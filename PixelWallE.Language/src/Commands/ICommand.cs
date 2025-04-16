@@ -1,4 +1,4 @@
-﻿namespace PixellWallE.Language.Commands;
+﻿namespace PixelWallE.Language.Commands;
 
 public interface ICommand
 {

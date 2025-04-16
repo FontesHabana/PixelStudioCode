@@ -1,6 +1,6 @@
 ﻿namespace PixelWallE.Language.Commands;
 
-public class DrawRectangleCommand: iCommand
+public class DrawRectangleCommand: ICommand
 {
     
 }

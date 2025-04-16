@@ -1,16 +1,18 @@
 ﻿namespace PixelWallE.Language.Tokens;
 
 public enum TokenType
-{
+{  
     //Single character token
     LEFT_PAREN, RIGHT_PAREN,LEFT_BRACKET,RIGHT_BRACKET, COMMA, NEW_LINE,
     //Operators token
-    ASSIGNMENT, MINUS, PLUS, DIVIDE, MULTIPLY, MODULO,
+    ASSIGNMENT, MINUS, PLUS, DIVIDE, MULTIPLY, MODULO, EXPONENTIAL,
     EQUAL,
     NOT_EQUAL, NOT, 
     GREATER, GREATER_EQUAL,
     LESS, LESS_EQUAL,
     AND, OR,
+    //Comment token
+    COMENNT,
     
     //Literals
     IDENTIFIER, STRING, NUMBER,
@@ -23,5 +25,7 @@ public enum TokenType
 		GETACTUALX,GETACTUALY,GETCANVASSIZE,GETCOLORCOUNT,ISBRUSHCOLOR,ISBRUSHSIZE,ISCANVASCOLOR, ISCOLOR,
     
     //End of file
-    EOF
+    EOF,
+
+    UNKNOW
 }
