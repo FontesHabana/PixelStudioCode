@@ -52,8 +52,10 @@ namespace PixellWallE.Language.Lexer;
                 string text;
                 if (stream.Match(start))
                 {
-                    if (!stream.ReadUntil(texts[start], out text))
-                        errors.Add(new CompilingError(stream.Location, ErrorCode.Expected, texts[start]));
+                    if (!stream.ReadUntil(texts[start], out text)){
+                        errors.Add(new CompilingError(stream.Location, ErrorCode.Expected, texts[start])); 
+                    }
+                       
 
                         //Revisar la construcción del token creo que tienes propiedades innecesarias
                     tokens.Add(new Token(TokenType.STRING, text, text, stream.Location));
@@ -79,9 +81,17 @@ namespace PixellWallE.Language.Lexer;
                 {
                     continue;
                 }
+                    if (stream.ReadEOL())
+                      {  
+                        tokens.Add(new Token(TokenType.EOL, "\\n",null, stream.Location));
+                        stream.ActionReadEOL();
+                        continue;
+                       }
 
                 if (stream.ReadWhiteSpace())
                     continue;
+
+                
 
                 if (stream.ReadID(out value))
                 {
@@ -104,15 +114,15 @@ namespace PixellWallE.Language.Lexer;
                 if (MatchText(stream, tokens, errors))
                     continue;
                 
-
+                //System.Console.WriteLine("Trate de matchear simbolo");
                 if (MatchSymbol(stream, tokens))
                     continue;
                 
-
+              //  System.Console.WriteLine("pasé por aqui");
                 var unkOp = stream.ReadAny();
                 errors.Add(new CompilingError(stream.Location, ErrorCode.Unknown, unkOp.ToString()));
             }
-
+            tokens.Add(new Token(TokenType.EOF,"\\0", null, stream.Location));
             return tokens;
         }
 
@@ -329,7 +339,7 @@ namespace PixellWallE.Language.Lexer;
         /*Devuelve si un caracter es valido en una situación. Utilizado para etiquetas y variables*/
         public bool ValidIdCharacter(char c, bool begining)
             {
-                return c == '_' || (begining ? char.IsLetter(c) : char.IsLetterOrDigit(c));
+                return c == '-' || (begining ? char.IsLetter(c) : char.IsLetterOrDigit(c));
             }
         //Determina si una palabra es un identifier
         public bool ReadID(out string id)
@@ -345,21 +355,10 @@ namespace PixellWallE.Language.Lexer;
                 number = "";
                 while (!EOL && char.IsDigit(Peek()))
                     number += ReadAny();
-                if (!EOL && Match("."))
-                {
-                    // read decimal part
-                    number += '.';
-                    while (!EOL && char.IsDigit(Peek()))
-                        number += ReadAny();
-                }
-
+               
                 if (number.Length == 0)
                     return false;
 
-                // Load Number posfix, i.e., 34.0F
-                // Not supported exponential formats: 1.3E+4
-                while (!EOL && char.IsLetterOrDigit(Peek()))
-                    number += ReadAny();
 
                 return number.Length > 0;
             }
@@ -385,6 +384,20 @@ namespace PixellWallE.Language.Lexer;
                 }
                 return false;
             }
+
+        public bool ReadEOL()
+            { 
+                if(Peek()=='\n'){
+                    
+                    return true;
+                }
+                return false;
+            }
+        public void ActionReadEOL(){
+                line++;
+                start = current++;
+        }
+       
         public bool ReadComment(){
             if (Peek()=='#')
             {
@@ -404,7 +417,7 @@ namespace PixellWallE.Language.Lexer;
         public char ReadAny()
             {
                 if (EOF)
-                    throw new InvalidOperationException();
+                    return '\0';
 
                 if (EOL)
                 {
@@ -416,3 +429,6 @@ namespace PixellWallE.Language.Lexer;
     }
 
 }
+
+//Comentarios que tengo que revisar al final de esto
+//Cómo se cuentan las filas????

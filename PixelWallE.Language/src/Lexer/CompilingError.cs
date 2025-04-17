@@ -17,6 +17,12 @@ public class CompilingError
             this.Argument = argument;
             Location = location;
         }
+
+    public override string ToString()
+    {
+        return Code+ " " + Argument + " " + Location.Line + " " + Location.Column;
+    }
+
     }
 
     public enum ErrorCode

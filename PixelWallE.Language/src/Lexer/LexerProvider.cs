@@ -23,6 +23,7 @@ public class LexerProvider
                 __LexicalProcess.RegisterOperator("<-", TokenType.ASSIGNMENT);
                 __LexicalProcess.RegisterOperator("&&", TokenType.AND);
                 __LexicalProcess.RegisterOperator("||", TokenType.OR);
+                __LexicalProcess.RegisterOperator("==", TokenType.EQUAL);
                 __LexicalProcess.RegisterOperator("!=", TokenType.NOT_EQUAL);
                 __LexicalProcess.RegisterOperator("!", TokenType.NOT);
 

@@ -26,6 +26,8 @@ public enum TokenType
     
     //End of file
     EOF,
-
+    //End of Line
+    EOL,
+    
     UNKNOW
 }

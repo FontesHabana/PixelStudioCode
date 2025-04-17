@@ -18,7 +18,7 @@ public class Token
 
      //View Token
      public String toString(){
-        return Type+ " "+ Value;
+        return Type+ " "+ Value + " fila "+ Location.Line+ "  columna " + Location.Column;
      }
 
 }

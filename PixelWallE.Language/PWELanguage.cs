@@ -7,7 +7,6 @@ public class PWELanguage{
     static bool hadError=false;
     public static void Main(){
         string text = File.ReadAllText("./test.pw"); 
-        
         run(text);
         
 
@@ -20,12 +19,22 @@ public class PWELanguage{
 
    private static void run(string source){
     Lexer lex = LexerProvider.Lexical;
-
-    IEnumerable<Token> tokens= lex.GetTokens("test", source, new List<CompilingError>());
-foreach (Token token in tokens)
- {
-    Console.WriteLine(token.toString());
- }
+    List<CompilingError> errors=new List<CompilingError>();
+    IEnumerable<Token> tokens= lex.GetTokens("test", source,errors);
+    
+    if (errors.Count>0)
+      {
+        foreach (CompilingError error in errors)
+        {
+        Console.WriteLine(error);
+        hadError=true;
+        }
+        return;
+      }
+    foreach (Token token in tokens)
+      {
+        Console.WriteLine(token.toString());
+      }
    }
 
 
