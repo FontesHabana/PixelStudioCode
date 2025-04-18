@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("PixelWallE.Language")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b16e40f9c26421943b3b14392a2a95317eea9d1a")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+95e4859536e0b5e129f47a04f810d1f05365c943")]
 [assembly: System.Reflection.AssemblyProductAttribute("PixelWallE.Language")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PixelWallE.Language")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
