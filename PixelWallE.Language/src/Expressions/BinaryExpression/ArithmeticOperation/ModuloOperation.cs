@@ -34,7 +34,7 @@ public abstract class ModuloOperation: BinaryExpression
     {
         if (Value == null)
         {
-            return String.Format("({0} + {1})", Left, Right);
+            return String.Format("({0} % {1})", Left, Right);
         }
         return Value.ToString();
     }

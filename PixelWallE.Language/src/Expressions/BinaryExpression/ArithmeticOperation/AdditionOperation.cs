@@ -12,7 +12,7 @@ public abstract class AdditionOperation: BinaryExpression
         Right.Evaluate();
         Left.Evaluate();
         
-        Value = (int)Right.Value + (int)Left.Value;
+        Value = (int)Left.Value + (int)Right.Value;
     }
 
     public override bool CheckSemantic(Context context, Scope scope, List<CompilingError> errors)

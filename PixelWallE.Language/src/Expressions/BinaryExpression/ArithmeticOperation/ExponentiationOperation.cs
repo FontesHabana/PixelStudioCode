@@ -12,7 +12,7 @@ public abstract class ExponentiationOperation: BinaryExpression
         Right.Evaluate();
         Left.Evaluate();
         //Revisar ma¡ás adelante división por cero
-        Value = Math.Pow((int)Right.Value, (int)Left.Value);
+        Value = Math.Pow((int)Left.Value, (int)Right.Value);
     }
 
     public override bool CheckSemantic(Context context, Scope scope, List<CompilingError> errors)
@@ -34,7 +34,7 @@ public abstract class ExponentiationOperation: BinaryExpression
     {
         if (Value == null)
         {
-            return String.Format("({0} + {1})", Left, Right);
+            return String.Format("({0} ** {1})", Left, Right);
         }
         return Value.ToString();
     }
