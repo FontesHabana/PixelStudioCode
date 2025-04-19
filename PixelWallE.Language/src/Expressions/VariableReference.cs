@@ -1,6 +1,6 @@
 ﻿namespace PixelWallE.Language.Expressions;
 
-public class VariableReference: IExpression
+public class VariableReference
 {
     
 }

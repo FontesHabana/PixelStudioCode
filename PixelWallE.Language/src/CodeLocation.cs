@@ -1,5 +1,5 @@
 
-namespace PixelWallE.Language.Tokens;
+namespace PixelWallE.Language;
 public struct CodeLocation
 {
     public string File;

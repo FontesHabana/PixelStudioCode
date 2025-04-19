@@ -1,6 +1,6 @@
 namespace PixelWallE.Language.Expressions;
 
-public class AssigmentExpression: IExpression
+public class AssigmentExpression
 {
 
 }

@@ -1,6 +1,6 @@
 //Sacar de aqui
-namespace PixellWallE.Language.Lexer;
-using PixelWallE.Language.Tokens;
+namespace PixelWallE.Language;
+
 
 //Modificar esto
 public class CompilingError
