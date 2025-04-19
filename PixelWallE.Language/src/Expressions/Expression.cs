@@ -1,10 +1,15 @@
-﻿namespace PixelWallE.Language.Expressions;
+﻿namespace PixelWallE.Language.Parsing.Expressions;
+using PixelWallE.Language.Tokens;
 
-public abstract class Expression
+
+public abstract class Expression: ASTNode
 {
     
+    public abstract ExpressionType Type { get; set; }
 
-    protected abstract void interpret();
-    protected abstract void resolve();
-    protected abstract void analyze();
+    public abstract object? Value { get; set; }
+
+    public Expression(CodeLocation location) : base (location) { }
+
+     public abstract void Evaluate();
 }
