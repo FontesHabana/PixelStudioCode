@@ -5,11 +5,11 @@ namespace PixelWallE.Language.Parsing;
 
 public class ElementalProgram: ASTNode{
 
-    public List<CompilingError> Errors {get; set;}
+    public List<PixelWallEException> Errors {get; set;}
     public List<ASTNode> Statements {get; set;}
     public List<Label>? Labels{get; private set;}
 
-    public ElementalProgram(CodeLocation location,List<CompilingError> errors):base(location){
+    public ElementalProgram(CodeLocation location,List<PixelWallEException> errors):base(location){
         Errors = errors;
         Statements=new List<ASTNode>();
         Labels=new List<Label>();

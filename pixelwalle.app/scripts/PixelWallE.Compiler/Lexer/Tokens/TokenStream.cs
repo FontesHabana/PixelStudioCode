@@ -50,13 +50,10 @@ return Peek().Type == TokenType.EOF;
         return Peek().Type==type;
     }
 
-    public Token? Consume(TokenType type,string message)
+    public Token? Consume(TokenType type,string expected)
     {
          if (Check(type)) return Advance();
-         throw Error(Peek(), message);
-    }
-    public CompilingError Error(Token token,string message){
-        return new CompilingError(token,message);
+        throw SyntaxException.UnexpectedToken(type.ToString(), expected, Peek().Location);
     }
 
     public void Synchronize(){

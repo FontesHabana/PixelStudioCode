@@ -80,9 +80,9 @@ public partial class main_ui : Control // partial es importante si adjuntas el s
         // Aquí puedes añadir lógica para 'ejecutar' o 'analizar' el código
         // ... (Por ahora, solo imprimimos y actualizamos el TextEdit)
         // Mostrar el texto recibido en el TextEdit
-        foreach (CompilingError error in interpreter.Errors)
+        foreach (PixelWallEException error in interpreter.Errors)
         {
-            _textEditOutput.Text +="\n"+ error.ToString() ;
+            _textEditOutput.Text +="\n"+ error.Message ;
         }
         if (interpreter.Errors.Count==0)
         {

@@ -11,13 +11,13 @@ using System;
 public class Executer : IVisitor<ASTNode>
 {
     private Scope scope;
-    public List<CompilingError> errors;
+    public List<PixelWallEException> errors;
 
     private Canvas canvas;
     private RobotState robot;
      int index;
 
-    public Executer(Scope scope, Canvas canvas, RobotState robot,  List<CompilingError> error)
+    public Executer(Scope scope, Canvas canvas, RobotState robot,  List<PixelWallEException> error)
     {
         this.scope = scope;
         this.canvas = canvas;
@@ -39,14 +39,14 @@ public class Executer : IVisitor<ASTNode>
              index++;
              
             }
-            catch(CompilingError error){
+            catch(PixelWallEException error){
                 errors.Add(error);
                 Godot.GD.Print(error);
                 return;
             }
             catch (System.Exception error)
-            {   System.Console.WriteLine(error);
-                errors.Add(new CompilingError(program.Statements[index].Location, ErrorCode.Unknown, error.Message));
+            {   
+                errors.Add(new RuntimeException(error.Message, program.Statements[index].Location));
                  Godot.GD.Print(error);
                 return;
             }
@@ -57,11 +57,8 @@ public class Executer : IVisitor<ASTNode>
     public void ParenthesizedExpression(ParenthesizedExpression expression)
     {   
        expression.InnerExpression.Accept(this);
-       if (expression.InnerExpression.Value==null)
-        throw new CompilingError(expression.Location, ErrorCode.Expected, "Se esperaba un valor válido en el paréntesis");
        
-       
-        expression.Value = expression.Value;
+       expression.Value = expression.Value;
     }
     public void Variable(Variable var)
     {
@@ -170,22 +167,7 @@ public class Executer : IVisitor<ASTNode>
     public void IsColorFunction(IsColorFunction function){}
     #endregion
 
-    private int CheckBool(Expression expression){
-        if (expression.Type == ExpressionType.Bool)
-        {
-           if ((bool)expression.Value)
-        {
-            return 1;
-        }
-        else
-        {
-            return 0;
-        }
-        }
-        return (int)expression.Value;
-        
-        
-    }
+    
     #region  Unary Expressions
     public void NotOperation(NotOperation operation){
         operation.Right.Accept(this);
@@ -194,7 +176,7 @@ public class Executer : IVisitor<ASTNode>
     public void NegationOperation(NegationOperation operation){
         operation.Right.Accept(this);
 
-        int right=CheckBool(operation.Right);
+        int right=(int)operation.Right.Value;
         operation.Value=-right;
     }
     #endregion
@@ -205,32 +187,32 @@ public class Executer : IVisitor<ASTNode>
     public void AdditionOperation(AdditionOperation operation){
         operation.Left.Accept(this);
         operation.Right.Accept(this);
-        int left=CheckBool(operation.Left);
-       int  right=CheckBool(operation.Right);
+        int left=(int)operation.Left.Value;
+        int  right=(int)operation.Right.Value;
         operation.Value=left+right;
     }
     public void DivisionOperation(DivisionOperation operation){
         operation.Left.Accept(this);
         operation.Right.Accept(this);
        
-       int left=CheckBool(operation.Left);
-       int  right=CheckBool(operation.Right);
+       int left=(int)operation.Left.Value;
+       int  right=(int)operation.Right.Value;
         
             if (right == 0)
             {
-                throw new CompilingError(operation.Location, ErrorCode.Unknown, "Division by zero");
+                throw RuntimeException.DivisionByZero(operation.Location);
             }
         operation.Value=left/right;
     }
     public void ExponentiationOperation(ExponentiationOperation operation){
         operation.Left.Accept(this);
         operation.Right.Accept(this);
-         int left=CheckBool(operation.Left);
-         int  right=CheckBool(operation.Right);
+         int left=(int)operation.Left.Value;
+         int  right=(int)operation.Right.Value;
         
         if ((int)left==0&&(int)right==0)
         {
-            throw new CompilingError(operation.Location, ErrorCode.Unknown, "0^0 is undefined");
+            throw RuntimeException.ZeroPowerZero(operation.Location);
         }
         operation.Value=(int)Math.Pow(left,right);
     }
@@ -238,17 +220,16 @@ public class Executer : IVisitor<ASTNode>
         operation.Left.Accept(this);
         operation.Right.Accept(this);
        
-        int left=CheckBool(operation.Left);
-       int  right=CheckBool(operation.Right);
-        
+         int left=(int)operation.Left.Value;
+         int  right=(int)operation.Right.Value;
         operation.Value=left%right;
        }
     public void MultiplicationOperation(MultiplicationOperation operation){
         operation.Left.Accept(this);
         operation.Right.Accept(this);
        
-        int left=CheckBool(operation.Left);
-       int  right=CheckBool(operation.Right);
+        int left=(int)operation.Left.Value;
+       int  right=(int)operation.Right.Value;
         
         operation.Value=left*right;
     }
@@ -256,8 +237,8 @@ public class Executer : IVisitor<ASTNode>
         operation.Left.Accept(this);
         operation.Right.Accept(this);
        
-         int left=CheckBool(operation.Left);
-         int  right=CheckBool(operation.Right);
+         int left=(int)operation.Left.Value;
+         int  right=(int)operation.Right.Value;
         
         operation.Value=left-right;
     }
@@ -283,19 +264,19 @@ public class Executer : IVisitor<ASTNode>
         
         if (operation.Left.Type==ExpressionType.String)
         {
-            operation.Value=operation.Left.Equals(operation.Right);
+            operation.Value=operation.Left.Equals(operation.Right.Value);
             return;
         }
-        int left=CheckBool(operation.Left);
-        int  right=CheckBool(operation.Right);
+        int left=(int)operation.Left.Value;
+        int  right=(int)operation.Right.Value;
         
         operation.Value=left.Equals(right);
     }
     public void GreatherThanOperation(GreatherThanOperation operation){
         operation.Left.Accept(this);
         operation.Right.Accept(this);
-        int left=CheckBool(operation.Left);
-         int  right=CheckBool(operation.Right);
+        int left=(int)operation.Left.Value;
+         int  right=(int)operation.Right.Value;
         
         
         operation.Value=(int)left>(int)right;
@@ -303,8 +284,8 @@ public class Executer : IVisitor<ASTNode>
     public void GreatherThanOrEqualToOperation(GreatherThanOrEqualToOperation operation){
         operation.Left.Accept(this);
         operation.Right.Accept(this);
-          int left=CheckBool(operation.Left);
-         int  right=CheckBool(operation.Right);
+          int left=(int)operation.Left.Value;
+         int  right=(int)operation.Right.Value;
         
         
         operation.Value=(int)left>=(int)right;
@@ -312,8 +293,8 @@ public class Executer : IVisitor<ASTNode>
     public void LessThanOperation(LessThanOperation operation){
         operation.Left.Accept(this);
         operation.Right.Accept(this);
-         int left=CheckBool(operation.Left);
-         int  right=CheckBool(operation.Right);
+         int left=(int)operation.Left.Value;
+         int  right=(int)operation.Right.Value;
         operation.Value=left<right;
        
     }
@@ -321,8 +302,8 @@ public class Executer : IVisitor<ASTNode>
         operation.Left.Accept(this);
         operation.Right.Accept(this);
       
-       int left=CheckBool(operation.Left);
-         int  right=CheckBool(operation.Right);
+       int left=(int)operation.Left.Value;
+         int  right=(int)operation.Right.Value;
         
         operation.Value=left<=right;
     }
@@ -339,8 +320,8 @@ public class Executer : IVisitor<ASTNode>
             operation.Value=!operation.Left.Equals(operation.Right);
             return;
         }
-        int left=CheckBool(operation.Left);
-        int  right=CheckBool(operation.Right);
+        int left=(int)operation.Left.Value;
+        int  right=(int)operation.Right.Value;
         
         operation.Value=!left.Equals(right);
     }
@@ -358,11 +339,23 @@ public class Executer : IVisitor<ASTNode>
         }
         return true;
     }
-
+    private void CheckDirection(Command command)
+    {
+        int x = (int)command.Args[0].Value;
+        int y = (int)command.Args[1].Value;
+        if (x != 1 && x != -1 && x != 0 )
+        {
+            throw RuntimeException.InvalidDirectionCoordinates(x, y, command.Name, command.Location);
+        }
+        if ( y != 1 && y != -1 && y != 0)
+        {
+             throw RuntimeException.InvalidDirectionCoordinates(x, y, command.Name, command.Location);
+        }
+    }
     private void RobotOutException(int x, int y, int size, ASTNode node){
         if (!CheckPosition(x,y,size))
         {
-            throw new CompilingError(node.Location, ErrorCode.Invalid, "El robot se encuentra fuera del canvas");
+            throw RuntimeException.PositionOutOfBounds(x,y,node.ToString(), node.Location);
         }
     }
     private void DrawPixel(int X, int Y){
@@ -401,6 +394,12 @@ public class Executer : IVisitor<ASTNode>
             item.Accept(this);
            
         }
+        if ((int)command.Args[2].Value <= 0)
+        {
+            throw RuntimeException.ArgumentMostBePositive("Radio", (int)command.Args[2].Value, command.Location);
+        
+        }
+        CheckDirection(command);
         object cx=command.Args[0].Value;
         object cy=command.Args[1].Value;
         object r=command.Args[2].Value;
@@ -445,6 +444,12 @@ public class Executer : IVisitor<ASTNode>
             item.Accept(this);
         
         }
+        if ((int)command.Args[2].Value <= 0)
+        {
+           throw RuntimeException.ArgumentMostBePositive("Distance", (int)command.Args[2].Value, command.Location);
+           
+        }
+        CheckDirection(command);
         object x=command.Args[0].Value;
         object y=command.Args[1].Value;
         object distance=command.Args[2].Value;
@@ -463,7 +468,22 @@ public class Executer : IVisitor<ASTNode>
             item.Accept(this);
 
         }
-        Godot.GD.Print("Acepto todos los argumentos");
+        if ((int)command.Args[2].Value <= 0)
+        {
+           throw RuntimeException.ArgumentMostBePositive("Distance", (int)command.Args[2].Value, command.Location);
+           
+        }
+        if ((int)command.Args[3].Value <= 0)
+        {
+           throw RuntimeException.ArgumentMostBePositive("Width", (int)command.Args[2].Value, command.Location);
+           
+        }
+        if ((int)command.Args[4].Value <= 0)
+        {
+           throw RuntimeException.ArgumentMostBePositive("Height", (int)command.Args[2].Value, command.Location);
+           
+        }
+        CheckDirection(command);
         object x = command.Args[0].Value;
         object y = command.Args[1].Value;
         object distance = command.Args[2].Value;

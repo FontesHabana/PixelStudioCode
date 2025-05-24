@@ -1,8 +1,8 @@
 [gd_scene load_steps=7 format=3 uid="uid://6vs6w3i1savd"]
 
-[ext_resource type="Script" path="res://scripts/main_ui.cs" id="1_vuw8x"]
-[ext_resource type="Script" path="res://scripts/TextEdit.cs" id="2_2f17j"]
-[ext_resource type="Script" path="res://scripts/CanvasController.cs" id="3_akxhr"]
+[ext_resource type="Script" path="res://scripts/PixelWallE.UI/main_ui.cs" id="1_se0kn"]
+[ext_resource type="Script" path="res://scripts/PixelWallE.UI/TextEdit.cs" id="2_vlke6"]
+[ext_resource type="Script" path="res://scripts/PixelWallE.UI/CanvasController.cs" id="3_4rnn0"]
 
 [sub_resource type="CodeHighlighter" id="CodeHighlighter_woaua"]
 
@@ -22,7 +22,7 @@ grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 6
 size_flags_vertical = 6
-script = ExtResource("1_vuw8x")
+script = ExtResource("1_se0kn")
 _codeEditNode = NodePath("CodeEdit")
 _saveFileDialog = NodePath("Save")
 _loadFileDialog = NodePath("Load")
@@ -104,7 +104,7 @@ context_menu_enabled = false
 syntax_highlighter = SubResource("CodeHighlighter_58tmq")
 highlight_all_occurrences = true
 highlight_current_line = true
-script = ExtResource("2_2f17j")
+script = ExtResource("2_vlke6")
 
 [node name="Save" type="FileDialog" parent="."]
 initial_position = 1
@@ -133,7 +133,7 @@ offset_top = 60.0
 offset_right = 1863.0
 offset_bottom = 886.0
 texture = SubResource("CanvasTexture_lhqmy")
-script = ExtResource("3_akxhr")
+script = ExtResource("3_4rnn0")
 
 [node name="Button" type="Button" parent="."]
 layout_mode = 0

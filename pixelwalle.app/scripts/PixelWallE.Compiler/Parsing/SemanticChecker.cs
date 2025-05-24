@@ -6,13 +6,17 @@ using PixelWallE.Language.Commands;
 using System.Net;
 using System.Collections.Generic;
 using System.Linq;
+using PixelWallE.Language;
+using System;
+using System.Xml;
 
 public class SemanticChecker : IVisitor<ASTNode>
 {
+    //Checkear color declarado aislarlo en una sola funcion
     private Scope scope;
-    public List<CompilingError> errors;
+    public List<PixelWallEException> errors;
 
-    public SemanticChecker(Scope scope, List<CompilingError> error)
+    public SemanticChecker(Scope scope, List<PixelWallEException> error)
     {
         this.scope = scope;
         errors = error;
@@ -39,169 +43,113 @@ public class SemanticChecker : IVisitor<ASTNode>
     }
     public void Variable(Variable var)
     {
-        if (!scope.IsDeclaredVariable(var.VariableName))
+        if (!scope.IsDeclared(var.VariableName,scope.variables))
         {
-            errors.Add(new CompilingError(var.Location, ErrorCode.None, $"La variable {var.VariableName} no está declarada"));
+           
+            errors.Add(SemanticException.UndeclaredVariable(var.VariableName, var.Location));
             return;
         }
         var.Type=scope.GetVariableType(var.VariableName);
     }
 
-    private void CheckArguments(List<Expression> args)
+//Quitar la lista de argumentos viene implicita por el function
+    private void CheckArguments( List<ExpressionType> argsType, ASTNode node)
     {
-        foreach (var arg in args)
+        if (node is IArgument<Expression> function)
         {
-            arg.Accept(this);
+
+            string name = (node is IName nameNode)? nameNode.Name : node.GetType().Name;
+
+
+        foreach (Expression arg in function.Args)
+            {
+                arg.Accept(this);
+            }
+
+            for (int i = 0; i < Math.Min(function.Args.Count, argsType.Count); i++)
+            {
+                if (function.Args[i].Type != argsType[i])
+                {
+                    errors.Add(SemanticException.TypeMismatch(name, argsType[i], function.Args[i].Type, node.Location));
+                }
+            if (function.Args[i].Type==ExpressionType.String)
+            {
+                 if (!scope.IsDeclared(function.Args[i].ToString(), scope.colors))
+            {
+                SemanticException.UndeclaredColor(function.Args[i].ToString(), node.Location);
+            }
+            }
+           
+        
+     }
+
+        if (function.Args.Count != argsType.Count)
+        {
+            errors.Add(SemanticException.IncorrectArgumentCount(name, argsType.Count, function.Args.Count, node.Location));
         }
+
+        }
+        
     }
+
+    
     #region functions
     //Functions
     public void GetActualXFunction(GetActualXFunction function)
     {
-        if (function.Args.Count != 0)
-            errors.Add(new CompilingError(function.Location, ErrorCode.Invalid, "La función No debe recibir ningún argumento"));
+        CheckArguments(new List<ExpressionType>(), function);
     }
 
     public void GetActualYFunction(GetActualYFunction function)
     {
 
-        if (function.Args.Count != 0)
-            errors.Add(new CompilingError(function.Location, ErrorCode.Invalid, "La función No debe recibir ningún argumento"));
+       CheckArguments(new List<ExpressionType>(), function);
     }
     public void GetCanvasSizeFunction(GetCanvasSizeFunction function)
     {
-
-        if (function.Args.Count != 0)
-            errors.Add(new CompilingError(function.Location, ErrorCode.Invalid, "La función No debe recibir ningún argumento"));
+         CheckArguments(new List<ExpressionType>(), function);
     }
     public void GetColorCountFunction(GetColorCountFunction function)
     {
-        CheckArguments(function.Args);
-        if (function.Args.Count!= 5)
-        {
-            errors.Add(new CompilingError(function.Location, ErrorCode.Invalid, $"No recibe {function.Args.Count} argumento"));
-            return;
-        }
-
-        if (function.Args[0].Type != ExpressionType.String)
-        {
-            errors.Add(new CompilingError(function.Location, ErrorCode.Invalid, "Debe ser string"));
-
-        }
-        if (function.Args[1].Type != ExpressionType.Number)
-        {
-            errors.Add(new CompilingError(function.Location, ErrorCode.Invalid, "Debe ser número"));
-
-        }
-        if (function.Args[2].Type != ExpressionType.Number)
-        {
-            errors.Add(new CompilingError(function.Location, ErrorCode.Invalid, "Debe ser número"));
-
-        }
-        if (function.Args[3].Type != ExpressionType.Number)
-        {
-            errors.Add(new CompilingError(function.Location, ErrorCode.Invalid, "Debe ser número"));
-
-        }
-        if (function.Args[4].Type != ExpressionType.Number)
-        {
-            errors.Add(new CompilingError(function.Location, ErrorCode.Invalid, "Debe ser número"));
-
-        }
+        CheckArguments(new List<ExpressionType>() { ExpressionType.String, ExpressionType.Number, ExpressionType.Number, ExpressionType.Number, ExpressionType.Number }, function);
+         
     }
     public void IsBrushColorFunction(IsBrushColorFunction function)
     {
-        //Revisar si el checkeo semantico aqui incluye o no parentesis
-        CheckArguments(function.Args);
-
-        if (function.Args.Count != 1)
-        {
-            errors.Add(new CompilingError(function.Location, ErrorCode.Invalid, $"No recibe {function.Args.Count} argumento Deberia recibir 1"));
-        return;
-        }
-        if (function.Args[0].Type != ExpressionType.String)
-        {
-            errors.Add(new CompilingError(function.Location, ErrorCode.Invalid, "Debe ser string"));
-            
-        }
+        CheckArguments(new List<ExpressionType>() { ExpressionType.String }, function);
+         
     }
     public void IsBrushSizeFunction(IsBrushSizeFunction function)
     {
-        CheckArguments(function.Args);
-        if (function.Args.Count !=1)
-        {
-            errors.Add(new CompilingError(function.Location, ErrorCode.Invalid, $"LA funcion no recibe {function.Args.Count()} argumentos"));
-return;
-        }
-        if (function.Args[0].Type != ExpressionType.Number)
-        {
-            errors.Add(new CompilingError(function.Location, ErrorCode.Invalid, "Debe ser número"));
-
-        }
+        CheckArguments(new List<ExpressionType>(){ExpressionType.Number}, function);
     }
     public void IsCanvasColor(IsCanvasColor function)
     {
-        CheckArguments(function.Args);
-        if (function.Args.Count != 3)
-        {
-            errors.Add(new CompilingError(function.Location, ErrorCode.Invalid, $"No recibe {function.Args.Count()} argumento"));
-        return;
-        }
-        if (function.Args[0].Type != ExpressionType.String)
-        {
-            errors.Add(new CompilingError(function.Location, ErrorCode.Invalid, "Debe ser string"));
-        }
-        if (function.Args[1].Type != ExpressionType.Number)
-        {
-            errors.Add(new CompilingError(function.Location, ErrorCode.Invalid, "Debe ser número"));
-        }
-        if (function.Args[2].Type != ExpressionType.Number)
-        {
-            errors.Add(new CompilingError(function.Location, ErrorCode.Invalid, "Debe ser número"));
-        }
+        CheckArguments(new List<ExpressionType>() { ExpressionType.String, ExpressionType.Number, ExpressionType.Number }, function);
+        
     }
     public void IsColorFunction(IsColorFunction function)
     {
-        CheckArguments(function.Args);
-        if (function.Args.Count !=3)
-        {
-            errors.Add(new CompilingError(function.Location, ErrorCode.Invalid, $"No recibe {function.Args.Count} argumento"));
-        return;
-        }
-        if (function.Args[0].Type != ExpressionType.String)
-        {
-            errors.Add(new CompilingError(function.Location, ErrorCode.Invalid, "Debe ser string"));
-        }
-        if (function.Args[1].Type != ExpressionType.Number)
-        {
-            errors.Add(new CompilingError(function.Location, ErrorCode.Invalid, "Debe ser número"));
-        }
-        if (function.Args[2].Type != ExpressionType.Number)
-        {
-            errors.Add(new CompilingError(function.Location, ErrorCode.Invalid, "Debe ser número"));
-        }
+         CheckArguments(new List<ExpressionType>(){ExpressionType.String, ExpressionType.Number,ExpressionType.Number}, function);
     }
     #endregion
 
 
     #region  Unary Expressions
+    private void UnaryOperation(UnaryExpression operation, ExpressionType type)
+    {   operation.Right.Accept(this);
+        if (operation.Right.Type !=type)
+        {
+            errors.Add(SemanticException.InvalidOperation(operation.ToString(),operation.Right.Type, operation.Location));
+        }
+    }
     public void NotOperation(NotOperation operation)
     {
-        operation.Right.Accept(this);
-
-        if (operation.Right.Type != ExpressionType.Bool)
-        {
-            errors.Add(new CompilingError(operation.Location, ErrorCode.Invalid, "The operand of the not operation must be a boolean"));
-        }
+        UnaryOperation(operation, ExpressionType.Bool);
     }
     public void NegationOperation(NegationOperation operation)
     {
-        operation.Right.Accept(this);
-
-        if (operation.Right.Type != ExpressionType.Number && operation.Right.Type != ExpressionType.Bool)
-        {   
-            errors.Add(new CompilingError(operation.Location, ErrorCode.Invalid, "The operand of the negation operation must be a number"));
-        }
+        UnaryOperation(operation, ExpressionType.Number);
     }
     #endregion
 
@@ -213,20 +161,16 @@ return;
         operation.Right.Accept(this);
         operation.Left.Accept(this);
 
-       if (operation.Right.Type == ExpressionType.String ||operation.Left.Type==ExpressionType.String)
+       if (operation.Left.Type != type)
         {
-            errors.Add(new CompilingError(operation.Location, ErrorCode.Invalid, $"Los lados de la expresion deben ser {type} "));
+            errors.Add(SemanticException.InvalidOperation(operation.ToString(), operation.Left.Type, operation.Location));
+        }
+        if (operation.Right.Type != type)
+        {
+            errors.Add(SemanticException.InvalidOperation(operation.ToString(), operation.Right.Type, operation.Location));
         }
     }
-    private void BoolExpression(BinaryExpression operation){
-        operation.Right.Accept(this);
-        operation.Left.Accept(this);
-
-        if (operation.Left.Type!=ExpressionType.Bool||operation.Right.Type!=ExpressionType.Bool)
-        {
-             errors.Add(new CompilingError(operation.Location, ErrorCode.Invalid, $"Los lados de la expresion deben ser {ExpressionType.Bool} "));
-        }
-    }
+    
     #region Arithmetic Operation
     public void AdditionOperation(AdditionOperation operation)
     {
@@ -257,19 +201,19 @@ return;
     #region Logic Operation
     public void ANDOperation(ANDOperation operation)
     {
-        BoolExpression(operation);
+        BinaryExpression(operation, ExpressionType.Bool);
     }
     public void OrOperation(OrOperation operation)
     {
-        BoolExpression(operation);
+         BinaryExpression(operation, ExpressionType.Bool);
     }
     public void EqualToOperation(EqualToOperation operation)
     {   operation.Left.Accept(this);
         operation.Right.Accept(this);
         
-        if ((operation.Right.Type==ExpressionType.String&&operation.Left.Type!=ExpressionType.String)||(operation.Left.Type==ExpressionType.String&&operation.Right.Type!=ExpressionType.String))
+        if (operation.Right.Type !=operation.Left.Type)
         {
-            errors.Add(new CompilingError(operation.Location, ErrorCode.Invalid, "Los lados de la expresión deben ser del mismo tipo"));
+            errors.Add(SemanticException.TypeMismatch("Equal", operation.Left.Type, operation.Right.Type, operation.Location));
         }
        
     }
@@ -277,10 +221,10 @@ return;
     {
         operation.Left.Accept(this);
         operation.Right.Accept(this);
-        
-        if ((operation.Right.Type==ExpressionType.String&&operation.Left.Type!=ExpressionType.String)||(operation.Left.Type==ExpressionType.String&&operation.Right.Type!=ExpressionType.String))
+
+        if (operation.Right.Type !=operation.Left.Type)
         {
-            errors.Add(new CompilingError(operation.Location, ErrorCode.Invalid, "Los lados de la expresión deben ser del mismo tipo"));
+            errors.Add(SemanticException.TypeMismatch("NotEqual", operation.Left.Type, operation.Right.Type, operation.Location));
         }
     }
 
@@ -312,11 +256,11 @@ return;
     {
         command.Argument.Accept(this);
 
-        if (scope.IsDeclaredVariable(command.Var.VariableName))
+        if (scope.IsDeclared(command.Var.VariableName, scope.variables))
         {
             if (scope.GetVariableType(command.Var.VariableName) != command.Argument.Type)
             {
-                errors.Add(new CompilingError(command.Location, ErrorCode.Expected, $"La variable es del tipo {scope.GetVariableType(command.Var.VariableName)} y el argumento es del tipo {command.Argument.Type}"));
+                errors.Add(SemanticException.TypeMismatch("Assigment", command.Var.Type, command.Argument.Type, command.Location));
             }
         }
 
@@ -327,134 +271,41 @@ return;
     }
     public void ColorCommand(ColorCommand command)
     {
-        CheckArguments(command.Args);
-
-        if (command.Args.Count != 1)
-        {
-            errors.Add(new CompilingError(command.Location, ErrorCode.Invalid, "Cantidad de argumentos inválida"));
-        return;
-        }
-        if (command.Args[0].Type != ExpressionType.String)
-        {
-            errors.Add(new CompilingError(command.Location, ErrorCode.Invalid, "El argumento debe ser un color"));
-        }
+        CheckArguments(new List<ExpressionType>() { ExpressionType.String }, command);
+        
     }
     public void DrawCircleCommand(DrawCircleCommand command)
     {
-        CheckArguments(command.Args);
-        if (command.Args.Count != 3)
-        {
-            errors.Add(new CompilingError(command.Location, ErrorCode.Invalid, "Cantidad de argumentos inválida"));
-return;
-        }
-
-        for (int i = 0; i < 3; i++)
-        {
-            if (command.Args[i].Type != ExpressionType.Number)
-            {
-                errors.Add(new CompilingError(command.Location, ErrorCode.Invalid, "El argumento debe ser un número"));
-            }
-        }
+         CheckArguments(new List<ExpressionType>(){ExpressionType.Number, ExpressionType.Number, ExpressionType.Number}, command);
     }
     public void DrawLineCommand(DrawLineCommand command)
     {
-        CheckArguments(command.Args);
-        if (command.Args.Count !=3)
-        {
-            errors.Add(new CompilingError(command.Location, ErrorCode.Invalid, "Cantidad de argumentos inválida"));
-            return;
-        }
-
-        for (int i = 0; i < 3; i++)
-        {
-            if (command.Args[i].Type != ExpressionType.Number)
-            {
-                errors.Add(new CompilingError(command.Location, ErrorCode.Invalid, "El argumento debe ser un numero"));
-            }
-        }
+         CheckArguments(new List<ExpressionType>(){ExpressionType.Number, ExpressionType.Number, ExpressionType.Number}, command);
     }
     public void DrawRectangleCommand(DrawRectangleCommand command)
     {
-        CheckArguments(command.Args);
-        if (command.Args.Count != 5)
-        {
-            errors.Add(new CompilingError(command.Location, ErrorCode.Invalid, "Cantidad de argumentos inválida"));
-       return;
-        }
-
-        for (int i = 0; i < 5; i++)
-        {
-            if (command.Args[i].Type != ExpressionType.Number)
-            {
-                errors.Add(new CompilingError(command.Location, ErrorCode.Invalid, "El argumento debe ser un número"));
-
-            }
-        }
+         CheckArguments(new List<ExpressionType>(){ExpressionType.Number, ExpressionType.Number, ExpressionType.Number, ExpressionType.Number, ExpressionType.Number}, command);
 
     }
     public void FillCommand(FillCommand command)
     {
-        if (command.Args.Count > 0)
-        {
-            errors.Add(new CompilingError(command.Location, ErrorCode.Invalid, "Cantidad de argumentos inválida"));
-return;
-        }
-
+        CheckArguments(new List<ExpressionType>(), command);
     }
     public void SizeCommand(SizeCommand command)
     {
-        CheckArguments(command.Args);
-        if (command.Args.Count != 1)
-        {
-            errors.Add(new CompilingError(command.Location, ErrorCode.Invalid, "Cantidad de argumentos inválida"));
-        return;
-        }
-        for (int i = 0; i < 1; i++)
-        {
-            if (command.Args[i].Type != ExpressionType.Number)
-            {
-                errors.Add(new CompilingError(command.Location, ErrorCode.Invalid, "El argumento debe ser un numero"));
-
-            }
-        }
+         CheckArguments(new List<ExpressionType>(){ExpressionType.Number}, command);
     }
     public void SpawnCommand(SpawnCommand command)
     {
-        CheckArguments(command.Args);
-        if (command.Args.Count != 2)
-        {
-            errors.Add(new CompilingError(command.Location, ErrorCode.Invalid, "Cantidad de argumentos inválida"));
-        return;
-        }
-
-        for (int i = 0; i < 2; i++)
-        {
-            if (command.Args[i].Type != ExpressionType.Number)
-            {
-                errors.Add(new CompilingError(command.Location, ErrorCode.Invalid, "El argumento debe ser un numero"));
-            }
-        }
+        CheckArguments(new List<ExpressionType>(){ExpressionType.Number, ExpressionType.Number}, command);
 
     }
     public void GoToCommand(GoToCommand command)
     {
-        CheckArguments(command.Args);
-
-        if (command.Args.Count != 1)
+        CheckArguments(new List<ExpressionType>(){ExpressionType.Bool}, command);
+        if (!scope.IsDeclared(command.Label,scope.labels))
         {
-            errors.Add(new CompilingError(command.Location, ErrorCode.Invalid, "Cantidad de argumentos inválida"));
-       return;
-        }
-        for (int i = 0; i < 1; i++)
-        {
-            if (command.Args[i].Type != ExpressionType.Bool)
-            {
-                errors.Add(new CompilingError(command.Location, ErrorCode.Invalid, "El argumento debe ser un bool"));
-            }
-        }
-        if (!scope.IsDeclaredLabel(command.Label))
-        {
-            errors.Add(new CompilingError(command.Location, ErrorCode.Invalid, "La etiqueta no se encuentra declarada"));
+            errors.Add(SemanticException.LabelNotFound(command.Label, command.Location));
         }
 
     }

@@ -19,17 +19,17 @@ namespace PixelWallE.Language.Parsing;
 public class Parser{
 
     public TokenStream Stream  {get; private set;}
-    private List<CompilingError> Errors{ get; set; }
+    private List<PixelWallEException> Errors{ get; set; }
 
 
-    public Parser(TokenStream stream, List<CompilingError> errors)
+    public Parser(TokenStream stream, List<PixelWallEException> errors)
     {
         Stream = stream;
         Errors = errors;
     }
 
  /*
-    public IExecutable ParseInstruction(List<CompilingError> errors){
+    public IExecutable ParseInstruction(List<PixelWallEException> errors){
             Token tokenHead=Stream.Peek();
 
             if (tokenHead.Type==TokenType.IDENTIFIER)
@@ -196,41 +196,42 @@ private Expression ParseUnary() {
     return ParsePrimary();
 }
 
-//Parsear funciones que retornan valor
-private Expression ParsePrimary(){
-    if (Stream.Match(new List<TokenType>{TokenType.FALSE}))
+    //Parsear funciones que retornan valor
+    private Expression ParsePrimary()
     {
-        return new Bool(Stream.Previous().Location, false); 
-    }
-    if (Stream.Match(new List<TokenType>{TokenType.TRUE}))
-    {
-        return new Bool(Stream.Previous().Location, true); 
-    }
-    if (Stream.Match(new List<TokenType>{TokenType.NUMBER}))
-    {
-        return new Number(Stream.Previous().Location, (int)Stream.Previous().Literal);
-    }
-    if (Stream.Match(new List<TokenType>{TokenType.STRING}))
-    {
-        return new StringLiteral(Stream.Previous().Location, (string)Stream.Previous().Literal);
-    }
-    if (Stream.Match(new List<TokenType>{TokenType.LEFT_PAREN}))
-    {
-        Expression expr=ParseExpression();
-        Stream.Consume(TokenType.RIGHT_PAREN, "Expected ')' after expression.");
-        return new ParenthesizedExpression(Stream.Previous().Location, expr);
-    }
-    if (Stream.Match(new List<TokenType>{TokenType.ISBRUSHCOLOR,TokenType.ISBRUSHSIZE,TokenType.ISCANVASCOLOR,TokenType.ISCOLOR,TokenType.GETACTUALX,TokenType.GETACTUALY,TokenType.GETCANVASSIZE,TokenType.GETCOLORCOUNT}))
+        if (Stream.Match(new List<TokenType> { TokenType.FALSE }))
+        {
+            return new Bool(Stream.Previous().Location, false);
+        }
+        if (Stream.Match(new List<TokenType> { TokenType.TRUE }))
+        {
+            return new Bool(Stream.Previous().Location, true);
+        }
+        if (Stream.Match(new List<TokenType> { TokenType.NUMBER }))
+        {
+            return new Number(Stream.Previous().Location, (int)Stream.Previous().Literal);
+        }
+        if (Stream.Match(new List<TokenType> { TokenType.STRING }))
+        {
+            return new StringLiteral(Stream.Previous().Location, (string)Stream.Previous().Literal);
+        }
+        if (Stream.Match(new List<TokenType> { TokenType.LEFT_PAREN }))
+        {
+            Expression expr = ParseExpression();
+            Stream.Consume(TokenType.RIGHT_PAREN, ")");
+            return new ParenthesizedExpression(Stream.Previous().Location, expr);
+        }
+        if (Stream.Match(new List<TokenType> { TokenType.ISBRUSHCOLOR, TokenType.ISBRUSHSIZE, TokenType.ISCANVASCOLOR, TokenType.ISCOLOR, TokenType.GETACTUALX, TokenType.GETACTUALY, TokenType.GETCANVASSIZE, TokenType.GETCOLORCOUNT }))
 
-     {
-        return ParseFunction();
-     }
-    if (Stream.Match(new List<TokenType>{TokenType.IDENTIFIER}))
-    {
-        return new Variable(Stream.Previous().Location, (string)Stream.Previous().Value);
-    }
+        {
+            return ParseFunction();
+        }
+        if (Stream.Match(new List<TokenType> { TokenType.IDENTIFIER }))
+        {
+            return new Variable(Stream.Previous().Location, (string)Stream.Previous().Value);
+        }
 
-    throw Stream.Error(Stream.Peek(), "Expect expression");
+        throw SyntaxException.UnexpectedToken(Stream.Peek().Value.ToString(), "expected expression", Stream.Peek().Location);
 }
 
 
@@ -238,7 +239,7 @@ private Expression ParsePrimary(){
 #endregion
 
 private void ParseIArgument(IArgument<Expression> argument){
-     Stream.Consume(TokenType.LEFT_PAREN, "Expected '(' after keyword.");
+     Stream.Consume(TokenType.LEFT_PAREN, "(");
 if (!Stream.Check(TokenType.RIGHT_PAREN))
     {
          do{
@@ -255,7 +256,7 @@ if (!Stream.Check(TokenType.RIGHT_PAREN))
     }
    
    
-    Stream.Consume(TokenType.RIGHT_PAREN, "Expected ')' or ',' after arguments.");
+    Stream.Consume(TokenType.RIGHT_PAREN, ")' or ',");
 }
 #region Command expression
 
@@ -360,7 +361,7 @@ private Command ParseGoTo(){
     
     GoToCommand? command= new GoToCommand(headCommand.Location,TokenType.GOTO,new List<Expression>(),null);
     
-      Stream.Consume(TokenType.LEFT_BRACKET, "Expected '[' after keyword.");
+      Stream.Consume(TokenType.LEFT_BRACKET, "[");
   
 
     if (Stream.Match(new List<TokenType>{TokenType.IDENTIFIER}))
@@ -368,16 +369,16 @@ private Command ParseGoTo(){
         command.Label=Stream.Previous().Value;
     }
     else{
-        throw new CompilingError(Stream.Peek(),"Se esperaba un label");
+            throw SyntaxException.UnexpectedToken(Stream.Peek().Value.ToString(), "Label", Stream.Peek().Location);
     }
      
-    Stream.Consume(TokenType.RIGHT_BRACKET, "Expected ']' after label.");
+    Stream.Consume(TokenType.RIGHT_BRACKET, "]");
 
-    Stream.Consume(TokenType.LEFT_PAREN, "Expected '(' after label.");
+    Stream.Consume(TokenType.LEFT_PAREN, "(");
     
     command.Args.Add(ParseExpression());
     
-    Stream.Consume(TokenType.RIGHT_PAREN, "Expected ')' or ',' after arguments.");
+    Stream.Consume(TokenType.RIGHT_PAREN, ")' or ',");
  
     return command; 
 }
@@ -389,7 +390,7 @@ private Command ParseGoTo(){
 */
 #region Parse program
 public ElementalProgram Parse(){
-    ElementalProgram program=new ElementalProgram(new CodeLocation(),Errors);
+    ElementalProgram program=new ElementalProgram(new CodeLocation(), Errors);
     while (!Stream.IsAtEnd())
     {
             if (Stream.Match(new List<TokenType> { TokenType.SPAWN }))
@@ -399,7 +400,7 @@ public ElementalProgram Parse(){
                     program.Statements.Add(ParseCommand());
                   
                 }
-                catch (CompilingError error)
+                catch (PixelWallEException error)
                 {
                     program.Errors.Add(error);
                     Stream.Synchronize();
@@ -408,7 +409,7 @@ public ElementalProgram Parse(){
             }
             else if (!Stream.Match(new List<TokenType> { TokenType.EOL, TokenType.COMENNT }))
             {
-                program.Errors.Add(new CompilingError("En la primera línea debe ser un spawn"));
+                program.Errors.Add(SyntaxException.SpawnMisplaced( Stream.Peek().Location));
                 break;
             }
     }
@@ -416,7 +417,7 @@ public ElementalProgram Parse(){
     while(!Stream.IsAtEnd()){
           if (Stream.Match(new List<TokenType>{TokenType.SPAWN}))
         {  
-             program.Errors.Add(new CompilingError("EL spawn solo puede estar en el inicio del codigo y una sola vez en todo el codigo"));
+             program.Errors.Add(SyntaxException.DuplicateSpawn( Stream.Peek().Location));
              Stream.Synchronize();
         }
         if (Stream.Match(new List<TokenType>{TokenType.COLOR,TokenType.DRAWCIRCLE,TokenType.DRAWLINE,TokenType.DRAWRECTANGLE,TokenType.FILL,TokenType.SIZE}))
@@ -424,7 +425,7 @@ public ElementalProgram Parse(){
              {
               program.Statements.Add(ParseCommand());
               }
-            catch (CompilingError error)
+            catch (PixelWallEException error)
              {
                 program.Errors.Add(error);
                 Stream.Synchronize();
@@ -438,7 +439,7 @@ public ElementalProgram Parse(){
                 program.Statements.Add(ParseGoTo());
 
             }
-            catch (CompilingError error)
+            catch (PixelWallEException error)
             {
                 program.Errors.Add(error);
                 Stream.Synchronize();
@@ -453,7 +454,7 @@ public ElementalProgram Parse(){
             {
                 program.Statements.Add(ParseAssignation());
             }
-            catch (CompilingError error)
+            catch (PixelWallEException error)
             {
                 program.Errors.Add(error);
                 Stream.Synchronize();
@@ -466,7 +467,7 @@ public ElementalProgram Parse(){
        }
        if (!(Stream.Match(new List<TokenType>{TokenType.EOL})||Stream.Match(new List<TokenType>{TokenType.EOF})))
         {
-       program.Errors.Add(new CompilingError(Stream.Peek(),"Despues de un comando se espera un salto de linea"));
+       program.Errors.Add(SyntaxException.ExpectedNewLineAfterCommand(Stream.Peek().Value.ToString(), Stream.Peek().Location));
        Stream.Synchronize();
         }   
         else if (Stream.Previous().Type==TokenType.EOF)
@@ -484,19 +485,19 @@ public ElementalProgram Parse(){
     
 }
 
-/*public class CompilingError:System.Exception
+/*public class PixelWallEException:System.Exception
 {
     public Token? Token{get;}
 
-    public CompilingError( Token token, string message): base($"[Line {token.Location.Line}:{token.Location.Column}] Parse Error: {message} (Found token: {token.Type}'{token.Value}')")
+    public PixelWallEException( Token token, string message): base($"[Line {token.Location.Line}:{token.Location.Column}] Parse Error: {message} (Found token: {token.Type}'{token.Value}')")
     {
         Token=token;
     }
-    public CompilingError( CodeLocation location, string message): base($"[Line {location.Line}:{location.Column}] Parse Error: {message} )")
+    public PixelWallEException( CodeLocation location, string message): base($"[Line {location.Line}:{location.Column}] Parse Error: {message} )")
     {
        Token=default;
     }
-    public CompilingError(string message):base($"Parse error: {message}"){
+    public PixelWallEException(string message):base($"Parse error: {message}"){
         Token=default;
     }
 }*/

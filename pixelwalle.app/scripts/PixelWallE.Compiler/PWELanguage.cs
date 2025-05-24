@@ -12,18 +12,20 @@ using GodotPlugins.Game;
 namespace PixelWallE.Language;
 
 public  class Interpreter{
-   public  List<CompilingError> Errors { get;  set;}
-   public  Canvas Canvas { get;  set;} 
+   public  List<PixelWallEException> Errors { get;  set;}
+   public  Canvas Canvas { get;  set;}
+  public Scope Scope;
 
-    public Interpreter(Canvas canvas, string code){
-      Canvas = canvas;
-      Errors=new List<CompilingError>();
-      Run(code);
-    }
+    public Interpreter(Canvas canvas, string code)
+  {
+    Canvas = canvas;
+    Errors = new List<PixelWallEException>();
+    Run(code);
+  }
     
   
    private void Run(string source){
-    Errors=new List<CompilingError>();
+    Errors=new List<PixelWallEException>();
     Lexer.Lexer lex = LexerProvider.Lexical;
     IEnumerable<Token> tokens= lex.GetTokens("test", source,Errors);
     TokenStream stream=new TokenStream(tokens);
@@ -33,7 +35,7 @@ public  class Interpreter{
     
     if (Errors.Count>0)
       {
-        foreach (CompilingError error in Errors)
+        foreach (PixelWallEException error in Errors)
         {
         GD.Print(error);
         //hadError=true;
@@ -49,7 +51,7 @@ public  class Interpreter{
    ElementalProgram program=parser.Parse();
    if (program.Errors.Count>0)
    { 
-    foreach (CompilingError error in program.Errors)
+    foreach (PixelWallEException error in program.Errors)
         {
         GD.Print(error);
        // hadError=true;
@@ -58,8 +60,8 @@ public  class Interpreter{
    }
   printAst.printAstNode(program, 0);
    
-  Scope scope=new Scope(program.Labels);
-  SemanticChecker semanticChecker=new SemanticChecker(scope, Errors);
+  Scope=new Scope(program.Labels);
+  SemanticChecker semanticChecker=new SemanticChecker(Scope, Errors);
   program.Accept(semanticChecker);
 
 
@@ -71,10 +73,15 @@ public  class Interpreter{
       GD.Print(item);
     }
   }
-    
-    RobotState robot=new RobotState();
-    Executer executer=new Executer(scope, Canvas, robot, Errors);
+    if (Errors.Count==0)
+    {
+     RobotState robot=new RobotState();
+ 
+  
+    Executer executer=new Executer(Scope, Canvas, robot, Errors);
     program.Accept(executer);
+    }
+ 
 
     /* for (int i = 0; i < Canvas.Size; i++)
         {

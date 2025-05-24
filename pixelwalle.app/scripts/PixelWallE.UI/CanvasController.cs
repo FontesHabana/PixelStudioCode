@@ -1,5 +1,6 @@
 using Godot;
 using PixelWallE.Language;
+using PixelWallE.Language.Parsing;
 using System;
 
 public partial class CanvasController : TextureRect
@@ -42,7 +43,7 @@ public partial class CanvasController : TextureRect
         {
             for (int j = 0; j < size; j++)
             {
-                Godot.Color color = CheckColor(interpreter.Canvas.Matrix[i, j]);
+                Godot.Color color = CheckColor(interpreter.Canvas.Matrix[i, j],interpreter.Scope);
                 //GD.Print(interpreter.Canvas.Matrix[i, j]);
                 //  GD.Print("dibuje pixel"+color.ToString());
                 Rect2 rect = new Rect2(j * space, i * space, space, space);
@@ -62,22 +63,9 @@ public partial class CanvasController : TextureRect
 
           Brush.Position = new Vector2(X, Y);
       }*/
-    public Godot.Color CheckColor(string color)
+    public Godot.Color CheckColor(string color, Scope scope)
     {
-        switch (color)
-        {
-            case "Transparent": return new Godot.Color(255, 255, 255, 0);
-            case "Red": return new Godot.Color(255, 0, 0);
-            case "Blue": return new Godot.Color(0, 0, 255);
-            case "Green": return new Godot.Color(0, 255, 0);
-            case "Yellow": return new Godot.Color(255, 255, 0);
-            case "Orange": return new Godot.Color(255, 165, 0);
-            case "Purple": return new Godot.Color(160, 32, 240);
-            case "Black": return new Godot.Color(0, 0, 0);
-            case "White": return new Godot.Color(255, 255, 255);
-            case "Pink": return new Godot.Color(255, 80, 220);
-            default: return new Godot.Color(255, 255, 255, 0);
-        }
+        return scope.colors[color];
     }
 
 

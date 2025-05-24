@@ -1,6 +1,6 @@
 using System.Diagnostics;
 using PixelWallE.Language.Tokens;
-
+using PixelWallE.Language;
 using System.Collections.Generic;
 using System.Linq;
 using System;
@@ -49,7 +49,7 @@ namespace PixelWallE.Language.Lexer;
 
         /* Matches a Text part in the code and read the literal from the stream.
         The tokens list is updated with the new string token and errors is updated with new errors if detected. */
-        private bool MatchText (TokenReader stream, List<Token> tokens, List<CompilingError> errors)
+        private bool MatchText (TokenReader stream, List<Token> tokens, List<PixelWallEException> errors)
         {
             foreach (var start in texts.Keys.OrderByDescending(k=>k.Length))
             {
@@ -57,7 +57,7 @@ namespace PixelWallE.Language.Lexer;
                 if (stream.Match(start))
                 {
                     if (!stream.ReadUntil(texts[start], out text)){
-                        errors.Add(new CompilingError(stream.Location, ErrorCode.Expected, texts[start])); 
+                       // errors.Add(new CompilingError(stream.Location, ErrorCode.Expected, texts[start])); 
                     }
                        
 
@@ -72,60 +72,58 @@ namespace PixelWallE.Language.Lexer;
 
 
   /* Returns all tokens read from the code and populate the errors list with all lexical errors detected. */
-        public IEnumerable<Token> GetTokens(string fileName, string code, List<CompilingError> errors)
+        public IEnumerable<Token> GetTokens(string fileName, string code, List<PixelWallEException> errors)
         {
             List<Token> tokens = new List<Token>();
 
             TokenReader stream = new TokenReader(fileName, code);
 
-            while (!stream.EOF)
+        while (!stream.EOF)
+        {
+            string value;
+            if (stream.ReadComment())
             {
-                string value;
-                if (stream.ReadComment())
-                {
-                    continue;
-                }
-                    if (stream.ReadEOL())
-                      {  
-                        tokens.Add(new Token(TokenType.EOL, "\\n",null, stream.Location));
-                        stream.ActionReadEOL();
-                        continue;
-                       }
-
-                if (stream.ReadWhiteSpace())
-                    continue;
-
-                
-
-                if (stream.ReadID(out value))
-                {
-                    if (keywords.ContainsKey(value))
-                        tokens.Add(new Token(keywords[value], value ,null, stream.Location));
-                    else
-                        tokens.Add(new Token(TokenType.IDENTIFIER, value, null,stream.Location));
-                    continue;
-                }
-
-                if(stream.ReadNumber(out value))
-                {
-                    int d;
-                    if (!int.TryParse(value, out d))
-                        errors.Add(new CompilingError(stream.Location, ErrorCode.Invalid, "Number format"));
-                    tokens.Add(new Token(TokenType.NUMBER, value, d, stream.Location));
-                    continue;
-                }
-
-                if (MatchText(stream, tokens, errors))
-                    continue;
-                
-                //System.Console.WriteLine("Trate de matchear simbolo");
-                if (MatchSymbol(stream, tokens))
-                    continue;
-                
-              //  System.Console.WriteLine("pasé por aqui");
-                var unkOp = stream.ReadAny();
-                errors.Add(new CompilingError(stream.Location, ErrorCode.Unknown, unkOp.ToString()));
+                continue;
             }
+            if (stream.ReadEOL())
+            {
+                tokens.Add(new Token(TokenType.EOL, "\\n", null, stream.Location));
+                stream.ActionReadEOL();
+                continue;
+            }
+
+            if (stream.ReadWhiteSpace())
+                continue;
+
+
+
+            if (stream.ReadID(out value))
+            {
+                if (keywords.ContainsKey(value))
+                    tokens.Add(new Token(keywords[value], value, null, stream.Location));
+                else
+                    tokens.Add(new Token(TokenType.IDENTIFIER, value, null, stream.Location));
+                continue;
+            }
+
+            if (stream.ReadNumber(out value))
+            {
+                tokens.Add(new Token(TokenType.NUMBER, value, int.Parse(value), stream.Location));
+                continue;
+            }
+
+            if (MatchText(stream, tokens, errors))
+                continue;
+
+            //System.Console.WriteLine("Trate de matchear simbolo");
+            if (MatchSymbol(stream, tokens))
+                continue;
+
+            //  System.Console.WriteLine("pasé por aqui");
+            var unkOp = stream.ReadAny();
+            errors.Add(LexicalException.UnexpectedCharacter(unkOp,stream.Location));
+            }
+
             tokens.Add(new Token(TokenType.EOF,"\\0", null, stream.Location));
             return tokens;
         }
