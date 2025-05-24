@@ -12,7 +12,7 @@ using System.Collections.Generic;
 public class SizeCommand : Command
 {
     public SizeCommand(CodeLocation location, TokenType nameCommand, List<Expression> args):base(location, nameCommand, args){
-        
+        Name = "Size";
     }
     public override void Accept(IVisitor<ASTNode> visitor)
     {

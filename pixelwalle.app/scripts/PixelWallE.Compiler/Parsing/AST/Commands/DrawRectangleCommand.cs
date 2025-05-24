@@ -12,7 +12,7 @@ using System.Collections.Generic;
 public class DrawRectangleCommand : Command
 {
     public DrawRectangleCommand(CodeLocation location, TokenType nameCommand, List<Expression> args):base(location, nameCommand, args){
-        
+         Name = "DrawRectangle";
     }
 
 

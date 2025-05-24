@@ -12,7 +12,7 @@ using System.Collections.Generic;
 public class DrawLineCommand : Command
 {
     public DrawLineCommand(CodeLocation location, TokenType nameCommand, List<Expression> args):base(location, nameCommand, args){
-        
+         Name = "DrawLine";
     }
 
 

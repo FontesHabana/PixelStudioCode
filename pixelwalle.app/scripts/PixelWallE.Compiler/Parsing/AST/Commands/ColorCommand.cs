@@ -11,7 +11,7 @@ using System.Collections.Generic;
 public class ColorCommand : Command
 {
     public ColorCommand(CodeLocation location, TokenType nameCommand, List<Expression> args):base(location, nameCommand, args){
-        
+         Name = "Color";
     }
 
 

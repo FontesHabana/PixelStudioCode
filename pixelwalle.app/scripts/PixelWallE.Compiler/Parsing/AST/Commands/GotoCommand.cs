@@ -11,7 +11,8 @@ public class GoToCommand : Command
 
     public GoToCommand(CodeLocation location, TokenType commandName, List<Expression> args, string label) : base(location, commandName, args)
     {
-        Label=label;
+        Label = label;
+         Name = "GoTo";
     }
 
    

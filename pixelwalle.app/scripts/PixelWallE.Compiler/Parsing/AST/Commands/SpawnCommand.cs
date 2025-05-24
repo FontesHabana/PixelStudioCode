@@ -12,7 +12,7 @@ using System.Collections.Generic;
 public class SpawnCommand : Command
 {
     public SpawnCommand(CodeLocation location, TokenType nameCommand, List<Expression> args):base(location, nameCommand, args){
-        
+        Name = "Spawn";
     }
 
 

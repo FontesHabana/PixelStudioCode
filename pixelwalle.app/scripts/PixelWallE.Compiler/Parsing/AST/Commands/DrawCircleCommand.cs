@@ -12,7 +12,7 @@ using System.Collections.Generic;
 public class DrawCircleCommand : Command
 {
     public DrawCircleCommand(CodeLocation location, TokenType nameCommand, List<Expression> args):base(location, nameCommand, args){
-        
+         Name = "DrawCircle";
     }
 
 

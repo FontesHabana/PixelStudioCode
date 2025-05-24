@@ -12,7 +12,7 @@ using System.Collections.Generic;
 public class FillCommand : Command
 {
     public FillCommand(CodeLocation location, TokenType nameCommand, List<Expression> args):base(location, nameCommand, args){
-        
+         Name = "Fill";
     }
 
 
