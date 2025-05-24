@@ -20,12 +20,19 @@ public class SemanticException : PixelWallEException
         OffendingIdentifier = offendingIdentifier;
     }
 
+   
+
     public static SemanticException UndeclaredVariable(string variableName, CodeLocation location)
     {
         string message = $"Semantic Error: Use of undeclared variable '{variableName}'. Error at line{location.Line}, column {location.Column}";
         return new SemanticException(message, location, variableName);
     }
 
+    public static SemanticException UndeclaredColor(string colorName, CodeLocation location)
+    {
+        string message = $"Semantic Error: Use of undeclared color '{colorName}'. Error at line{location.Line}, column {location.Column}";
+        return new SemanticException(message, location, colorName);
+    }
     public static SemanticException LabelNotFound(string labelName, CodeLocation location)
     {
         string message = $"Semantic Error: Label '{labelName}' not found in the current scope. GoTo declared at line {location.Line}, column {location.Column}";

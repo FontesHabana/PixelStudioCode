@@ -28,16 +28,35 @@ class RuntimeException : PixelWallEException
         string message = $"Runtime Error: Division by zero encountered during expression evaluation at line {location.Line}, column {location.Column}.";
         return new RuntimeException(message, location);
     }
-    
-     public static RuntimeException ArgumentMostBePositive(string argumentName,int opffendingValue,CodeLocation location)
+
+    public static RuntimeException ZeroPowerZero(CodeLocation location)
+    {
+        string message = $"Runtime Error: Undefined operation 0**0. Error at line {location.Line}, column {location.Column}.";
+        return new RuntimeException(message, location);
+    }
+
+    public static RuntimeException ZeroModuloZero(CodeLocation location)
+    {
+        string message = $"Runtime Error: Undefined operation 0%0. Error at line {location.Line}, column {location.Column}.";
+        return new RuntimeException(message, location);
+    }
+
+    public static RuntimeException ArgumentMostBePositive(string argumentName, int opffendingValue, CodeLocation location)
     {
         string message = $"Runtime Error: Argument '(argumentName)' must be positive number(grater than 0). Received {opffendingValue}. Error at line {location.Line}, column {location.Column}.";
         return new RuntimeException(message, location);
     }
 
-     public static RuntimeException PositionOutOfBounds(int x, int y, string commandName, CodeLocation location)
+    public static RuntimeException PositionOutOfBounds(int x, int y, string commandName, CodeLocation location)
     {
-        string message = $"Runtime Error in command '{commandName}': Position ({x},{y}) is outside the cnavas boundaries. Error occurred at line {location.Line}, column {location.Column}.";
+        string message = $"Runtime Error in command '{commandName}': Position ({x},{y}) is outside the canvas boundaries. Error occurred at line {location.Line}, column {location.Column}.";
         return new RuntimeException(message, location);
     }
+
+    public static RuntimeException InvalidDirectionCoordinates(int x, int y, string commandName, CodeLocation location)
+    {
+        string message = $"Runtime Error in command '{commandName}': Invlid coordinates ({x},{y}). Values must be (-1,0,1). Error occurred at line {location.Line}, column {location.Column}.";
+        return new RuntimeException(message, location);
+    }
+
 }
