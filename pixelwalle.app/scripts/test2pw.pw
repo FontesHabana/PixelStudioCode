@@ -1,0 +1,25 @@
+ Spawn(5, 5)
+
+ Color("Black")
+DrawCircle(1,1,5)
+Fill()
+ DrawLine(1,0,7)
+ n <- 5
+ k <- 3 + 3 * 10
+ n <- k * 2
+ r<-true
+ actual-x <- GetActualX()
+ i <- 0>1
+ Color("Red")
+DrawCircle(-1,-1,5)
+Fill ()
+loop-1
+ is-brush-color-blue <- IsBrushColor("Blue")
+# GoTo [loop-ends-here] (is-brush-color-blue)
+ #GoTo [loop-1] (i < 10)
+
+ Color("Blue")
+
+#GoTo [loop-1] (IsBrushColor("red"))
+
+loop-ends-here
