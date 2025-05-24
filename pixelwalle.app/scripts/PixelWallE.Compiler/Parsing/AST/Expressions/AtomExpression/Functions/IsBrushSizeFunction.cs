@@ -8,14 +8,14 @@ namespace PixelWallE.Language.Expressions;
 public class IsBrushSizeFunction: Function
 {
     public override List<Expression> Args {get;  set;}
-    public  string FunctionName {get; set;}
     public override ExpressionType Type{get;set;}
 
     public override object? Value { get; set; }
 
-    public IsBrushSizeFunction(CodeLocation location, TokenType functionName,List<Expression>? args) : base(location, functionName, args)
+    public IsBrushSizeFunction(CodeLocation location, TokenType functionName, List<Expression>? args) : base(location, functionName, args)
     {
-       Type=ExpressionType.Number;
+        Type = ExpressionType.Number;
+        Name = "IsBrushSize";
     }
     
 

@@ -8,15 +8,15 @@ namespace PixelWallE.Language.Expressions;
 public class IsColorFunction: Function
 {
     public override List<Expression> Args {get;  set;}
-    public  string FunctionName {get; set;}
     public override ExpressionType Type{get;set;}
     //public override ExpressionType Type{get;set;}
 
     public override object? Value { get; set; }
 
-    public IsColorFunction(CodeLocation location, TokenType functionName,List<Expression?> args) : base(location, functionName, args)
+    public IsColorFunction(CodeLocation location, TokenType functionName, List<Expression?> args) : base(location, functionName, args)
     {
-        Type=ExpressionType.Bool;
+        Type = ExpressionType.Bool;
+        Name = "IsColor";
     }
     
 

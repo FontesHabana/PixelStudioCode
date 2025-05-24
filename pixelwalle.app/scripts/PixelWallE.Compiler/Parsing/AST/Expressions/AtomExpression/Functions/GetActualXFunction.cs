@@ -8,14 +8,15 @@ namespace PixelWallE.Language.Expressions;
 public class GetActualXFunction: Function
 {
     public override List<Expression> Args {get;  set;}
-    public  string FunctionName {get; set;}
+   
     public override ExpressionType Type{get;set;}
 
     public override object? Value { get; set; }
 
-    public GetActualXFunction(CodeLocation location, TokenType functionName,List<Expression?> args) : base(location, functionName, args)
-    {  
-      Type=ExpressionType.Number;
+  public GetActualXFunction(CodeLocation location, TokenType functionName, List<Expression?> args) : base(location, functionName, args)
+  {
+    Type = ExpressionType.Number;
+    Name = "GetrrActualX";
     }
    
 

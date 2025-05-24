@@ -8,14 +8,14 @@ namespace PixelWallE.Language.Expressions;
 public class GetCanvasSizeFunction: Function
 {
     public override List<Expression> Args {get;  set;}
-    public  string FunctionName {get; set;}
     public override ExpressionType Type{get;set;}
 
     public override object? Value { get; set; }
 
     public GetCanvasSizeFunction(CodeLocation location, TokenType functionName, List<Expression>? args) : base(location, functionName, args)
     {
-     Type=ExpressionType.Number;
+        Type = ExpressionType.Number;
+        Name = "GetCanvasSize";
     }
   
     public override void Accept(IVisitor<ASTNode> visitor)
