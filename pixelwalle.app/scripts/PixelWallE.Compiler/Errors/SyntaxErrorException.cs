@@ -46,7 +46,7 @@ public class SyntaxException : PixelWallEException
     
     public static SyntaxException ExpectedNewLineAfterCommand(string offendingTokenValue, CodeLocation location)
     {
-        string message = $"Syntax Error: Expected a new line or end of file after command or a label, but found '{offendingTokenValue}'. Error at line {location.Line}, column {location.Column}.";
+        string message = $"Syntax Error: Expected a new line or end of file after command or label, but found '{offendingTokenValue}'. Error at line {location.Line}, column {location.Column}.";
         return new SyntaxException(message, location);
     }
 }

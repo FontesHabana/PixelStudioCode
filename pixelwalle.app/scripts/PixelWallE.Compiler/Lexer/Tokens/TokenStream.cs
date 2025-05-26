@@ -57,9 +57,10 @@ return Peek().Type == TokenType.EOF;
     }
 
     public void Synchronize(){
-        Advance();
-        while(!IsAtEnd()){
-            if (Peek().Type==TokenType.EOL)
+        //Advance();
+        while (!IsAtEnd())
+        {    
+            if (Peek().Type == TokenType.EOL)
             {
                 Advance();
                 return;

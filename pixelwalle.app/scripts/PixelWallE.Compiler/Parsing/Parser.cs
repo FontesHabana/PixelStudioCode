@@ -414,67 +414,81 @@ public ElementalProgram Parse(){
             }
     }
 
-    while(!Stream.IsAtEnd()){
-          if (Stream.Match(new List<TokenType>{TokenType.SPAWN}))
-        {  
-             program.Errors.Add(SyntaxException.DuplicateSpawn( Stream.Peek().Location));
-             Stream.Synchronize();
-        }
-        if (Stream.Match(new List<TokenType>{TokenType.COLOR,TokenType.DRAWCIRCLE,TokenType.DRAWLINE,TokenType.DRAWRECTANGLE,TokenType.FILL,TokenType.SIZE}))
-        {  try
-             {
-              program.Statements.Add(ParseCommand());
-              }
-            catch (PixelWallEException error)
-             {
-                program.Errors.Add(error);
+        while (!Stream.IsAtEnd())
+        {
+            bool twoCommandLineError = false;
+            if (Stream.Match(new List<TokenType> { TokenType.SPAWN }))
+            {
+                program.Errors.Add(SyntaxException.DuplicateSpawn(Stream.Peek().Location));
                 Stream.Synchronize();
-             }
-        }
-        else if (Stream.Match(new List<TokenType>{TokenType.GOTO}))
-        { 
-            try
-            { 
-            
-                program.Statements.Add(ParseGoTo());
+            }
+            if (Stream.Match(new List<TokenType> { TokenType.COLOR, TokenType.DRAWCIRCLE, TokenType.DRAWLINE, TokenType.DRAWRECTANGLE, TokenType.FILL, TokenType.SIZE }))
+            {
+                try
+                {
+                    program.Statements.Add(ParseCommand());
+                    twoCommandLineError = true;
+                }
+                catch (PixelWallEException error)
+                {
+                    program.Errors.Add(error);
+                    Stream.Synchronize();
+                }
+            }
+            else if (Stream.Match(new List<TokenType> { TokenType.GOTO }))
+            {
+                try
+                {
+
+                    program.Statements.Add(ParseGoTo());
+                    twoCommandLineError = true;
+
+                }
+                catch (PixelWallEException error)
+                {
+                    program.Errors.Add(error);
+                    Stream.Synchronize();
+
+                }
+            }
+            else if (Stream.Match(new List<TokenType> { TokenType.IDENTIFIER }))
+            {
+                if (Stream.Match(new List<TokenType> { TokenType.ASSIGNMENT }))
+                {
+                    try
+                    {
+                        program.Statements.Add(ParseAssignation());
+                        twoCommandLineError = true;
+                    }
+                    catch (PixelWallEException error)
+                    {
+                        program.Errors.Add(error);
+                        Stream.Synchronize();
+
+                    }
+                }
+                else
+                {
+                    program.Labels.Add(new Label(Stream.Previous().Value, program.Statements.Count()));
+                }
+            }
+             if ((!(Stream.Match(new List<TokenType> { TokenType.EOL }) || Stream.Match(new List<TokenType> { TokenType.EOF })))&&twoCommandLineError)
+            {
+                program.Errors.Add(SyntaxException.ExpectedNewLineAfterCommand(Stream.Peek().Value.ToString(), Stream.Peek().Location));
+                Stream.Synchronize();
 
             }
-            catch (PixelWallEException error)
+            else if (Stream.Previous().Type == TokenType.EOF)
             {
-                program.Errors.Add(error);
-                Stream.Synchronize();
-                
+                return program;
             }
+            //Posible codigo sin uso
+            
+    
+            //Verificar como compruebas quenno existan dos comandos en la misma linea si hay error en el primero sincronizas por lo cual no puedes comprobar el error y si no no lo haces
+
+
         }
-       else if (Stream.Match(new List<TokenType>{TokenType.IDENTIFIER}))
-       {
-        if (Stream.Match(new List<TokenType>{TokenType.ASSIGNMENT}))
-        {
-            try
-            {
-                program.Statements.Add(ParseAssignation());
-            }
-            catch (PixelWallEException error)
-            {
-                program.Errors.Add(error);
-                Stream.Synchronize();
-                
-            }
-        }
-        else{
-            program.Labels.Add(new Label(Stream.Previous().Value, program.Statements.Count()));
-        }
-       }
-       if (!(Stream.Match(new List<TokenType>{TokenType.EOL})||Stream.Match(new List<TokenType>{TokenType.EOF})))
-        {
-       program.Errors.Add(SyntaxException.ExpectedNewLineAfterCommand(Stream.Peek().Value.ToString(), Stream.Peek().Location));
-       Stream.Synchronize();
-        }   
-        else if (Stream.Previous().Type==TokenType.EOF)
-         {
-             return program;
-        }
-    }
            return program;
     
 }
