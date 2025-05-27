@@ -16,6 +16,7 @@ public partial class main_ui : Control // partial es importante si adjuntas el s
     [Export] LineEdit _resizeInput;
     [Export] Button _cleanCanvas;
     [Export] Button _processButton;
+    [Export] Button _closeButton;
     [Export] TextEdit _textEditOutput;
     private static Canvas canvas = new Canvas(25);
     public static Interpreter interpreter = new Interpreter(canvas, ""); // Inicializa el intérprete con un tamaño de 25 (ajusta según sea necesario)
@@ -131,6 +132,10 @@ public partial class main_ui : Control // partial es importante si adjuntas el s
     {
         ResizedCanvas(_resizeInput.Text);  
          
+    }
+    private void ClosePressed()
+    {
+        GetTree().Quit();
     }
     private void PressedArchiveControl()
     {
