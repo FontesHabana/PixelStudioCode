@@ -8,22 +8,18 @@ public partial class CanvasController : TextureRect
     Godot.Color GridColor = new Godot.Color(0, 0, 0, 0.1f);
     [Export] float LineWidth = 1.0f;
 
-    // Called when the node enters the scene tree for the first time.
-    public override void _Ready()
-    {
 
-    }
-
-    // Called every frame. 'delta' is the elapsed time since the previous frame.
-    public override void _Process(double delta)
-    {
-    }
 
     public override void _Draw()
     {   //Tomar el tamaño del canvas de una casilla
         Interpreter interpreter = main_ui.interpreter;
+        
         int size = interpreter.Canvas.Size;
         float space = Size.X / size;
+        GD.Print(Size.X);
+        GD.Print(size);
+        GD.Print(space);
+
 
         DrawColor(size, space, interpreter);
         if (interpreter.Canvas.Size<100)

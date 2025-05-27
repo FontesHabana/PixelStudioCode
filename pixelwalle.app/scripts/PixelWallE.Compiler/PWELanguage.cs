@@ -14,7 +14,7 @@ namespace PixelWallE.Language;
 public  class Interpreter{
    public  List<PixelWallEException> Errors { get;  set;}
    public  Canvas Canvas { get;  set;}
-  public Scope Scope;
+   public Scope Scope;
 
     public Interpreter(Canvas canvas, string code)
   {

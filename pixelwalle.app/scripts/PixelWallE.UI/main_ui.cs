@@ -191,7 +191,7 @@ public partial class main_ui : Control // partial es importante si adjuntas el s
         int number;
         if (int.TryParse(text, out number))
         {
-            if (number <= 256 && number>0)
+            if (number <= 1024 && number>0)
             {
                 canvas = new Canvas(number);
                 interpreter.Canvas = canvas;
