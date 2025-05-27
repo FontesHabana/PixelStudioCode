@@ -16,8 +16,8 @@ public class LexerProvider
 
                 __LexicalProcess.RegisterOperator("+", TokenType.PLUS);
                 __LexicalProcess.RegisterOperator("*", TokenType.MULTIPLY);
-                 __LexicalProcess.RegisterOperator("**", TokenType.EXPONENTIAL);
-                  __LexicalProcess.RegisterOperator("%", TokenType.MODULO);
+                __LexicalProcess.RegisterOperator("**", TokenType.EXPONENTIAL);
+                __LexicalProcess.RegisterOperator("%", TokenType.MODULO);
                 __LexicalProcess.RegisterOperator("-", TokenType.MINUS);
                 __LexicalProcess.RegisterOperator("/", TokenType.DIVIDE);
                 __LexicalProcess.RegisterOperator("<-", TokenType.ASSIGNMENT);

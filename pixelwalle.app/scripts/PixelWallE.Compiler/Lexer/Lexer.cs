@@ -85,19 +85,16 @@ namespace PixelWallE.Language.Lexer;
             {
                 continue;
             }
-            if (stream.ReadEOL())
+            else if (stream.ReadEOL())
             {
                 tokens.Add(new Token(TokenType.EOL, "\\n", null, stream.Location));
                 stream.ActionReadEOL();
                 continue;
             }
 
-            if (stream.ReadWhiteSpace())
-                continue;
+            else if (stream.ReadWhiteSpace())  continue;
 
-
-
-            if (stream.ReadID(out value))
+           else  if (stream.ReadID(out value))
             {
                 if (keywords.ContainsKey(value))
                     tokens.Add(new Token(keywords[value], value, null, stream.Location));
@@ -345,10 +342,9 @@ namespace PixelWallE.Language.Lexer;
         public bool ReadID(out string id)
             {
                 id = "";
-                if (Peek()=='-')
-                {
+                if (Peek()=='_')
                    return id.Length > 0;
-                }
+                
                 while (!EOL && ValidIdCharacter(Peek(), id.Length == 0))
                     id += ReadAny();
                 return id.Length > 0;

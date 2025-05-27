@@ -422,7 +422,7 @@ public ElementalProgram Parse(){
                 program.Errors.Add(SyntaxException.DuplicateSpawn(Stream.Peek().Location));
                 Stream.Synchronize();
             }
-            if (Stream.Match(new List<TokenType> { TokenType.COLOR, TokenType.DRAWCIRCLE, TokenType.DRAWLINE, TokenType.DRAWRECTANGLE, TokenType.FILL, TokenType.SIZE }))
+            else if (Stream.Match(new List<TokenType> { TokenType.COLOR, TokenType.DRAWCIRCLE, TokenType.DRAWLINE, TokenType.DRAWRECTANGLE, TokenType.FILL, TokenType.SIZE }))
             {
                 try
                 {
@@ -470,12 +470,22 @@ public ElementalProgram Parse(){
                 else
                 {
                     program.Labels.Add(new Label(Stream.Previous().Value, program.Statements.Count()));
+                    twoCommandLineError = true;
                 }
             }
-             if ((!(Stream.Match(new List<TokenType> { TokenType.EOL }) || Stream.Match(new List<TokenType> { TokenType.EOF })))&&twoCommandLineError)
+            if (!(Stream.Match(new List<TokenType> { TokenType.EOL }) || Stream.Match(new List<TokenType> { TokenType.EOF })))
             {
-                program.Errors.Add(SyntaxException.ExpectedNewLineAfterCommand(Stream.Peek().Value.ToString(), Stream.Peek().Location));
-                Stream.Synchronize();
+                if (twoCommandLineError)
+                {
+                    program.Errors.Add(SyntaxException.ExpectedNewLineAfterCommand(Stream.Peek().Value.ToString(), Stream.Peek().Location));
+                    Stream.Synchronize();
+                }
+                else
+                {
+                    program.Errors.Add(SyntaxException.UnexpectedToken(Stream.Peek().Value.ToString(), "Command or Label", Stream.Peek().Location ));
+                    Stream.Synchronize();
+                }
+                
 
             }
             else if (Stream.Previous().Type == TokenType.EOF)
