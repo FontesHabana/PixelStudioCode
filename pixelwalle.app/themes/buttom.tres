@@ -1,0 +1,4 @@
+[gd_resource type="Theme" format=3 uid="uid://cnul15ibhyt4c"]
+
+[resource]
+Button/constants/icon_max_width = 50

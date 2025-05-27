@@ -1,8 +1,10 @@
-[gd_scene load_steps=7 format=3 uid="uid://6vs6w3i1savd"]
+[gd_scene load_steps=9 format=3 uid="uid://6vs6w3i1savd"]
 
 [ext_resource type="Script" path="res://scripts/PixelWallE.UI/main_ui.cs" id="1_se0kn"]
 [ext_resource type="Script" path="res://scripts/PixelWallE.UI/TextEdit.cs" id="2_vlke6"]
 [ext_resource type="Script" path="res://scripts/PixelWallE.UI/CanvasController.cs" id="3_4rnn0"]
+[ext_resource type="Theme" uid="uid://cnul15ibhyt4c" path="res://themes/buttom.tres" id="4_284gc"]
+[ext_resource type="Texture2D" uid="uid://npi2wh6awxbq" path="res://assets/icons/Trash.svg" id="5_crl6a"]
 
 [sub_resource type="CodeHighlighter" id="CodeHighlighter_woaua"]
 
@@ -13,7 +15,7 @@ keyword_colors = {
 
 [sub_resource type="CanvasTexture" id="CanvasTexture_lhqmy"]
 
-[node name="Control" type="Control" node_paths=PackedStringArray("_codeEditNode", "_saveFileDialog", "_loadFileDialog", "_controlArchives", "_canvas", "_resizeButton", "_resizeInput")]
+[node name="Control" type="Control" node_paths=PackedStringArray("_codeEditNode", "_saveFileDialog", "_loadFileDialog", "_controlArchives", "_canvas", "_resizeButton", "_resizeInput", "_cleanCanvas", "_processButton", "_textEditOutput")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -26,21 +28,23 @@ script = ExtResource("1_se0kn")
 _codeEditNode = NodePath("CodeEdit")
 _saveFileDialog = NodePath("Save")
 _loadFileDialog = NodePath("Load")
-_controlArchives = NodePath("ColorRect2/ControlArchivos")
-_canvas = NodePath("TextureRect")
-_resizeButton = NodePath("Button2")
-_resizeInput = NodePath("LineEdit")
+_controlArchives = NodePath("TopLine/ArchivesManager")
+_canvas = NodePath("Canvas")
+_resizeButton = NodePath("Resize")
+_resizeInput = NodePath("ResizeInput")
+_cleanCanvas = NodePath("CanvasActions/Clean Canvas")
+_processButton = NodePath("Run")
+_textEditOutput = NodePath("Console")
 metadata/_edit_horizontal_guides_ = [-380.0]
 
-[node name="Fondo" type="ColorRect" parent="."]
+[node name="Background" type="ColorRect" parent="."]
 layout_mode = 0
-offset_left = -4.0
-offset_top = -2.0
-offset_right = 1916.0
-offset_bottom = 1045.0
+offset_top = -21.0
+offset_right = 1920.0
+offset_bottom = 1083.0
 color = Color(0.211765, 0.207843, 0.254902, 1)
 
-[node name="ColorRect2" type="ColorRect" parent="."]
+[node name="TopLine" type="ColorRect" parent="."]
 layout_mode = 0
 offset_left = 1.0
 offset_top = 2.0
@@ -48,7 +52,7 @@ offset_right = 1920.0
 offset_bottom = 49.0
 color = Color(0.243137, 0.243137, 0.305882, 1)
 
-[node name="ControlArchivos" type="MenuButton" parent="ColorRect2"]
+[node name="ArchivesManager" type="MenuButton" parent="TopLine"]
 layout_mode = 0
 offset_left = 47.0
 offset_right = 184.0
@@ -62,7 +66,8 @@ popup/item_0/text = "Load"
 popup/item_1/text = "Save"
 popup/item_1/id = 1
 
-[node name="Vista" type="MenuButton" parent="ColorRect2"]
+[node name="Settings" type="MenuButton" parent="TopLine"]
+visible = false
 layout_mode = 0
 offset_left = 193.0
 offset_right = 330.0
@@ -78,10 +83,10 @@ popup/item_1/id = 1
 
 [node name="CodeEdit" type="CodeEdit" parent="."]
 layout_mode = 0
-offset_left = 49.0
-offset_top = 71.0
-offset_right = 998.0
-offset_bottom = 779.0
+offset_left = 77.0
+offset_top = 68.0
+offset_right = 969.0
+offset_bottom = 776.0
 minimap_draw = true
 syntax_highlighter = SubResource("CodeHighlighter_woaua")
 highlight_all_occurrences = true
@@ -93,12 +98,12 @@ indent_automatic = true
 auto_brace_completion_enabled = true
 auto_brace_completion_highlight_matching = true
 
-[node name="TextEdit" type="TextEdit" parent="."]
+[node name="Console" type="TextEdit" parent="."]
 layout_mode = 0
-offset_left = 48.0
-offset_top = 780.0
-offset_right = 997.0
-offset_bottom = 1024.0
+offset_left = 81.0
+offset_top = 784.0
+offset_right = 973.0
+offset_bottom = 1028.0
 text = "***Welcome Start to Code***"
 context_menu_enabled = false
 syntax_highlighter = SubResource("CodeHighlighter_58tmq")
@@ -111,7 +116,7 @@ initial_position = 1
 size = Vector2i(352, 180)
 unresizable = true
 access = 2
-filters = PackedStringArray(".pw")
+filters = PackedStringArray("*.pw")
 use_native_dialog = true
 
 [node name="Load" type="FileDialog" parent="."]
@@ -126,52 +131,72 @@ access = 2
 filters = PackedStringArray("*.pw")
 use_native_dialog = true
 
-[node name="TextureRect" type="TextureRect" parent="."]
+[node name="Canvas" type="TextureRect" parent="."]
 layout_mode = 0
-offset_left = 1037.0
-offset_top = 60.0
-offset_right = 1863.0
-offset_bottom = 886.0
+offset_left = 981.0
+offset_top = 69.0
+offset_right = 1860.0
+offset_bottom = 948.0
 texture = SubResource("CanvasTexture_lhqmy")
 script = ExtResource("3_4rnn0")
 
-[node name="Button" type="Button" parent="."]
+[node name="Run" type="Button" parent="."]
 layout_mode = 0
-offset_left = 1045.0
-offset_top = 898.0
-offset_right = 1156.0
-offset_bottom = 960.0
+offset_left = 1012.0
+offset_top = 967.0
+offset_right = 1123.0
+offset_bottom = 1029.0
 text = "Run"
 
-[node name="Button2" type="Button" parent="."]
+[node name="Resize" type="Button" parent="."]
 layout_mode = 0
-offset_left = 1294.0
-offset_top = 897.0
-offset_right = 1466.0
-offset_bottom = 960.0
+offset_left = 1300.0
+offset_top = 968.0
+offset_right = 1472.0
+offset_bottom = 1031.0
 text = "Resize"
 
-[node name="LineEdit" type="LineEdit" parent="."]
+[node name="ResizeInput" type="LineEdit" parent="."]
 layout_mode = 0
-offset_left = 1167.0
-offset_top = 898.0
-offset_right = 1289.0
-offset_bottom = 961.0
+offset_left = 1139.0
+offset_top = 964.0
+offset_right = 1261.0
+offset_bottom = 1027.0
 placeholder_text = "CanvasSize"
 
-[node name="ColorRect" type="ColorRect" parent="."]
+[node name="CanvasActions" type="ColorRect" parent="."]
 layout_mode = 0
-offset_top = 1015.0
-offset_right = 1920.0
-offset_bottom = 1050.0
+offset_left = 2.0
+offset_top = 44.0
+offset_right = 63.0
+offset_bottom = 1079.0
 color = Color(0.243137, 0.243137, 0.305882, 1)
 
-[connection signal="pressed" from="ColorRect2/ControlArchivos" to="." method="PressedArchiveControl"]
-[connection signal="pressed" from="ColorRect2/Vista" to="." method="PressedArchiveControl"]
-[connection signal="pressed" from="ColorRect2/Vista" to="." method="PressedVista"]
-[connection signal="text_changed" from="TextEdit" to="TextEdit" method="_on_text_changed"]
+[node name="Clean Canvas" type="Button" parent="CanvasActions"]
+layout_mode = 0
+offset_left = 2.0
+offset_top = 42.0
+offset_right = 60.0
+offset_bottom = 100.0
+theme = ExtResource("4_284gc")
+icon = ExtResource("5_crl6a")
+flat = true
+
+[node name="DownLine" type="ColorRect" parent="."]
+layout_mode = 0
+offset_left = 2.0
+offset_top = 1044.0
+offset_right = 1922.0
+offset_bottom = 1079.0
+color = Color(0.243137, 0.243137, 0.305882, 1)
+
+[connection signal="pressed" from="TopLine/ArchivesManager" to="." method="PressedArchiveControl"]
+[connection signal="pressed" from="TopLine/Settings" to="." method="PressedArchiveControl"]
+[connection signal="pressed" from="TopLine/Settings" to="." method="PressedVista"]
+[connection signal="text_changed" from="Console" to="Console" method="_on_text_changed"]
 [connection signal="file_selected" from="Save" to="." method="OnFileSaveSelected"]
 [connection signal="file_selected" from="Load" to="." method="OnFileSelected"]
-[connection signal="pressed" from="Button" to="." method="OnButtomPressed"]
-[connection signal="pressed" from="Button2" to="." method="ResizePressed"]
-[connection signal="text_submitted" from="LineEdit" to="." method="ResizedCanvas"]
+[connection signal="pressed" from="Run" to="." method="OnButtonPressed"]
+[connection signal="pressed" from="Resize" to="." method="ResizePressed"]
+[connection signal="text_submitted" from="ResizeInput" to="." method="ResizedCanvas"]
+[connection signal="pressed" from="CanvasActions/Clean Canvas" to="." method="CleanCanvas"]

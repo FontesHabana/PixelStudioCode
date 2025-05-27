@@ -1,0 +1,74 @@
+[33mcommit a78d56ceb9960548c591f4b6a00bd73e6b745a2d[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mdevelop[m[33m)[m
+Author: Javier Fontes <javierfontbas@gmail.com>
+Date:   Tue May 27 14:04:56 2025 -0400
+
+    Change - for _ in identifiers
+
+[33mcommit 6f9be65cf43610054ebe2e4377dd23e2766d384e[m
+Author: Javier Fontes <javierfontbas@gmail.com>
+Date:   Sun May 25 21:49:46 2025 -0400
+
+    Solved TwoCommandLine Error
+
+[33mcommit ef2e1e588d4534ad5641c5554ebdbbc8754a7aa1[m[33m ([m[1;31morigin/develop[m[33m, [m[1;32mCompiling-Error[m[33m)[m
+Author: Javier Fontes <javierfontbas@gmail.com>
+Date:   Sat May 24 19:01:46 2025 -0400
+
+    Refactor error handling in PixelWallE compiler to use PixelWallEException instead of CompilingError
+    
+    - Updated Lexer, Parser, and Interpreter classes to replace CompilingError with PixelWallEException for error reporting.
+    - Modified GetTokens method in Lexer to handle errors with PixelWallEException.
+    - Adjusted TokenStream to throw SyntaxException for unexpected tokens.
+    - Refined semantic checks in SemanticChecker to utilize PixelWallEException for semantic errors.
+    - Updated CanvasController to check colors using the Scope class.
+    - Changed UI output to display error messages from PixelWallEException.
+
+[33mcommit 7a3611b3230277948e049c8c69d22346a58872b4[m
+Author: Javier Fontes <javierfontbas@gmail.com>
+Date:   Sat May 24 19:01:26 2025 -0400
+
+    Refactor Scope class to improve variable and color management, enhancing readability and maintainability.
+
+[33mcommit 87d76dea5784888982f1877f6ccbbc1a67191b78[m
+Author: Javier Fontes <javierfontbas@gmail.com>
+Date:   Sat May 24 19:01:17 2025 -0400
+
+    Implement IName interface for command classes and set default names for clarity
+
+[33mcommit b015b0a160274da691e2c51b0a64e444e8fe8231[m
+Author: Javier Fontes <javierfontbas@gmail.com>
+Date:   Sat May 24 19:00:47 2025 -0400
+
+    Refactor function classes to implement IName interface and set function names for better clarity and consistency.
+
+[33mcommit 9b5728bb333efb2975eaa90b8af6ff4f9f04da6e[m
+Author: Javier Fontes <javierfontbas@gmail.com>
+Date:   Sat May 24 18:56:20 2025 -0400
+
+    Enhance error handling by adding new runtime and semantic exceptions, and refining syntax exception messages for better clarity.
+
+[33mcommit 7bce726a5004447d3a7cbbe14c5cd5176bbdbaa5[m
+Author: Javier Fontes <javierfontbas@gmail.com>
+Date:   Sat May 24 12:52:09 2025 -0400
+
+    Add new Exception class.
+
+[33mcommit 06afc68c7837f71398865cab12226202c645c1ae[m
+Author: Javier Fontes <javierfontbas@gmail.com>
+Date:   Sat May 24 12:51:08 2025 -0400
+
+    Reestructure project UI in a new file
+
+[33mcommit d40d9ec14b7c47fd60072e325524cc4f535ad793[m
+Author: Javier Fontes <javierfontbas@gmail.com>
+Date:   Fri May 23 23:30:20 2025 -0400
+
+    Reset project
+    We need to reset the project because is impossible to push the project to github.
+    This moment there are a basic interpreter and a basic ui
+
+[33mcommit 9a03b4065b5ed8ba604b178ae7fcd8c557c29393[m
+Author: Javier Fontes Basabe <142742715+FontesHabana@users.noreply.github.com>
+Date:   Sat Apr 5 18:42:46 2025 -0400
+
+    Initial commit

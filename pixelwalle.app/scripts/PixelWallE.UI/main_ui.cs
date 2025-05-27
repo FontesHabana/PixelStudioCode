@@ -14,11 +14,12 @@ public partial class main_ui : Control // partial es importante si adjuntas el s
     [Export] CanvasController _canvas;
     [Export] Button _resizeButton;
     [Export] LineEdit _resizeInput;
-    private Button _processButton;
-    private TextEdit _textEditOutput;
+    [Export] Button _cleanCanvas;
+    [Export] Button _processButton;
+    [Export] TextEdit _textEditOutput;
     private static Canvas canvas = new Canvas(25);
     public static Interpreter interpreter = new Interpreter(canvas, ""); // Inicializa el intérprete con un tamaño de 25 (ajusta según sea necesario)
-
+    string userScript = "***D:/.../Archivo  Fecha 🤖***";
 
 
     // Método _Ready se llama cuando el nodo y sus hijos han entrado en el árbol de escena
@@ -31,16 +32,12 @@ public partial class main_ui : Control // partial es importante si adjuntas el s
         // *** ESTAS SON LAS LÍNEAS QUE NECESITAN CAMBIAR ***
         // Debes poner las rutas CORRECTAS SEGÚN LA JERARQUÍA DE TU ESCENA
 
-        _processButton = GetNode<Button>("./Button");
-        _textEditOutput = GetNode<TextEdit>("./TextEdit");
         // ***************************************************
 
         // El resto del código de _Ready() y los otros métodos sigue siendo válido
         // (las verificaciones de null, la conexión de señal, etc.)
 
 
-
-        _processButton.Pressed += OnButtonPressed;
         
 
         if (_textEditOutput != null)
@@ -76,7 +73,7 @@ public partial class main_ui : Control // partial es importante si adjuntas el s
         GD.Print("Método 'ProcessCode' llamado con el siguiente texto:");
         GD.Print(codeString); // Imprime en la consola de salida de Godot
 
-        string userScript = "***D:/.../Archivo  Fecha 🤖***";
+       // string userScript = "***D:/.../Archivo  Fecha 🤖***";
         // Aquí puedes añadir lógica para 'ejecutar' o 'analizar' el código
         // ... (Por ahora, solo imprimimos y actualizamos el TextEdit)
         // Mostrar el texto recibido en el TextEdit
@@ -107,19 +104,13 @@ public partial class main_ui : Control // partial es importante si adjuntas el s
     private void OnButtonPressed()
     {
         string codeFromEdit = _codeEditNode.Text; // Obtiene el texto del CodeEdit
-
+        GD.Print("llamada a ejecturar correcta");
         ProcessCode(codeFromEdit); // Llama al método de procesamiento con el texto
 
     }
 
     // Limpieza cuando el nodo va a ser eliminado (si conectaste señales en _Ready)
-    public override void _ExitTree()
-    {
-        if (_processButton != null)
-        {
-            _processButton.Pressed -= OnButtonPressed; // Desconecta la señal para evitar errores
-        }
-    }
+    
 
     private void PressedSave()
     {
@@ -129,10 +120,17 @@ public partial class main_ui : Control // partial es importante si adjuntas el s
     {
         _loadFileDialog.Popup();
     }
-
-    private async void ResizePressed()
+    private void CleanCanvas()
     {
-        ResizedCanvas(_resizeInput.Text);   
+        canvas = new Canvas(canvas.Size);
+        interpreter.Canvas = canvas;
+        _canvas._Ready();   
+        _canvas.QueueRedraw();
+    }
+    private void ResizePressed()
+    {
+        ResizedCanvas(_resizeInput.Text);  
+         
     }
     private void PressedArchiveControl()
     {
@@ -150,16 +148,18 @@ public partial class main_ui : Control // partial es importante si adjuntas el s
                 break;
         }
     }
+
+    
     private void PressedVista()
     {
-       
+
     }
 
     private void OnFileSelected(string path)
     {
         if (!path.EndsWith(".pw"))
-        {
-            ProcessCode("Solo se admiten archivos terminados en .pw");
+        {   
+             _textEditOutput.Text += "\n"+ "Solo se admiten archivos terminados en .pw"+"\n"+ userScript + "\n" + ">>>";
             return;
         }
 
@@ -171,13 +171,13 @@ public partial class main_ui : Control // partial es importante si adjuntas el s
     {
 
         try
-        {
+        {   
             File.WriteAllText(path, _codeEditNode.Text);
 
         }
         catch (System.Exception error)
-        {
-            ProcessCode("Error al guardar el archivo" + error);
+        {   _textEditOutput.Text += "\n"+ "Error al guardar el archivo" + error+"\n"+ userScript + "\n" + ">>>";
+        
         }
     }
 
@@ -202,20 +202,7 @@ public partial class main_ui : Control // partial es importante si adjuntas el s
     //opcion 1 presionando enter en el teclado
    
 
-    public void SaveTextureRectAsImage(TextureRect textureRect, string filePath)
-    {
-        Texture2D texture = textureRect.Texture;
-        Image image = texture.GetImage();
-        Error error = image.SavePng(filePath);
-        if (error == Error.Ok)
-        {
-            GD.Print("Salvada");
-        }
-        else
-        {
-            GD.Print("no salvada");
-        }
-    }
+    
 
 
 }
