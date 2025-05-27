@@ -231,7 +231,7 @@ private Expression ParseUnary() {
             return new Variable(Stream.Previous().Location, (string)Stream.Previous().Value);
         }
 
-        throw SyntaxException.UnexpectedToken(Stream.Peek().Value.ToString(), "expected expression", Stream.Peek().Location);
+        throw SyntaxException.UnexpectedToken(Stream.Peek().Value.ToString(), "expression", Stream.Peek().Location);
 }
 
 

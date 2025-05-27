@@ -339,7 +339,7 @@ namespace PixelWallE.Language.Lexer;
         /*Devuelve si un caracter es valido en una situación. Utilizado para etiquetas y variables*/
         public bool ValidIdCharacter(char c, bool begining)
             {
-                return c == '-' || (begining ? char.IsLetter(c) : char.IsLetterOrDigit(c));
+                return c == '_' || (begining ? char.IsLetter(c) : char.IsLetterOrDigit(c));
             }
         //Determina si una palabra es un identifier
         public bool ReadID(out string id)
