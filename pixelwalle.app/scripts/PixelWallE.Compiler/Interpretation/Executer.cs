@@ -7,10 +7,12 @@ using PixelWallE.Core;
 using System.Collections.Generic;
 using System;
 //using Godot;
+//using Godot;
 
 public class Executer : IVisitor<ASTNode>
 {
     private Scope scope;
+    public int Delay{ get; set; }
     public List<PixelWallEException> errors;
 
     private Canvas canvas;
@@ -22,6 +24,7 @@ public class Executer : IVisitor<ASTNode>
         this.scope = scope;
         this.canvas = canvas;
         this.robot = robot;
+        
         errors = error;
         index=0;
     }
