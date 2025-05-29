@@ -421,6 +421,7 @@ public ElementalProgram Parse(){
             {
                 program.Errors.Add(SyntaxException.DuplicateSpawn(Stream.Peek().Location));
                 Stream.Synchronize();
+                continue;
             }
             else if (Stream.Match(new List<TokenType> { TokenType.COLOR, TokenType.DRAWCIRCLE, TokenType.DRAWLINE, TokenType.DRAWRECTANGLE, TokenType.FILL, TokenType.SIZE }))
             {
@@ -433,6 +434,7 @@ public ElementalProgram Parse(){
                 {
                     program.Errors.Add(error);
                     Stream.Synchronize();
+                    continue;
                 }
             }
             else if (Stream.Match(new List<TokenType> { TokenType.GOTO }))
@@ -448,6 +450,7 @@ public ElementalProgram Parse(){
                 {
                     program.Errors.Add(error);
                     Stream.Synchronize();
+                    continue;
 
                 }
             }
@@ -464,7 +467,7 @@ public ElementalProgram Parse(){
                     {
                         program.Errors.Add(error);
                         Stream.Synchronize();
-
+                        continue;
                     }
                 }
                 else
@@ -485,7 +488,6 @@ public ElementalProgram Parse(){
                     program.Errors.Add(SyntaxException.UnexpectedToken(Stream.Peek().Value.ToString(), "Command or Label", Stream.Peek().Location ));
                     Stream.Synchronize();
                 }
-                
 
             }
             else if (Stream.Previous().Type == TokenType.EOF)
