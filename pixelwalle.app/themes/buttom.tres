@@ -1,4 +1,18 @@
-[gd_resource type="Theme" format=3 uid="uid://cnul15ibhyt4c"]
+[gd_resource type="Theme" load_steps=4 format=3 uid="uid://cnul15ibhyt4c"]
+
+[ext_resource type="FontFile" uid="uid://vlkcwwd4g23j" path="res://assets/fonts/JetBrains_Mono/static/JetBrainsMono-Medium.ttf" id="1_kkqjp"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8uyhy"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+shadow_color = Color(0, 0, 0, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_w4k1i"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+shadow_color = Color(0, 0, 0, 0)
 
 [resource]
 Button/constants/icon_max_width = 50
+TextEdit/colors/font_readonly_color = Color(0.945098, 0.945098, 0.945098, 1)
+TextEdit/fonts/font = ExtResource("1_kkqjp")
+TextEdit/styles/normal = SubResource("StyleBoxFlat_8uyhy")
+TextEdit/styles/read_only = SubResource("StyleBoxFlat_w4k1i")

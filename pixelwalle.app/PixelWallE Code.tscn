@@ -1,6 +1,8 @@
-[gd_scene load_steps=12 format=3 uid="uid://6vs6w3i1savd"]
+[gd_scene load_steps=15 format=3 uid="uid://6vs6w3i1savd"]
 
 [ext_resource type="Script" path="res://scripts/PixelWallE.UI/main_ui.cs" id="1_se0kn"]
+[ext_resource type="Script" path="res://scripts/PixelWallE.UI/ShowError.cs" id="2_eije3"]
+[ext_resource type="FontFile" uid="uid://vlkcwwd4g23j" path="res://assets/fonts/JetBrains_Mono/static/JetBrainsMono-Medium.ttf" id="2_u6nwd"]
 [ext_resource type="Script" path="res://scripts/PixelWallE.UI/TextEdit.cs" id="2_vlke6"]
 [ext_resource type="Script" path="res://scripts/PixelWallE.UI/CanvasController.cs" id="3_4rnn0"]
 [ext_resource type="Theme" uid="uid://ckn0mkxklx1if" path="res://themes/button 2.tres" id="3_x2dav"]
@@ -11,6 +13,18 @@
 
 [sub_resource type="CodeHighlighter" id="CodeHighlighter_woaua"]
 
+[sub_resource type="CodeHighlighter" id="CodeHighlighter_1v4sa"]
+number_color = Color(0.716234, 0.810914, 1, 1)
+symbol_color = Color(0.945098, 0.945098, 0.945098, 1)
+function_color = Color(0.945098, 0.945098, 0.945098, 1)
+member_variable_color = Color(0.945098, 0.945098, 1, 1)
+keyword_colors = {
+"Semantic": Color(1, 0, 0, 1)
+}
+member_keyword_colors = {
+"Error": Color(1, 0, 0, 1)
+}
+
 [sub_resource type="CodeHighlighter" id="CodeHighlighter_58tmq"]
 keyword_colors = {
 "Unknown": Color(0, 0, 1, 1)
@@ -18,7 +32,7 @@ keyword_colors = {
 
 [sub_resource type="CanvasTexture" id="CanvasTexture_lhqmy"]
 
-[node name="Control" type="Control" node_paths=PackedStringArray("_codeEditNode", "_saveFileDialog", "_loadFileDialog", "_controlArchives", "_canvas", "_resizeButton", "_resizeInput", "_cleanCanvas", "_cleanConsole", "_processButton", "_closeButton", "_goBackButton", "_goNextButton", "_textEditOutput")]
+[node name="Control" type="Control" node_paths=PackedStringArray("_codeEditNode", "_saveFileDialog", "_loadFileDialog", "_controlArchives", "_canvas", "_resizeButton", "_resizeInput", "_cleanCanvas", "_cleanConsole", "_processButton", "_closeButton", "_goBackButton", "_goNextButton", "_lineInfo", "_textEditOutput", "_errorTooltip")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -41,7 +55,9 @@ _processButton = NodePath("CanvasActions/Run")
 _closeButton = NodePath("TopLine/Close")
 _goBackButton = NodePath("CanvasActions/GoBack")
 _goNextButton = NodePath("CanvasActions/GoNext")
+_lineInfo = NodePath("DownLine/LineInfo")
 _textEditOutput = NodePath("Console")
+_errorTooltip = NodePath("CodeEdit/ColorRect")
 metadata/_edit_horizontal_guides_ = [-380.0]
 
 [node name="Background" type="ColorRect" parent="."]
@@ -66,6 +82,7 @@ offset_right = 184.0
 offset_bottom = 45.0
 mouse_filter = 1
 mouse_default_cursor_shape = 2
+theme_override_fonts/font = ExtResource("2_u6nwd")
 keep_pressed_outside = true
 text = "Archivo"
 item_count = 2
@@ -101,6 +118,7 @@ offset_left = 77.0
 offset_top = 68.0
 offset_right = 969.0
 offset_bottom = 776.0
+theme_override_fonts/font = ExtResource("2_u6nwd")
 wrap_mode = 1
 minimap_draw = true
 caret_blink = true
@@ -114,12 +132,46 @@ indent_automatic = true
 auto_brace_completion_enabled = true
 auto_brace_completion_highlight_matching = true
 
+[node name="ColorRect" type="ColorRect" parent="CodeEdit" node_paths=PackedStringArray("_errorMessage")]
+visible = false
+layout_mode = 0
+offset_left = 20.0
+offset_top = 362.0
+offset_right = 848.0
+offset_bottom = 444.0
+color = Color(0.10828, 0.105063, 0.121143, 1)
+script = ExtResource("2_eije3")
+_errorMessage = NodePath("ErrorMessage")
+
+[node name="ErrorMessage" type="TextEdit" parent="CodeEdit/ColorRect"]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 10.0
+offset_right = 821.0
+offset_bottom = 78.0
+theme = ExtResource("4_284gc")
+theme_override_colors/background_color = Color(0, 0, 0, 0)
+theme_override_colors/caret_background_color = Color(0, 0, 0, 0)
+theme_override_fonts/font = ExtResource("2_u6nwd")
+editable = false
+context_menu_enabled = false
+shortcut_keys_enabled = false
+deselect_on_focus_loss_enabled = false
+drag_and_drop_selection_enabled = false
+virtual_keyboard_enabled = false
+middle_mouse_paste_enabled = false
+wrap_mode = 1
+scroll_smooth = true
+syntax_highlighter = SubResource("CodeHighlighter_1v4sa")
+highlight_all_occurrences = true
+
 [node name="Console" type="TextEdit" parent="."]
 layout_mode = 0
 offset_left = 81.0
 offset_top = 784.0
 offset_right = 973.0
 offset_bottom = 1028.0
+theme_override_fonts/font = ExtResource("2_u6nwd")
 text = "***Welcome Start to Code***"
 context_menu_enabled = false
 shortcut_keys_enabled = false
@@ -247,18 +299,21 @@ offset_right = 1922.0
 offset_bottom = 1079.0
 color = Color(0.243137, 0.243137, 0.305882, 1)
 
-[node name="RichTextLabel" type="RichTextLabel" parent="DownLine"]
+[node name="LineInfo" type="RichTextLabel" parent="DownLine"]
 layout_mode = 0
 offset_left = 5.0
 offset_top = 7.0
 offset_right = 227.0
 offset_bottom = 34.0
-text = "Line Column"
+theme_override_fonts/normal_font = ExtResource("2_u6nwd")
+text = "Line: 0  Column: 0"
 
 [connection signal="pressed" from="TopLine/ArchivesManager" to="." method="PressedArchiveControl"]
-[connection signal="pressed" from="TopLine/Settings" to="." method="PressedVista"]
 [connection signal="pressed" from="TopLine/Settings" to="." method="PressedArchiveControl"]
+[connection signal="pressed" from="TopLine/Settings" to="." method="PressedVista"]
 [connection signal="pressed" from="TopLine/Close" to="." method="ClosePressed"]
+[connection signal="caret_changed" from="CodeEdit" to="." method="CaretChanged"]
+[connection signal="text_changed" from="CodeEdit" to="." method="CodeChange"]
 [connection signal="text_changed" from="Console" to="Console" method="_on_text_changed"]
 [connection signal="pressed" from="Console/Clean Console" to="." method="CleanConsole"]
 [connection signal="file_selected" from="Save" to="." method="OnFileSaveSelected"]

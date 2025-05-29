@@ -2,7 +2,7 @@ using Godot;
 using System;
 using Godot.Collections;
 using System.Text.RegularExpressions;
-
+namespace Editor;
 public partial class ConsoleHighlighter: SyntaxHighlighter{
     private Color bracketContentCOlor=new Color((float)0.5,(float)0.5,(float)1.0,1);
     TextEdit textEdit {get;set;}

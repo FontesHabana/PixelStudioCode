@@ -2,7 +2,7 @@ using Godot;
 using PixelWallE.Language;
 using PixelWallE.Language.Parsing;
 using System;
-
+namespace Editor;
 public partial class CanvasController : TextureRect
 {
     Godot.Color GridColor = new Godot.Color(0, 0, 0, 0.1f);

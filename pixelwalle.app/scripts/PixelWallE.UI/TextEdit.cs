@@ -1,6 +1,6 @@
 using Godot;
 using System;
-
+namespace Editor;
 public partial class TextEdit : Godot.TextEdit
 {
 	private int protectedOffset=0 ;
