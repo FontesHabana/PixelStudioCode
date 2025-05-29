@@ -43,6 +43,12 @@ public class SyntaxException : PixelWallEException
         string message = $"Syntax Error: The 'Spawn' command can only appear once in the program. Duplicate 'Spawn' at line {location.Line}, column {location.Column}.";
         return new SyntaxException(message, location);
     }
+
+    public static SyntaxException DuplicateLabel(CodeLocation location, string label)
+    {
+        string message = $"Syntax Error: The label {label} has already exist. Error at line {location.Line}, column {location.Column}.";
+        return new SyntaxException(message, location);
+    }
     
     public static SyntaxException ExpectedNewLineAfterCommand(string offendingTokenValue, CodeLocation location)
     {

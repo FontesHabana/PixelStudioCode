@@ -59,13 +59,19 @@ public  class Interpreter{
        // return;
    }
   printAst.printAstNode(program, 0);
-   
+ 
   Scope=new Scope(program.Labels);
+  Godot.GD.Print("Creado scope");
   SemanticChecker semanticChecker=new SemanticChecker(Scope, Errors);
-  program.Accept(semanticChecker);
+Godot.GD.Print("Creado checkeco semantico");
+
+      program.Accept(semanticChecker);
+
+   
+ 
 
 
-
+   
   if (semanticChecker.errors.Count>0)
   {
     foreach (var item in semanticChecker.errors)
@@ -95,15 +101,6 @@ public  class Interpreter{
    }
 
 
-    public static void error(CodeLocation location, string message) {
-    report(location, "", message);
-    }
-    private static void report(CodeLocation location, string where,
-    string message) {
-    GD.Print(
-    "[line " + location.Line + "][column" +location.Column+ "] Error" + where + ": " + message);
-   // hadError = true;
-    }
 
  
 

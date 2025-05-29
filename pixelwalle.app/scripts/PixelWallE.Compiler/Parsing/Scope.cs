@@ -16,12 +16,21 @@ public class Scope
     //Se pueden agregar las funciones aquí;
     public Scope(List<Label> labels, Scope? parent = null)
     {
-
-        this.parent = parent;
+        try
+        {
+              this.parent = parent;
         foreach (var item in labels)
         {
             this.labels.Add(item.LabelReference, item);
         }
+        }
+        catch (System.Exception error)
+        {
+             Godot.GD.Print(error);
+           
+        }
+      
+        Godot.GD.Print("Labels añadidos con exito");
         colors = new()
         {
              {"Transparent", new  Godot.Color(255, 255, 255, 0)},
@@ -35,6 +44,7 @@ public class Scope
             {"White", new  Godot.Color(255, 255, 255)},
             {"Pink", new  Godot.Color(255, 80, 220)},
         };
+        Godot.GD.Print("Scope creado con exito");
     }
 
 

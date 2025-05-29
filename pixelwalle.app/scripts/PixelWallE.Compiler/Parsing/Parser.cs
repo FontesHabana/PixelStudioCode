@@ -14,6 +14,7 @@ using System.Linq;
 using System.ComponentModel.Design;
 
 
+
 namespace PixelWallE.Language.Parsing;
 
 public class Parser{
@@ -391,14 +392,15 @@ private Command ParseGoTo(){
 #region Parse program
 public ElementalProgram Parse(){
     ElementalProgram program=new ElementalProgram(new CodeLocation(), Errors);
+        HashSet<string> referenceLabel = new HashSet<string>();
     while (!Stream.IsAtEnd())
-    {
+        {
             if (Stream.Match(new List<TokenType> { TokenType.SPAWN }))
             {
                 try
                 {
                     program.Statements.Add(ParseCommand());
-                  
+
                 }
                 catch (PixelWallEException error)
                 {
@@ -409,10 +411,10 @@ public ElementalProgram Parse(){
             }
             else if (!Stream.Match(new List<TokenType> { TokenType.EOL, TokenType.COMENNT }))
             {
-                program.Errors.Add(SyntaxException.SpawnMisplaced( Stream.Peek().Location));
+                program.Errors.Add(SyntaxException.SpawnMisplaced(Stream.Peek().Location));
                 break;
             }
-    }
+        }
 
         while (!Stream.IsAtEnd())
         {
@@ -471,9 +473,19 @@ public ElementalProgram Parse(){
                     }
                 }
                 else
-                {
-                    program.Labels.Add(new Label(Stream.Previous().Value, program.Statements.Count()));
-                    twoCommandLineError = true;
+                {   if (referenceLabel.Contains(Stream.Previous().Value))
+                    {
+                        program.Errors.Add(SyntaxException.DuplicateLabel(Stream.Previous().Location, Stream.Previous().Value));
+                        Stream.Synchronize();
+                        continue;
+                    }
+                    else
+                    {
+                        program.Labels.Add(new Label(Stream.Previous().Value, program.Statements.Count()));
+                        referenceLabel.Add(Stream.Previous().Value);
+                        twoCommandLineError = true;
+                    }
+                    
                 }
             }
             if (!(Stream.Match(new List<TokenType> { TokenType.EOL }) || Stream.Match(new List<TokenType> { TokenType.EOF })))
@@ -485,7 +497,7 @@ public ElementalProgram Parse(){
                 }
                 else
                 {
-                    program.Errors.Add(SyntaxException.UnexpectedToken(Stream.Peek().Value.ToString(), "Command or Label", Stream.Peek().Location ));
+                    program.Errors.Add(SyntaxException.UnexpectedToken(Stream.Peek().Value.ToString(), "Command or Label", Stream.Peek().Location));
                     Stream.Synchronize();
                 }
 
