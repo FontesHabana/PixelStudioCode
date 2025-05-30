@@ -34,7 +34,7 @@ public partial class main_ui : Control // partial es importante si adjuntas el s
     private static Stack<Canvas> stackGoNext;
     public static Interpreter interpreter = new Interpreter(canvas, ""); // Inicializa el intérprete con un tamaño de 25 (ajusta según sea necesario)
     string userScript = "***D:/.../Archivo  Fecha 🤖***";
-    
+
 
 
     // Método _Ready se llama cuando el nodo y sus hijos han entrado en el árbol de escena
@@ -94,7 +94,7 @@ public partial class main_ui : Control // partial es importante si adjuntas el s
 
     public override void _PhysicsProcess(double delta)
     {
-        
+
     }
     // Este método recibirá el texto del CodeEdit
     //hacer que este metodo genere la matriz copia completa y asi no tener que crearla de forma manual en el  proceso
@@ -112,27 +112,28 @@ public partial class main_ui : Control // partial es importante si adjuntas el s
 
     private void CodeChange()
     {
+        _resizeInput.Visible = false;
         interpreter = new Interpreter(canvas, _codeEditNode.Text);
         HighlightError(interpreter.Errors);
-       // _codeEditNode.Text.ShowErrors(interpreter.Errors);
-      }
-      private void HighlightError(List<PixelWallEException> exceptions)
-      {
-          Godot.Color errorLineColor = new Godot.Color(1, 0.3f, 0.3f, 0.3f); // Rojo suave
-          Godot.Color normalLineColor = new Godot.Color(0, 0, 0, 0); // Transparente = fondo normal
+        // _codeEditNode.Text.ShowErrors(interpreter.Errors);
+    }
+    private void HighlightError(List<PixelWallEException> exceptions)
+    {
+        Godot.Color errorLineColor = new Godot.Color(1, 0.3f, 0.3f, 0.3f); // Rojo suave
+        Godot.Color normalLineColor = new Godot.Color(0, 0, 0, 0); // Transparente = fondo normal
 
-             // Limpiamos todos los colores antes de resaltar errores nuevos
-          for (int i = 0; i < _codeEditNode.GetLineCount(); i++)
-          {
-              _codeEditNode.SetLineBackgroundColor(i, normalLineColor);
-          }
+        // Limpiamos todos los colores antes de resaltar errores nuevos
+        for (int i = 0; i < _codeEditNode.GetLineCount(); i++)
+        {
+            _codeEditNode.SetLineBackgroundColor(i, normalLineColor);
+        }
 
-          // Verifica errores línea por línea (aquí puedes meter tu lógica personalizada de PixelWalle)
-           foreach (PixelWallEException error in interpreter.Errors)
-          {
-              _codeEditNode.SetLineBackgroundColor(error.Location.Line - 1, errorLineColor);
-          }
-      }
+        // Verifica errores línea por línea (aquí puedes meter tu lógica personalizada de PixelWalle)
+        foreach (PixelWallEException error in interpreter.Errors)
+        {
+            _codeEditNode.SetLineBackgroundColor(error.Location.Line - 1, errorLineColor);
+        }
+    }
 
 
 
@@ -175,11 +176,120 @@ public partial class main_ui : Control // partial es importante si adjuntas el s
         }
     }
 
- 
 
 
 
 
+    #region Buttom
+ private void OnButtonPressed()
+    {
+        string codeFromEdit = _codeEditNode.Text; // Obtiene el texto del CodeEdit
+        ProcessCode(codeFromEdit); // Llama al método de procesamiento con el texto
+        _goBackButton.Visible = true;
+    }
+ private void PressedSave()
+    {
+        _saveFileDialog.Popup();
+    }
+    private void PressedLoad()
+    {
+        _loadFileDialog.Popup();
+    }
+    private void CleanCanvas()
+    {
+        Canvas current = new Canvas(canvas.Size);
+        CopyMatrix(interpreter.Canvas, current);
+        stackGoBack.Push(current);
+        canvas = new Canvas(canvas.Size);
+        interpreter.Canvas = canvas;
+        _canvas._Ready();
+        _canvas.QueueRedraw();
+
+    }
+    private void CleanConsole()
+    {
+        _textEditOutput.Text = userScript + "\n" + ">>>";
+    }
+    private void ResizePressed()
+    {
+        if (!_resizeInput.Visible)
+        {
+            _resizeInput.Visible = true;
+            return;
+        }
+
+        ResizedCanvas(_resizeInput.Text);
+
+
+    }
+     private void ClosePressed()
+    {
+        GetTree().Quit();
+    }
+    private void PressedArchiveControl()
+    {
+        _controlArchives.GetPopup().IdPressed += OnMenuItemPressed;
+    }
+    private void OnMenuItemPressed(long id)
+    {
+        switch (id)
+        {
+            case 0:
+                _loadFileDialog.Popup();
+                break;
+            case 1:
+                _saveFileDialog.Popup();
+                break;
+        }
+    }
+
+    private void GoBack()
+    {
+
+        if (stackGoBack.Count > 0)
+        {
+            _textEditOutput.Text += "GoBack entre ";
+
+            if (stackGoBack.Count > 1)
+            {
+                Canvas current = new Canvas(canvas.Size);
+                CopyMatrix(interpreter.Canvas, current);
+                stackGoNext.Push(current);
+                interpreter.Canvas = stackGoBack.Pop();
+            }
+            else
+            {
+                interpreter.Canvas = stackGoBack.Peek();
+            }
+
+            _canvas.QueueRedraw();
+        }
+        _goNextButton.Visible = true;
+
+
+    }
+
+    private void GoNext()
+    {
+        _textEditOutput.Text += "GoNext ";
+        if (stackGoNext.Count > 0)
+        {
+            Canvas current = new Canvas(canvas.Size);
+            CopyMatrix(interpreter.Canvas, current);
+            stackGoBack.Push(current);
+            interpreter.Canvas = stackGoNext.Pop();
+            _canvas.QueueRedraw();
+        }
+
+    }
+
+    private void PressedVista()
+    {
+
+    }
+
+
+    #endregion
     private void ProcessCode(string codeString)
     {
 
@@ -220,118 +330,15 @@ public partial class main_ui : Control // partial es importante si adjuntas el s
 
     }
 
-    
+
     // Función que se llamará cuando se presione el botón (conectada en _Ready o en el editor)
-    private void OnButtonPressed()
-    {
-        string codeFromEdit = _codeEditNode.Text; // Obtiene el texto del CodeEdit
-        ProcessCode(codeFromEdit); // Llama al método de procesamiento con el texto
-        _goBackButton.Visible = true;
-    }
-
-    // Limpieza cuando el nodo va a ser eliminado (si conectaste señales en _Ready)
-    
-
-    private void PressedSave()
-    {
-        _saveFileDialog.Popup();
-    }
-    private void PressedLoad()
-    {
-        _loadFileDialog.Popup();
-    }
-    private void CleanCanvas()
-    {
-        Canvas current = new Canvas(canvas.Size);
-        CopyMatrix(interpreter.Canvas, current);
-        stackGoBack.Push(current);
-        canvas = new Canvas(canvas.Size);
-        interpreter.Canvas = canvas;
-        _canvas._Ready();
-        _canvas.QueueRedraw();
-       
-    }
-    private void CleanConsole()
-    {
-        _textEditOutput.Text = userScript + "\n" + ">>>";
-    }
-    private void ResizePressed()
-    {
-        if (!_resizeInput.Visible)
-        {
-            _resizeInput.Visible = true;
-            return;
-       }
-
-        ResizedCanvas(_resizeInput.Text);
-
-
-    }
    
-    private void ClosePressed()
-    {
-        GetTree().Quit();
-    }
-    private void PressedArchiveControl()
-    {
-        _controlArchives.GetPopup().IdPressed += OnMenuItemPressed;
-    }
-    private void OnMenuItemPressed(long id)
-    {
-        switch (id)
-        {
-            case 0:
-                _loadFileDialog.Popup();
-                break;
-            case 1:
-                _saveFileDialog.Popup();
-                break;
-        }
-    }
+    // Limpieza cuando el nodo va a ser eliminado (si conectaste señales en _Ready)
 
-    private void GoBack()
-    {
 
-        if (stackGoBack.Count > 0)
-        {
-            _textEditOutput.Text += "GoBack entre ";
-          
-            if (stackGoBack.Count > 1)
-            {     Canvas current = new Canvas(canvas.Size);
-                  CopyMatrix(interpreter.Canvas, current);
-                  stackGoNext.Push(current);
-                  interpreter.Canvas = stackGoBack.Pop();
-            }
-            else
-            {
-                 interpreter.Canvas = stackGoBack.Peek();
-            }
-           
-            _canvas.QueueRedraw();
-        }
-        _goNextButton.Visible = true;
-        
+   
 
-    }
-
-    private void GoNext()
-    {_textEditOutput.Text += "GoNext ";
-       if (stackGoNext.Count > 0)
-        {   Canvas current = new Canvas(canvas.Size);
-        CopyMatrix(interpreter.Canvas, current);
-            stackGoBack.Push(current);
-            interpreter.Canvas = stackGoNext.Pop();
-            _canvas.QueueRedraw();
-        }
-       
-    }
-    
-    private void PressedVista()
-    {
-
-    }
-
-    private void OnFileSelected(string path)
+       private void OnFileSelected(string path)
     {
         if (!path.EndsWith(".pw"))
         {
@@ -348,13 +355,14 @@ public partial class main_ui : Control // partial es importante si adjuntas el s
     {
 
         try
-        {   
+        {
             File.WriteAllText(path, _codeEditNode.Text);
 
         }
         catch (System.Exception error)
-        {   _textEditOutput.Text += "\n"+ "Error al guardar el archivo" + error+"\n"+ userScript + "\n" + ">>>";
-        
+        {
+            _textEditOutput.Text += "\n" + "Error al guardar el archivo" + error + "\n" + userScript + "\n" + ">>>";
+
         }
     }
 
@@ -387,10 +395,19 @@ public partial class main_ui : Control // partial es importante si adjuntas el s
         _resizeInput.Visible = false;
 
     }
-    //opcion 1 presionando enter en el teclado
-   
 
-    
+    private void CloseResize()
+    {
+       
+   
+     _resizeInput.Visible = false;
+
+       
+    }
+    //opcion 1 presionando enter en el teclado
+
+
+
 
 
 }

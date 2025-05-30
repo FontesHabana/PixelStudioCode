@@ -48,7 +48,7 @@ _loadFileDialog = NodePath("Load")
 _controlArchives = NodePath("TopLine/ArchivesManager")
 _canvas = NodePath("Canvas")
 _resizeButton = NodePath("CanvasActions/Resize")
-_resizeInput = NodePath("CanvasActions/ResizeInput")
+_resizeInput = NodePath("CanvasActions/Resize/ResizeInput")
 _cleanCanvas = NodePath("CanvasActions/Clean Canvas")
 _cleanConsole = NodePath("Console/Clean Console")
 _processButton = NodePath("CanvasActions/Run")
@@ -276,16 +276,16 @@ offset_right = 59.0
 offset_bottom = 250.0
 text = "Resize"
 
-[node name="ResizeInput" type="LineEdit" parent="CanvasActions"]
+[node name="ResizeInput" type="LineEdit" parent="CanvasActions/Resize"]
 visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 63.0
-offset_top = 186.0
-offset_right = 185.0
-offset_bottom = -782.0
+offset_left = 61.0
+offset_top = 2.0
+offset_right = 183.0
+offset_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 placeholder_text = "CanvasSize"
@@ -323,4 +323,5 @@ text = "Line: 0  Column: 0"
 [connection signal="pressed" from="CanvasActions/GoNext" to="." method="GoNext"]
 [connection signal="pressed" from="CanvasActions/Run" to="." method="OnButtonPressed"]
 [connection signal="pressed" from="CanvasActions/Resize" to="." method="ResizePressed"]
-[connection signal="text_submitted" from="CanvasActions/ResizeInput" to="." method="ResizedCanvas"]
+[connection signal="focus_exited" from="CanvasActions/Resize/ResizeInput" to="." method="CloseResize"]
+[connection signal="text_submitted" from="CanvasActions/Resize/ResizeInput" to="." method="ResizedCanvas"]
