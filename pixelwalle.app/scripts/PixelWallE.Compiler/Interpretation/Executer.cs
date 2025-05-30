@@ -6,51 +6,60 @@ using PixelWallE.Language.Commands;
 using PixelWallE.Core;
 using System.Collections.Generic;
 using System;
+using System.Threading.Tasks;
+using System.Runtime.Intrinsics.Arm;
+
+
 //using Godot;
 //using Godot;
 
 public class Executer : IVisitor<ASTNode>
 {
     private Scope scope;
-    public int Delay{ get; set; }
     public List<PixelWallEException> errors;
 
     private Canvas canvas;
     private RobotState robot;
      int index;
 
-    public Executer(Scope scope, Canvas canvas, RobotState robot,  List<PixelWallEException> error)
+    public Executer(Scope scope, Canvas canvas, RobotState robot, List<PixelWallEException> error)
     {
         this.scope = scope;
         this.canvas = canvas;
         this.robot = robot;
-        
+
         errors = error;
-        index=0;
+        index = 0;
     }
 
 
 
 
+
+ 
+
+
     public void ElementalProgram(ElementalProgram program)
-    {   
-        while (program.Statements.Count>index)
+    {
+        
+        while (program.Statements.Count > index)
         {
             try
             {
-             program.Statements[index].Accept(this);
-             index++;
-             
+                program.Statements[index].Accept(this);
+                index++;
+
             }
-            catch(PixelWallEException error){
+            catch (PixelWallEException error)
+            {
                 errors.Add(error);
                 Godot.GD.Print(error);
                 return;
             }
             catch (System.Exception error)
-            {   
+            {
                 errors.Add(new RuntimeException(error.Message, program.Statements[index].Location));
-                 Godot.GD.Print(error);
+                Godot.GD.Print(error);
                 return;
             }
         }
@@ -58,10 +67,11 @@ public class Executer : IVisitor<ASTNode>
 
     #region Expressions
     public void ParenthesizedExpression(ParenthesizedExpression expression)
-    {   
-       expression.InnerExpression.Accept(this);
-       
-       expression.Value = expression.Value;
+    {
+        expression.InnerExpression.Accept(this);
+
+        expression.Value = expression.InnerExpression.Value;
+
     }
     public void Variable(Variable var)
     {
