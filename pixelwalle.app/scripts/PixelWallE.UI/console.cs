@@ -2,9 +2,10 @@ using Godot;
 using System;
 using Godot.Collections;
 using System.Text.RegularExpressions;
+using System.Collections.Generic;
 namespace Editor;
 public partial class ConsoleHighlighter: SyntaxHighlighter{
-    private Color bracketContentCOlor=new Color((float)0.5,(float)0.5,(float)1.0,1);
+    private Godot.Color bracketContentCOlor=new Godot.Color(149,0,20);
     TextEdit textEdit {get;set;}
 
     public ConsoleHighlighter(TextEdit text){
@@ -14,7 +15,8 @@ public partial class ConsoleHighlighter: SyntaxHighlighter{
         string text= textEdit.GetLine(line);
         var highlighting=new Dictionary();
         var matches=Regex.Matches(text,@"\*\*\*(.*?)\*\*\*");
-        var error = Regex.Matches(text, @"Error");
+        //var error = Regex.Matches(text, @"Error");
+        List<string> errors = new List<string> { "Error", "Lexical", "Syntax", "Semantic" };
         foreach (Match match in matches)
         {
             int contentStartIndex = match.Index;
@@ -39,7 +41,11 @@ public partial class ConsoleHighlighter: SyntaxHighlighter{
 
         }
 
-         foreach (Match match in error)
+
+        foreach (string item in errors)
+        {
+            var error= Regex.Matches(text, $@"{item}");
+              foreach (Match match in error)
         {
             int contentStartIndex = match.Index;
             int contentEndIndex = match.Index + match.Length;
@@ -47,7 +53,7 @@ public partial class ConsoleHighlighter: SyntaxHighlighter{
             if (match.Length > 0)
             {
                 var style = new Dictionary{
-                    {"color", new Color(255,0,0)}
+                    {"color", new Godot.Color(255, 0, 0)}
                 };
 
 
@@ -62,6 +68,8 @@ public partial class ConsoleHighlighter: SyntaxHighlighter{
             }
 
         }
+        }
+      
 
         return highlighting;
     }

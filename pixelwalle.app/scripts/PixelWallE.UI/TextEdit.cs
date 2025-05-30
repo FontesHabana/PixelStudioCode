@@ -8,8 +8,10 @@ public partial class TextEdit : Godot.TextEdit
 	public override void _Ready()
 	{
 		AppendPrompt();
-		var customHighlighter=new ConsoleHighlighter(this);
-		this.SyntaxHighlighter=customHighlighter;
+		SyntaxHighlighter customHighlighter = new ConsoleHighlighter(this);
+		this.SyntaxHighlighter = customHighlighter;
+	
+		
 		
 		
 	}

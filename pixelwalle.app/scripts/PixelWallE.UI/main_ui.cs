@@ -60,25 +60,35 @@ public partial class main_ui : Control // partial es importante si adjuntas el s
 
 
 
-        if (_textEditOutput != null)
-        {
-            // _textEditOutput.Editable = false;
-        }
+       
         var myHighlighter = new CodeHighlighter(); // Sí, se llama GDScriptHighlighter incluso en C# para resaltar sintaxis GDScript
-        myHighlighter.AddKeywordColor("true", Colors.Red);
-        myHighlighter.AddKeywordColor("false", Colors.Red);
+    myHighlighter.AddKeywordColor("true", new Godot.Color(0.643f, 0.545f, 1.0f));     // Violeta eléctrico
+myHighlighter.AddKeywordColor("false", new Godot.Color(0.643f, 0.545f, 1.0f));    // Igual que true
+
+myHighlighter.NumberColor = new Godot.Color(1.0f, 0.592f, 0.71f);                 // Rosa fuerte
+     // Strings rojos
+
+myHighlighter.SymbolColor = new Godot.Color(1.0f, 0.914f, 0.49f);                 // Amarillo claro
+myHighlighter.FunctionColor = new Godot.Color(0.392f, 0.714f, 1.0f);              // Azul neón
+myHighlighter.MemberVariableColor = new Godot.Color(1.0f, 0.592f, 0.71f);         // Igual que números
+
+myHighlighter.AddKeywordColor("GoTo", new Godot.Color(0.643f, 0.545f, 1.0f));
+
+  
+        myHighlighter.AddColorRegion("#","\n", new Godot.Color(0.5f, 0.5f, 0.5f));
+        myHighlighter.AddColorRegion("\"", "\"", new Godot.Color(1.0f, 0.416f, 0.416f));
+
+        var consoleHighlighter = new CodeHighlighter(); // Sí, se llama GDScriptHighlighter incluso en C# para resaltar sintaxis GDScript
+        consoleHighlighter.NumberColor = new Godot.Color(0.9f, 0.9f, 1f);
+        consoleHighlighter.AddKeywordColor("Error", new Godot.Color(1f, 0f, 0f));
+        consoleHighlighter.AddKeywordColor("Syntax", new Godot.Color(1f, 0f, 0f));
+        consoleHighlighter.AddKeywordColor("Lexical", new Godot.Color(1f, 0f, 0f));
+        consoleHighlighter.AddKeywordColor("Semantic", new Godot.Color(1f, 0f, 0f));
+        consoleHighlighter.AddKeywordColor("Runtime", new Godot.Color(1f, 0f, 0f));
+        consoleHighlighter.AddColorRegion("***", "***", new Godot.Color(0.5f, 0.5f, 1f));
 
 
-
-
-        myHighlighter.NumberColor = Colors.Blue;
-        myHighlighter.AddKeywordColor("\"", Colors.Yellow);
-        myHighlighter.SymbolColor = Colors.Aqua;
-        myHighlighter.FunctionColor = Colors.Green;
-        myHighlighter.MemberVariableColor = Colors.Orange;
-        myHighlighter.AddKeywordColor("GoTo", Colors.Coral);
-
-
+       _textEditOutput.SyntaxHighlighter = consoleHighlighter;
 
         _codeEditNode.SyntaxHighlighter = myHighlighter;
 
@@ -248,21 +258,20 @@ public partial class main_ui : Control // partial es importante si adjuntas el s
 
         if (stackGoBack.Count > 0)
         {
-            _textEditOutput.Text += "GoBack entre ";
+         
 
-            if (stackGoBack.Count > 1)
-            {
-                Canvas current = new Canvas(canvas.Size);
-                CopyMatrix(interpreter.Canvas, current);
-                stackGoNext.Push(current);
-                interpreter.Canvas = stackGoBack.Pop();
-            }
-            else
-            {
-                interpreter.Canvas = stackGoBack.Peek();
-            }
+             
+            Canvas current = new Canvas(canvas.Size);
+            CopyMatrix(interpreter.Canvas, current);
+            stackGoNext.Push(current);
+            interpreter.Canvas = stackGoBack.Pop();
+
 
             _canvas.QueueRedraw();
+        }
+        else
+        {
+            _goBackButton.Visible = false;
         }
         _goNextButton.Visible = true;
 
@@ -271,7 +280,7 @@ public partial class main_ui : Control // partial es importante si adjuntas el s
 
     private void GoNext()
     {
-        _textEditOutput.Text += "GoNext ";
+    
         if (stackGoNext.Count > 0)
         {
             Canvas current = new Canvas(canvas.Size);
@@ -279,6 +288,11 @@ public partial class main_ui : Control // partial es importante si adjuntas el s
             stackGoBack.Push(current);
             interpreter.Canvas = stackGoNext.Pop();
             _canvas.QueueRedraw();
+            _goBackButton.Visible = true;
+        }
+        else
+        {
+            _goNextButton.Visible = false;
         }
 
     }
