@@ -1,18 +1,37 @@
 namespace PixelWallE.Language.Parsing.Expressions;
 
-public  class MultiplicationOperation: BinaryExpression
+/// <summary>
+/// Represents a multiplication operation (e.g., 5 * 7) in the PixelWallE language AST.
+/// </summary>
+public class MultiplicationOperation : BinaryExpression
 {
-    public override ExpressionType Type {get; set;}
-    public override object? Value {get; set;}
+    /// <summary>
+    /// Gets or sets the expression type (always Number for arithmetic operations).
+    /// </summary>
+    public override ExpressionType Type { get; set; }
 
-    public MultiplicationOperation(CodeLocation location, Expression left, Expression right) : base(location, left, right){
-        Type=ExpressionType.Number;
+    /// <summary>
+    /// Gets or sets the value of the multiplication operation.
+    /// </summary>
+    public override object? Value { get; set; }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MultiplicationOperation"/> class.
+    /// </summary>
+    /// <param name="location">The code location associated with this multiplication operation.</param>
+    /// <param name="left">The left operand expression.</param>
+    /// <param name="right">The right operand expression.</param>
+    public MultiplicationOperation(CodeLocation location, Expression left, Expression right) : base(location, left, right)
+    {
+        Type = ExpressionType.Number;
     }
 
+    /// <summary>
+    /// Accepts a visitor for traversing or processing the multiplication operation node.
+    /// </summary>
+    /// <param name="visitor">The visitor instance.</param>
     public override void Accept(IVisitor<ASTNode> visitor)
     {
-       visitor.MultiplicationOperation(this);
+        visitor.MultiplicationOperation(this);
     }
-
-
 }
