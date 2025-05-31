@@ -1,8 +1,20 @@
 namespace PixelWallE.Language.Lexer;
+
 using PixelWallE.Language.Tokens;
 
-//Define patrón singleton para el lexer// De esto hablo el profe en la clase del juego, te aseguras de tener un lexer único para cada iteración de el código
+
+/// <summary>
+/// Provides a singleton instance of the <see cref="Lexer"/> class, pre-configured with operators and keywords
+/// specific to the PixelWallE language. The <c>Lexical</c> property initializes the lexer on first access,
+/// registering all supported operators, keywords, and text delimiters.
+/// </summary>
+/// <remarks>
+/// The lexer is configured with common arithmetic, logical, comparison, and assignment operators,
+/// as well as language-specific keywords and text delimiters. This ensures consistent lexical analysis
+/// throughout the application.
+/// </remarks>
 public class LexerProvider
+
 {
     private static Lexer? __LexicalProcess;
     public static Lexer Lexical
@@ -38,15 +50,15 @@ public class LexerProvider
                 __LexicalProcess.RegisterOperator("[", TokenType.LEFT_BRACKET);
                 __LexicalProcess.RegisterOperator("]", TokenType.RIGHT_BRACKET);
                 __LexicalProcess.RegisterOperator("\n", TokenType.NEW_LINE);
-                
-                
+
+
 
 
                 __LexicalProcess.RegisterKeyword("false", TokenType.FALSE);
                 __LexicalProcess.RegisterKeyword("true", TokenType.TRUE);
                 __LexicalProcess.RegisterKeyword("Color", TokenType.COLOR);
                 __LexicalProcess.RegisterKeyword("DrawCircle", TokenType.DRAWCIRCLE);
-                __LexicalProcess.RegisterKeyword("DrawLine", TokenType.DRAWLINE);                
+                __LexicalProcess.RegisterKeyword("DrawLine", TokenType.DRAWLINE);
                 __LexicalProcess.RegisterKeyword("DrawRectangle", TokenType.DRAWRECTANGLE);
                 __LexicalProcess.RegisterKeyword("GoTo", TokenType.GOTO);
                 __LexicalProcess.RegisterKeyword("Size", TokenType.SIZE);
@@ -54,7 +66,7 @@ public class LexerProvider
                 __LexicalProcess.RegisterKeyword("Fill", TokenType.FILL);
                 __LexicalProcess.RegisterKeyword("GetActualX", TokenType.GETACTUALX);
                 __LexicalProcess.RegisterKeyword("GetActualY", TokenType.GETACTUALY);
-                __LexicalProcess.RegisterKeyword("GetCanvasSize", TokenType.GETCANVASSIZE);                
+                __LexicalProcess.RegisterKeyword("GetCanvasSize", TokenType.GETCANVASSIZE);
                 __LexicalProcess.RegisterKeyword("GetColorCount", TokenType.GETCOLORCOUNT);
                 __LexicalProcess.RegisterKeyword("IsBrushColor", TokenType.ISBRUSHCOLOR);
                 __LexicalProcess.RegisterKeyword("IsBrushSize", TokenType.ISBRUSHSIZE);
@@ -64,7 +76,7 @@ public class LexerProvider
                 /*  */
                 __LexicalProcess.RegisterText("\"", "\"");
             }
-
+            __LexicalProcess.OrderedDictionary();
             return __LexicalProcess;
         }
     }
