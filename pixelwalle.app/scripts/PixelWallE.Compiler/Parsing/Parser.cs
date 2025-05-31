@@ -407,9 +407,11 @@ public ElementalProgram Parse(){
                     program.Errors.Add(error);
                     Stream.Synchronize();
                 }
+              
+
                 break;
             }
-            else if (!Stream.Match(new List<TokenType> { TokenType.EOL, TokenType.COMENNT }))
+            else if (!Stream.Match(new List<TokenType> { TokenType.EOL, TokenType.COMENNT}))
             {
                 program.Errors.Add(SyntaxException.SpawnMisplaced(Stream.Peek().Location));
                 break;
@@ -419,6 +421,10 @@ public ElementalProgram Parse(){
         while (!Stream.IsAtEnd())
         {
             bool twoCommandLineError = false;
+            if (Stream.Peek().Location.Line==1&&!Stream.Match(new List<TokenType> { TokenType.EOL, TokenType.COMENNT}))
+            {
+                  program.Errors.Add(SyntaxException.UnexpectedToken(Stream.Peek().Value.ToString(), "Command or Label", Stream.Peek().Location));
+            }
             if (Stream.Match(new List<TokenType> { TokenType.SPAWN }))
             {
                 program.Errors.Add(SyntaxException.DuplicateSpawn(Stream.Peek().Location));
@@ -473,7 +479,8 @@ public ElementalProgram Parse(){
                     }
                 }
                 else
-                {   if (referenceLabel.Contains(Stream.Previous().Value))
+                {
+                    if (referenceLabel.Contains(Stream.Previous().Value))
                     {
                         program.Errors.Add(SyntaxException.DuplicateLabel(Stream.Previous().Location, Stream.Previous().Value));
                         Stream.Synchronize();
@@ -485,7 +492,7 @@ public ElementalProgram Parse(){
                         referenceLabel.Add(Stream.Previous().Value);
                         twoCommandLineError = true;
                     }
-                    
+
                 }
             }
             if (!(Stream.Match(new List<TokenType> { TokenType.EOL }) || Stream.Match(new List<TokenType> { TokenType.EOF })))

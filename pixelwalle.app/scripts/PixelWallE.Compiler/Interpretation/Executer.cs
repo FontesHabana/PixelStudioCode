@@ -20,7 +20,7 @@ public class Executer : IVisitor<ASTNode>
 
     private Canvas canvas;
     private RobotState robot;
-     int index;
+    private int Index { get; set; };
 
     public Executer(Scope scope, Canvas canvas, RobotState robot, List<PixelWallEException> error)
     {
@@ -29,7 +29,7 @@ public class Executer : IVisitor<ASTNode>
         this.robot = robot;
 
         errors = error;
-        index = 0;
+        Index = 0;
     }
 
 
@@ -41,14 +41,15 @@ public class Executer : IVisitor<ASTNode>
 
     public void ElementalProgram(ElementalProgram program)
     {
+       
         
-        while (program.Statements.Count > index)
+        while (program.Statements.Count > Index)
         {
             try
             {
-                program.Statements[index].Accept(this);
-                index++;
-
+                program.Statements[Index].Accept(this);
+                Index++;
+                
             }
             catch (PixelWallEException error)
             {
@@ -58,7 +59,7 @@ public class Executer : IVisitor<ASTNode>
             }
             catch (System.Exception error)
             {
-                errors.Add(new RuntimeException(error.Message, program.Statements[index].Location));
+                errors.Add(new RuntimeException(error.Message, program.Statements[Index].Location));
                 Godot.GD.Print(error);
                 return;
             }
@@ -597,16 +598,26 @@ public class Executer : IVisitor<ASTNode>
         robot.Y=(int)y;
         RobotOutException(robot.X,robot.Y,canvas.Size,command);
     }
-    public void GoToCommand(GoToCommand command){
-        foreach (Expression arg in command.Args)
+    public void GoToCommand(GoToCommand command)
+    {
+        if (command.InfinteCycle < 1000000) //10**6
         {
-            arg.Accept(this);
+            foreach (Expression arg in command.Args)
+            {
+                arg.Accept(this);
+            }
+            if ((bool)command.Args[0].Value)
+            {
+                Label? label = scope.GetLabel(command.Label);
+                Index = label.CommandIndicator - 1;
+            }
+            command.InfinteCycle++;
         }
-        if ((bool)command.Args[0].Value)
+        else
         {
-            Label? label=scope.GetLabel(command.Label);
-            index=label.CommandIndicator-1;
+            throw new RuntimeException("Possibly infinite Loop at ", command.Location, "GoTo");
         }
+      
     }
     #endregion
 

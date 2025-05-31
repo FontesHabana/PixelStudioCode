@@ -39,6 +39,7 @@ public class LexerProvider
                 __LexicalProcess.RegisterOperator("]", TokenType.RIGHT_BRACKET);
                 __LexicalProcess.RegisterOperator("\n", TokenType.NEW_LINE);
                 
+                
 
 
                 __LexicalProcess.RegisterKeyword("false", TokenType.FALSE);
