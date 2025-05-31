@@ -2,12 +2,24 @@
 
 namespace PixelWallE.Core
 {
+    /// <summary>
+    /// Represents a canvas for drawing pixels.
+    /// </summary>
     public class Canvas  
     {
+        /// <summary>
+        /// Gets the size of the canvas.
+        /// </summary>
         public int Size { get; private set; }
+        /// <summary>
+        /// Gets or sets the matrix representing the canvas.
+        /// </summary>
         public string[,] Matrix { get;  set; }
 
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Canvas"/> class.
+        /// </summary>
+        /// <param name="size">The size of the canvas.</param>
         public Canvas(int size)
         {
             Size = size;

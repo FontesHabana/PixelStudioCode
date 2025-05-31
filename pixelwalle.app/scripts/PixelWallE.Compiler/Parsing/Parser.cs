@@ -27,32 +27,46 @@ public class Parser
     /// </summary>
     private List<PixelWallEException> Errors { get; set; }
 
-    /// <summary>
+ /// <summary>
     /// Initializes a new instance of the <see cref="Parser"/> class.
     /// </summary>
     /// <param name="stream">The token stream to be parsed.</param>
     /// <param name="errors">A list to which parsing errors will be added.</param>
+    /// 
     public Parser(TokenStream stream, List<PixelWallEException> errors)
     {
         Stream = stream;
         Errors = errors;
     }
 
+    /*
+       public IExecutable ParseInstruction(List<PixelWallEException> errors){
+               Token tokenHead=Stream.Peek();
+
+               if (tokenHead.Type==TokenType.IDENTIFIER)
+               {
+                   //Parse asignación
+               }
+               //Para parsear las instrucciones crear un diccionario con todos los tipos de instrucción
+               if (true)
+               {
+
+               }
+
+
+       }
+
+   */
     #region Expression parsing
-    /// <summary>
-    /// Parses a general expression, starting from the lowest precedence (logic).
-    /// </summary>
-    /// <returns>An <see cref="Expression"/> representing the parsed expression.</returns>
+
     private Expression ParseExpression()
     {
+
+
+
         return ParseLogic();
+
     }
-
-
-    /// <summary>
-    /// Parses logical operations (AND, OR).
-    /// </summary>
-    /// <returns>An <see cref="Expression"/> representing the parsed logical operation.</returns>
     private Expression ParseLogic()
     {
         Expression expr = ParseEquality();
@@ -74,11 +88,6 @@ public class Parser
         return expr;
     }
 
-
-    /// <summary>
-    /// Parses equality and inequality operations (==, !=).
-    /// </summary>
-    /// <returns>An <see cref="Expression"/> representing the parsed equality operation.</returns>
     private Expression ParseEquality()
     {
         Expression expr = ParseComparison();
@@ -101,11 +110,6 @@ public class Parser
         return expr;
     }
 
-
-    /// <summary>
-    /// Parses comparison operations (>, >=, <, <=).
-    /// </summary>
-    /// <returns>An <see cref="Expression"/> representing the parsed comparison operation.</returns>
     private Expression ParseComparison()
     {
         Expression expr = ParseTerm();
@@ -136,11 +140,6 @@ public class Parser
         return expr;
     }
 
-
-    /// <summary>
-    /// Parses term operations (addition, subtraction).
-    /// </summary>
-    /// <returns>An <see cref="Expression"/> representing the parsed term operation.</returns>
     private Expression ParseTerm()
     {
         Expression expr = ParseFactor();
@@ -162,12 +161,6 @@ public class Parser
         return expr;
     }
 
-
-
-    /// <summary>
-    /// Parses factor operations (multiplication, division, modulo).
-    /// </summary>
-    /// <returns>An <see cref="Expression"/> representing the parsed factor operation.</returns>
     private Expression ParseFactor()
     {
         Expression expr = ParseExponential();
@@ -194,12 +187,6 @@ public class Parser
         return expr;
     }
 
-
-    /// <summary>
-    /// Parses exponential operations.
-    /// </summary>
-    /// <returns>An <see cref="Expression"/> representing the parsed exponential operation.</returns>
-
     private Expression ParseExponential()
     {
         Expression expr = ParseUnary();
@@ -214,11 +201,6 @@ public class Parser
         return expr;
     }
 
-
-    /// <summary>
-    /// Parses unary operations (NOT, negation).
-    /// </summary>
-    /// <returns>An <see cref="Expression"/> representing the parsed unary operation.</returns>
     private Expression ParseUnary()
     {
         if (Stream.Match(new List<TokenType> { TokenType.NOT, TokenType.MINUS }))
@@ -239,14 +221,7 @@ public class Parser
         return ParsePrimary();
     }
 
-
-
-    /// <summary>
-    /// Parses primary expressions, including literals, parenthesized expressions,
-    /// function calls, and variable references.
-    /// </summary>
-    /// <returns>An <see cref="Expression"/> representing the parsed primary expression.</returns>
-    /// <exception cref="SyntaxException">Thrown if an unexpected token is encountered.</exception>
+    //Parsear funciones que retornan valor
     private Expression ParsePrimary()
     {
         if (Stream.Match(new List<TokenType> { TokenType.FALSE }))
@@ -287,11 +262,7 @@ public class Parser
 
 
     #endregion
-    /// <summary>
-    /// Parses arguments for a command or function that implements <see cref="IArgument{Expression}"/>.
-    /// It expects arguments enclosed in parentheses, separated by commas.
-    /// </summary>
-    /// <param name="argument">The command or function object to which arguments will be added.</param>
+
     private void ParseIArgument(IArgument<Expression> argument)
     {
         Stream.Consume(TokenType.LEFT_PAREN, "(");
@@ -316,11 +287,6 @@ public class Parser
     }
     #region Command expression
 
-    /// <summary>
-    /// Parses a command or a function call, including its arguments.
-    /// It determines the specific command/function type based on the <paramref name="headCommand"/> token.
-    /// </summary>
-    /// <returns>An <see cref="IArgument{Expression}"/> representing the parsed command or function.</returns>
 
     private IArgument<Expression> ParseCommandorFunction()
     {
@@ -394,10 +360,6 @@ public class Parser
         return argument;
     }
 
-    /// <summary>
-    /// Parses an assignment expression (e.g., `variable <- expression`).
-    /// </summary>
-    /// <returns>An <see cref="AssigmentExpression"/> representing the parsed assignment.</returns>
     private AssigmentExpression ParseAssignation()
     {
         Stream.MoveBack(1);
@@ -411,12 +373,6 @@ public class Parser
 
     }
 
-
-    /// <summary>
-    /// Parses a GOTO command, which includes a label and an expression.
-    /// </summary>
-    /// <returns>A <see cref="GoToCommand"/> representing the parsed GOTO command.</returns>
-    /// <exception cref="SyntaxException">Thrown if an expected label or token is not found.</exception>
     private Command ParseGoTo()
     {
         Token headCommand = Stream.Previous();
@@ -448,13 +404,6 @@ public class Parser
     #endregion
 
     #region Parse program
-
-    /// <summary>
-    /// Parses the entire PixelWallE program, including statements and labels.
-    /// It handles the initial 'spawn' command and subsequent commands, assignments, and labels.
-    /// </summary>
-    /// <returns>An <see cref="ElementalProgram"/> representing the parsed program.</returns>
-
     public ElementalProgram Parse()
     {
         ElementalProgram program = new ElementalProgram(new CodeLocation(), Errors);

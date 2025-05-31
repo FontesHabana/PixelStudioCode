@@ -20,7 +20,7 @@ public class Executer : IVisitor<ASTNode>
 
     private Canvas canvas;
     private RobotState robot;
-    private int Index { get; set; };
+    private int Index { get; set; }
 
     public Executer(Scope scope, Canvas canvas, RobotState robot, List<PixelWallEException> error)
     {

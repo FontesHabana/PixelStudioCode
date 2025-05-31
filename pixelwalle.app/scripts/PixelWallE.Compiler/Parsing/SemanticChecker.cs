@@ -71,15 +71,24 @@ public class SemanticChecker : IVisitor<ASTNode>
         var.Type=scope.GetVariableType(var.VariableName);
     }
 
-    private void CheckArguments( List<ExpressionType> argsType, ASTNode node)
+
+/// <summary>
+    /// Helper method to check arguments for functions or commands.
+    /// It iterates through provided arguments, visits them, checks their types against expected types,
+    /// and verifies the argument count. It also includes specific checks for string arguments that might be colors.
+    /// </summary>
+    /// <param name="argsType">A list of <see cref="ExpressionType"/> representing the expected types of arguments.</param>
+    /// <param name="node">The <see cref="ASTNode"/> (Command or Function) whose arguments are being checked.</param>
+
+    private void CheckArguments(List<ExpressionType> argsType, ASTNode node)
     {
         if (node is IArgument<Expression> function)
         {
 
-            string name = (node is IName nameNode)? nameNode.Name : node.GetType().Name;
+            string name = (node is IName nameNode) ? nameNode.Name : node.GetType().Name;
 
 
-        foreach (Expression arg in function.Args)
+            foreach (Expression arg in function.Args)
             {
                 arg.Accept(this);
             }
@@ -90,24 +99,24 @@ public class SemanticChecker : IVisitor<ASTNode>
                 {
                     errors.Add(SemanticException.TypeMismatch(name, argsType[i], function.Args[i].Type, node.Location));
                 }
-            if (function.Args[i].Type==ExpressionType.String)
-            {
-                 if (!scope.IsDeclared(function.Args[i].ToString(), scope.colors))
-            {
-                SemanticException.UndeclaredColor(function.Args[i].ToString(), node.Location);
-            }
-            }
-           
-        
-     }
+                if (function.Args[i].Type == ExpressionType.String)
+                {
+                    if (!scope.IsDeclared(function.Args[i].ToString(), scope.colors))
+                    {
+                        SemanticException.UndeclaredColor(function.Args[i].ToString(), node.Location);
+                    }
+                }
 
-        if (function.Args.Count != argsType.Count)
-        {
-            errors.Add(SemanticException.IncorrectArgumentCount(name, argsType.Count, function.Args.Count, node.Location));
+
+            }
+
+            if (function.Args.Count != argsType.Count)
+            {
+                errors.Add(SemanticException.IncorrectArgumentCount(name, argsType.Count, function.Args.Count, node.Location));
+            }
+
         }
 
-        }
-        
     }
 
     

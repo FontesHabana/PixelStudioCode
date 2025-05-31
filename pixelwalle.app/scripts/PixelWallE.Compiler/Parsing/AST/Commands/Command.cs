@@ -3,6 +3,7 @@
 using PixelWallE.Language.Parsing;
 using PixelWallE.Language.Parsing.Expressions;
 using PixelWallE.Language.Tokens;
+using System;
 using System.Collections.Generic;
 
 /// <summary>
@@ -49,4 +50,6 @@ public abstract class Command : ASTNode, IArgument<Expression>, IName
     /// </summary>
     /// <param name="visitor">The visitor instance.</param>
     public override abstract void Accept(IVisitor<ASTNode> visitor);
+
+
 }

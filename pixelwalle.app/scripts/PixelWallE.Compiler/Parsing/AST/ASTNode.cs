@@ -32,7 +32,13 @@ public abstract class ASTNode
     /// </summary>
     /// <param name="visitor">The visitor instance.</param>
     public abstract void Accept(IVisitor<ASTNode> visitor);
+
+
 }
+
+
+
+
 
 /// <summary>
 /// Utility class for printing the structure of an AST for debugging or visualization purposes.
@@ -51,7 +57,7 @@ public class printAst
         const int MAX_DEPTH = 20; // Limit recursion depth to prevent stack overflow
 
         string indent = new string(' ', depth * 4);
-        
+
         if (node is null)
         {
             GD.Print($"{indent}Null Node");
@@ -65,11 +71,12 @@ public class printAst
         }
 
         if (node is ElementalProgram)
-        {   ElementalProgram enode=(ElementalProgram)node;
+        {
+            ElementalProgram enode = (ElementalProgram)node;
             foreach (var item in enode.Statements)
-            {   
-                node=(ASTNode)item;
-                printAstNode(node,2);
+            {
+                node = (ASTNode)item;
+                printAstNode(node, 2);
             }
         }
         if (visitedNodes.Contains(node))
@@ -84,7 +91,7 @@ public class printAst
 
         if (node is PixelWallE.Language.Parsing.Expressions.Expression expression)
         {
-           // GD.Print($"{indent}  Type: {expression.Type}, Value: {expression.Value}");
+            // GD.Print($"{indent}  Type: {expression.Type}, Value: {expression.Value}");
         }
 
         if (node is ParenthesizedExpression parenthesizedExpression)
@@ -129,7 +136,7 @@ public class printAst
                 printAstNode(arg, depth + 1, visitedNodes);
             }
         }
-         else if (node is Command command)
+        else if (node is Command command)
         {
             GD.Print($"{indent}  Name: {command.CommandName}");
             GD.Print($"{indent}  Arguments:");
@@ -149,4 +156,10 @@ public class printAst
     {
         printAstNode(node, depth, new HashSet<ASTNode>());
     }
+
+
+
+
+
+
 }
