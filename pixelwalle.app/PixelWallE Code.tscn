@@ -240,9 +240,9 @@ use_native_dialog = true
 [node name="Canvas" type="TextureRect" parent="."]
 layout_mode = 0
 offset_left = 994.0
-offset_top = 71.0
+offset_top = 89.0
 offset_right = 1894.0
-offset_bottom = 974.0
+offset_bottom = 992.0
 texture = SubResource("CanvasTexture_lhqmy")
 script = ExtResource("3_4rnn0")
 
