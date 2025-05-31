@@ -1,4 +1,3 @@
-
 using System.Linq.Expressions;
 using PixelWallE.Language.Commands;
 using PixelWallE.Language.Expressions;
@@ -6,67 +5,71 @@ using PixelWallE.Language.Parsing.Expressions;
 
 namespace PixelWallE.Language.Parsing;
 
-public interface IVisitor<T>{
-    
-    public void ElementalProgram(ElementalProgram program);
+/// <summary>
+/// Defines the Visitor interface for traversing and operating on AST nodes.
+/// Each method corresponds to a specific node type in the AST.
+/// </summary>
+/// <typeparam name="T">The return type for the visitor methods (often unused).</typeparam>
+public interface IVisitor<T>
+{
+    /// <summary>
+    /// Visits an ElementalProgram node.
+    /// </summary>
+    void ElementalProgram(ElementalProgram program);
 
     #region Expressions
-    public void ParenthesizedExpression(ParenthesizedExpression parenthesizedExpression);
-    public void Variable(Variable var);
-    #region functions
-    //Functions
-    public void GetActualXFunction(GetActualXFunction function);
-    public void GetActualYFunction(GetActualYFunction function);
-    public void GetCanvasSizeFunction(GetCanvasSizeFunction function);
-    public void GetColorCountFunction(GetColorCountFunction function);
-    public void IsBrushColorFunction(IsBrushColorFunction function);
-    public void IsBrushSizeFunction(IsBrushSizeFunction function);
-    public void IsCanvasColor(IsCanvasColor function);
-    public void IsColorFunction(IsColorFunction function);
-    #endregion
 
+    void ParenthesizedExpression(ParenthesizedExpression parenthesizedExpression);
+    void Variable(Variable var);
 
-    #region  Unary Expressions
-    public void NotOperation(NotOperation operation);
-    public void NegationOperation(NegationOperation operation);
-    #endregion
-   
-    #region Binary Expressions
-    
+   #region  Functions
+
+    void GetActualXFunction(GetActualXFunction function);
+    void GetActualYFunction(GetActualYFunction function);
+    void GetCanvasSizeFunction(GetCanvasSizeFunction function);
+    void GetColorCountFunction(GetColorCountFunction function);
+    void IsBrushColorFunction(IsBrushColorFunction function);
+    void IsBrushSizeFunction(IsBrushSizeFunction function);
+    void IsCanvasColor(IsCanvasColor function);
+    void IsColorFunction(IsColorFunction function);
+   #endregion
+    // Unary Expressions
+    void NotOperation(NotOperation operation);
+    void NegationOperation(NegationOperation operation);
+
+    // Binary Expressions
     #region Arithmetic Operation
-     public void AdditionOperation(AdditionOperation operation);
-     public void DivisionOperation(DivisionOperation operation);
-     public void ExponentiationOperation(ExponentiationOperation operation);
-     public void ModuloOperation(ModuloOperation operation);
-     public void MultiplicationOperation(MultiplicationOperation operation);
-     public void SubstractionOperation(SubstractionOperation operation);
+     void AdditionOperation(AdditionOperation operation);
+     void DivisionOperation(DivisionOperation operation);
+     void ExponentiationOperation(ExponentiationOperation operation);
+     void ModuloOperation(ModuloOperation operation);
+     void MultiplicationOperation(MultiplicationOperation operation);
+     void SubstractionOperation(SubstractionOperation operation);
     #endregion
     
     #region Logic Operation
-    public void ANDOperation(ANDOperation operation);
-    public void OrOperation(OrOperation operation);
-    public void EqualToOperation(EqualToOperation operation);
-    public void GreatherThanOperation(GreatherThanOperation operation);
-    public void GreatherThanOrEqualToOperation(GreatherThanOrEqualToOperation operation);
-    public void LessThanOperation(LessThanOperation operation);
-    public void LessThanOrEqualToOperation(LessThanOrEqualToOperation operation);
-    public void NotEqualToOperation(NotEqualToOperation operation);
-
-
-    #endregion
-   
+    void ANDOperation(ANDOperation operation);
+    void OrOperation(OrOperation operation);
+    void EqualToOperation(EqualToOperation operation);
+    void GreatherThanOperation(GreatherThanOperation operation);
+    void GreatherThanOrEqualToOperation(GreatherThanOrEqualToOperation operation);
+    void LessThanOperation(LessThanOperation operation);
+    void LessThanOrEqualToOperation(LessThanOrEqualToOperation operation);
+    void NotEqualToOperation(NotEqualToOperation operation);
     #endregion
     #endregion 
 
+
  #region Command
-    public void AssigmentExpression(AssigmentExpression command);
-    public void ColorCommand(ColorCommand command);
-    public void DrawCircleCommand(DrawCircleCommand command);
-    public void DrawLineCommand(DrawLineCommand command);
-    public void DrawRectangleCommand(DrawRectangleCommand command);
-    public void FillCommand(FillCommand command);
-    public void SizeCommand(SizeCommand command);
-    public void SpawnCommand(SpawnCommand command);
-    public void GoToCommand(GoToCommand command);
+  
+    void AssigmentExpression(AssigmentExpression command);
+    void ColorCommand(ColorCommand command);
+    void DrawCircleCommand(DrawCircleCommand command);
+    void DrawLineCommand(DrawLineCommand command);
+    void DrawRectangleCommand(DrawRectangleCommand command);
+    void FillCommand(FillCommand command);
+    void SizeCommand(SizeCommand command);
+    void SpawnCommand(SpawnCommand command);
+    void GoToCommand(GoToCommand command);
     #endregion
    }
