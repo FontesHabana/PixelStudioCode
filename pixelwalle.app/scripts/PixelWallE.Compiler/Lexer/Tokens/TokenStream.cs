@@ -7,34 +7,75 @@ using PixelWallE.Language.Expressions;
 using PixelWallE.Language.Parsing;
 using PixelWallE.Language.Parsing.Expressions;
 
-/* This stream has functions to operate over a list of tokens.
-The methods are simple, you can understand them easily */
-public class TokenStream : IEnumerable<Token>
+/// <summary>
+/// Provides functionality to operate over a list of tokens, allowing navigation,
+/// validation, and consumption of tokens during lexical or syntactic analysis.
+/// </summary>
+public class TokenStream
 {
+    /// <summary>
+    /// The list of tokens managed by this stream.
+    /// </summary>
     public List<Token> tokens;
 
-    public int position;
-    public int current;
-    public int Position { get { return position; } }
+    /// <summary>
+    /// Index used for iteration-based navigation (e.g., lookahead).
+    /// </summary>
+    public int iterationIndex;
 
+    /// <summary>
+    /// Index representing the current token for parsing operations.
+    /// </summary>
+    public int currentIndex;
+
+    /// <summary>
+    /// Gets the current iteration index.
+    /// </summary>
+    public int Position { get { return iterationIndex; } }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TokenStream"/> class with the specified tokens.
+    /// </summary>
+    /// <param name="tokens">The collection of tokens to operate on.</param>
     public TokenStream(IEnumerable<Token> tokens)
     {
         this.tokens = new List<Token>(tokens);
-        position = 0;
-        current=0;
+        iterationIndex  = 0;
+        currentIndex=0;
     }
 
-    public bool End => position == tokens.Count-1;
+    /// <summary>
+    /// Gets a value indicating whether the stream is at the last token.
+    /// </summary>
+    public bool IsAtStreamEnd => iterationIndex == tokens.Count - 1;
 
-public bool IsAtEnd() {
-return Peek().Type == TokenType.EOF;
-}
-    public Token Peek(){
-         return tokens[current];
+    /// <summary>
+    /// Determines whether the current token is the end-of-file (EOF) token.
+    /// </summary>
+    /// <returns>True if the current token is EOF; otherwise, false.</returns>
+    public bool IsAtEnd()
+    {
+        return Peek().Type == TokenType.EOF;
     }
 
-    public bool Match(List<TokenType> types){
-        foreach (var type in types)
+    /// <summary>
+    /// Returns the current token in the stream.
+    /// </summary>
+    /// <returns>The current <see cref="Token"/>.</returns>
+    public Token Peek()
+    {
+         return tokens[currentIndex];
+    }
+
+    /// <summary>
+    /// Attempts to match the current token against a list of token types.
+    /// Advances the stream if a match is found.
+    /// </summary>
+    /// <param name="types">A list of token types to match against.</param>
+    /// <returns>True if a match is found and the stream is advanced; otherwise, false.</returns>
+    public bool Match(List<TokenType> types)
+    {
+        foreach (TokenType type in types)
         {
             if (Check(type))
             {
@@ -45,18 +86,36 @@ return Peek().Type == TokenType.EOF;
         return false;
     }
 
-    public bool Check(TokenType type){
-        if (End) return false;
+    /// <summary>
+    /// Checks if the current token matches the specified token type.
+    /// </summary>
+    /// <param name="type">The token type to check.</param>
+    /// <returns>True if the current token matches the type; otherwise, false.</returns>
+    public bool Check(TokenType type)
+    {
+        if (IsAtStreamEnd) return false;
         return Peek().Type==type;
     }
 
-    public Token? Consume(TokenType type,string expected)
+    /// <summary>
+    /// Consumes the current token if it matches the specified type; otherwise, throws a syntax exception.
+    /// </summary>
+    /// <param name="type">The expected token type.</param>
+    /// <param name="expected">A description of the expected token for error reporting.</param>
+    /// <returns>The consumed <see cref="Token"/> if successful.</returns>
+    /// <exception cref="SyntaxException">Thrown if the current token does not match the expected type.</exception>
+    public Token? Consume(TokenType type, string expected)
     {
          if (Check(type)) return Advance();
         throw SyntaxException.UnexpectedToken(type.ToString(), expected, Peek().Location);
     }
 
-    public void Synchronize(){
+    /// <summary>
+    /// Advances the stream until an end-of-line (EOL) token is found or the end of the stream is reached.
+    /// Used for error recovery and synchronization.
+    /// </summary>
+    public void Synchronize()
+    {
         //Advance();
         while (!IsAtEnd())
         {    
@@ -68,90 +127,38 @@ return Peek().Type == TokenType.EOF;
             Advance();
         }
     }
-    public Token Advance(){
-        if (!End) current++;
+
+    /// <summary>
+    /// Advances to the next token in the stream if not at the end.
+    /// </summary>
+    /// <returns>The previous <see cref="Token"/> before advancing.</returns>
+    public Token Advance()
+    {
+        if (!IsAtStreamEnd) currentIndex++;
         
         return Previous();
     }
 
-    public Token Previous(){
-        return tokens[current-1];
-    }
-
-
-     
-    public void MoveNext(int k)
+    /// <summary>
+    /// Returns the token immediately before the current token.
+    /// </summary>
+    /// <returns>The previous <see cref="Token"/>.</returns>
+    public Token Previous()
     {
-        current += k;
+        return tokens[currentIndex-1];
     }
 
+    /// <summary>
+    /// Moves the current index backward by the specified number of tokens.
+    /// </summary>
+    /// <param name="k">The number of tokens to move back.</param>
     public void MoveBack(int k)
     {
-        current -= k;
+        currentIndex -= k;
     }
 
-     /* The next methods are used to scroll through the token list 
-     if a condition is satisfied */
+   
 
-     /* In this case, the condition is to have a next position */
-    public bool Next()
-    {
-        if (position < tokens.Count - 1)
-        {
-            position++;
-        }
 
-        return position < tokens.Count;
-    }
-
-    /* In this case, the next position must match the given type */
-    public bool Next( TokenType type )
-    {
-        if (position < tokens.Count-1 && LookAhead(1).Type == type)
-        {
-            position++;
-            return true;
-        }
-
-        return false;
-    }
-
-    /* In this cas, the next position must match the given value */
-    public bool Next(string value)
-    {            
-        if (position < tokens.Count-1 && LookAhead(1).Value == value)
-        {
-            position++;
-            return true;
-        }
-
-        return false;
-    }
-
-    public bool CanLookAhead(int k = 0)
-    {
-        return tokens.Count - position > k;
-    }
-
-    public Token LookAhead(int k = 0)
-    {
-        return tokens[position + k];
-    }
-
-    public IEnumerator<Token> GetEnumerator()
-    {
-        for (int i = position; i < tokens.Count; i++)
-            yield return tokens[i];
-    }
-
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return GetEnumerator();
-    }
-/*
-    internal bool Match(TokenType TRUE)
-    {
-        throw new NotImplementedException();
-    }*/
 }
 
