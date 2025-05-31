@@ -11,7 +11,7 @@ bg_color = Color(0.6, 0.6, 0.6, 0)
 shadow_color = Color(0, 0, 0, 0)
 
 [resource]
-Button/constants/icon_max_width = 40
+Button/constants/icon_max_width = 30
 MenuButton/colors/font_disabled_color = Color(1, 1, 1, 0.3)
 MenuButton/constants/h_separation = 4
 TextEdit/colors/font_readonly_color = Color(0.945098, 0.945098, 0.945098, 1)

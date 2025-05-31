@@ -14,26 +14,45 @@ public partial class main_ui : Control // partial es importante si adjuntas el s
 {
     // Declara variables miembro para guardar las referencias a los nodos
     [Export] CodeEdit _codeEditNode;
+    [Export] ColorRect _errorTooltip;
+
+    [Export] TextEdit _consoleOutput;
+    [Export] Button _cleanConsole;
+
+    [Export] CanvasController _canvas;
+
+
+
+
+
+    [Export] Button _docs;
     [Export] FileDialog _saveFileDialog;
     [Export] FileDialog _loadFileDialog;
     [Export] MenuButton _controlArchives;
-    [Export] CanvasController _canvas;
+    [Export] Button _closeButton;
+
+
     [Export] Button _resizeButton;
     [Export] LineEdit _resizeInput;
     [Export] Button _cleanCanvas;
-    [Export] Button _cleanConsole;
     [Export] Button _processButton;
-    [Export] Button _closeButton;
+
     [Export] Button _goBackButton;
     [Export] Button _goNextButton;
+
+
     [Export] RichTextLabel _lineInfo;
-    [Export] TextEdit _textEditOutput;
-    [Export] ColorRect _errorTooltip;
+
+
     private static Canvas canvas = new Canvas(25);
     private static Stack<Canvas> stackGoBack;
     private static Stack<Canvas> stackGoNext;
     public static Interpreter interpreter = new Interpreter(canvas, ""); // Inicializa el intérprete con un tamaño de 25 (ajusta según sea necesario)
-    string userScript = "***D:/.../Archivo  Fecha 🤖***";
+
+    private string userScript => $" {DateTime.Now.ToString()} 🤖";
+    private string? filePath = null;
+
+    private string? infoConsole => string.IsNullOrEmpty(filePath) ? $"*** New File {userScript} ***" : $"*** {filePath} {userScript} ***";
 
 
 
@@ -46,54 +65,7 @@ public partial class main_ui : Control // partial es importante si adjuntas el s
     public override void _Ready()
     {
         GD.Print("--> Método _Ready() iniciado.");
-
-
-
-        // *** ESTAS SON LAS LÍNEAS QUE NECESITAN CAMBIAR ***
-        // Debes poner las rutas CORRECTAS SEGÚN LA JERARQUÍA DE TU ESCENA
-
-        // ***************************************************
-
-        // El resto del código de _Ready() y los otros métodos sigue siendo válido
-        // (las verificaciones de null, la conexión de señal, etc.)
-
-
-
-
-       
-        var myHighlighter = new CodeHighlighter(); // Sí, se llama GDScriptHighlighter incluso en C# para resaltar sintaxis GDScript
-    myHighlighter.AddKeywordColor("true", new Godot.Color(0.643f, 0.545f, 1.0f));     // Violeta eléctrico
-myHighlighter.AddKeywordColor("false", new Godot.Color(0.643f, 0.545f, 1.0f));    // Igual que true
-
-myHighlighter.NumberColor = new Godot.Color(1.0f, 0.592f, 0.71f);                 // Rosa fuerte
-     // Strings rojos
-
-myHighlighter.SymbolColor = new Godot.Color(1.0f, 0.914f, 0.49f);                 // Amarillo claro
-myHighlighter.FunctionColor = new Godot.Color(0.392f, 0.714f, 1.0f);              // Azul neón
-myHighlighter.MemberVariableColor = new Godot.Color(1.0f, 0.592f, 0.71f);         // Igual que números
-
-myHighlighter.AddKeywordColor("GoTo", new Godot.Color(0.643f, 0.545f, 1.0f));
-
-  
-        myHighlighter.AddColorRegion("#","\n", new Godot.Color(0.5f, 0.5f, 0.5f));
-        myHighlighter.AddColorRegion("\"", "\"", new Godot.Color(1.0f, 0.416f, 0.416f));
-
-        var consoleHighlighter = new CodeHighlighter(); // Sí, se llama GDScriptHighlighter incluso en C# para resaltar sintaxis GDScript
-        consoleHighlighter.NumberColor = new Godot.Color(0.9f, 0.9f, 1f);
-        consoleHighlighter.AddKeywordColor("Error", new Godot.Color(1f, 0f, 0f));
-        consoleHighlighter.AddKeywordColor("Syntax", new Godot.Color(1f, 0f, 0f));
-        consoleHighlighter.AddKeywordColor("Lexical", new Godot.Color(1f, 0f, 0f));
-        consoleHighlighter.AddKeywordColor("Semantic", new Godot.Color(1f, 0f, 0f));
-        consoleHighlighter.AddKeywordColor("Runtime", new Godot.Color(1f, 0f, 0f));
-        consoleHighlighter.AddColorRegion("***", "***", new Godot.Color(0.5f, 0.5f, 1f));
-
-
-       _textEditOutput.SyntaxHighlighter = consoleHighlighter;
-
-        _codeEditNode.SyntaxHighlighter = myHighlighter;
-
-
-
+        _consoleOutput.Text = infoConsole;
         stackGoBack = new Stack<Canvas>();
         stackGoNext = new Stack<Canvas>();
 
@@ -102,23 +74,163 @@ myHighlighter.AddKeywordColor("GoTo", new Godot.Color(0.643f, 0.545f, 1.0f));
 
 
 
-    public override void _PhysicsProcess(double delta)
-    {
 
-    }
     // Este método recibirá el texto del CodeEdit
     //hacer que este metodo genere la matriz copia completa y asi no tener que crearla de forma manual en el  proceso
-    private static void CopyMatrix(Canvas canvas, Canvas copy)
+
+
+
+
+    #region Buttom
+
+
+    //-----------------------------------TopRegionButtons-----------------------------------------------
+    private void OnMenuItemPressed(long id)
     {
-        for (int i = 0; i < canvas.Size; i++)
+        switch (id)
         {
-            for (int j = 0; j < canvas.Size; j++)
-            {
-                copy.Matrix[i, j] = canvas.Matrix[i, j];
-            }
+            case 0:
+                _loadFileDialog.Popup();
+                break;
+            case 1:
+                _saveFileDialog.Popup();
+                break;
         }
     }
+    private void PressedArchiveControl()
+    {
+        _controlArchives.GetPopup().IdPressed += OnMenuItemPressed;
+    }
+    private void DocsPressed()
+    {
+        OS.ShellOpen("https://fonteshabana.github.io/Pixel_WallE_docs/");
+    }
+    private void ClosePressed()
+    {
+        GetTree().Quit();
+    }
+    //------------------------------------------------------------------------------------------------
 
+    //-----------------------------------LeftRegionBUttons-----------------------------------------------
+    private void OnButtonPressed()
+    {
+        string codeFromEdit = _codeEditNode.Text; // Obtiene el texto del CodeEdit
+        ProcessCode(codeFromEdit); // Llama al método de procesamiento con el texto
+        _goBackButton.Visible = true;
+    }
+    private void ResizePressed()
+    {
+        if (!_resizeInput.Visible)
+        {
+            _resizeInput.Visible = true;
+            return;
+        }
+
+        ResizedCanvas(_resizeInput.Text);
+
+
+    }
+    private void CleanCanvas()
+    {
+        Canvas current = new Canvas(canvas.Size);
+        CopyMatrix(interpreter.Canvas, current);
+        stackGoBack.Push(current);
+        canvas = new Canvas(canvas.Size);
+        interpreter.Canvas = canvas;
+        _canvas._Ready();
+        _canvas.QueueRedraw();
+
+    }
+    private void GoBack()
+    {
+
+        if (stackGoBack.Count > 0)
+        {
+
+
+
+            Canvas current = new Canvas(canvas.Size);
+            CopyMatrix(interpreter.Canvas, current);
+            stackGoNext.Push(current);
+            interpreter.Canvas = stackGoBack.Pop();
+
+
+            _canvas.QueueRedraw();
+        }
+        else
+        {
+            _goBackButton.Visible = false;
+        }
+        _goNextButton.Visible = true;
+
+
+    }
+    private void GoNext()
+    {
+
+        if (stackGoNext.Count > 0)
+        {
+            Canvas current = new Canvas(canvas.Size);
+            CopyMatrix(interpreter.Canvas, current);
+            stackGoBack.Push(current);
+            interpreter.Canvas = stackGoNext.Pop();
+            _canvas.QueueRedraw();
+            _goBackButton.Visible = true;
+        }
+        else
+        {
+            _goNextButton.Visible = false;
+        }
+
+    }
+    //------------------------------------------------------------------------------------------------
+    private void CleanConsole()
+    {
+        _consoleOutput.ConsoleLog(infoConsole);
+    }
+
+
+    #endregion
+
+
+
+    //------------------------------------Executer Manager-------------------------------------------
+
+    private void ProcessCode(string codeString)
+    {
+
+        Canvas current = new Canvas(canvas.Size);
+        CopyMatrix(canvas, current);
+        stackGoBack.Push(current);
+        interpreter = new Interpreter(canvas, codeString);
+        interpreter.Run();
+
+
+
+
+        foreach (PixelWallEException error in interpreter.Errors)
+        {
+            _consoleOutput.ConsoleLog("\n" + error.Message);
+
+        }
+
+        if (interpreter.Errors.Count == 0)
+         {
+             _consoleOutput.Text += "\n Compilado correctamente";
+         }
+
+        _consoleOutput.ConsoleLog("\n" + infoConsole + "\n" + ">>>");
+
+         _consoleOutput.ScrollVertical = _consoleOutput.GetLineCount(); 
+        _canvas.QueueRedraw();
+
+        // Si quisieras añadir líneas nuevas en lugar de reemplazar, podrías hacer:
+        // _consoleOutput.Text += "Texto recibido: " + codeString + "\n";
+
+
+        // await ToSignal(GetTree(), "process_frame");
+
+    }
 
     private void CodeChange()
     {
@@ -144,11 +256,6 @@ myHighlighter.AddKeywordColor("GoTo", new Godot.Color(0.643f, 0.545f, 1.0f));
             _codeEditNode.SetLineBackgroundColor(error.Location.Line - 1, errorLineColor);
         }
     }
-
-
-
-
-
     private void CaretChanged()
     {
 
@@ -187,199 +294,13 @@ myHighlighter.AddKeywordColor("GoTo", new Godot.Color(0.643f, 0.545f, 1.0f));
     }
 
 
+    //------------------------------------------------------------------------------------------------
 
 
 
-    #region Buttom
- private void OnButtonPressed()
-    {
-        string codeFromEdit = _codeEditNode.Text; // Obtiene el texto del CodeEdit
-        ProcessCode(codeFromEdit); // Llama al método de procesamiento con el texto
-        _goBackButton.Visible = true;
-    }
- private void PressedSave()
-    {
-        _saveFileDialog.Popup();
-    }
-    private void PressedLoad()
-    {
-        _loadFileDialog.Popup();
-    }
-    private void CleanCanvas()
-    {
-        Canvas current = new Canvas(canvas.Size);
-        CopyMatrix(interpreter.Canvas, current);
-        stackGoBack.Push(current);
-        canvas = new Canvas(canvas.Size);
-        interpreter.Canvas = canvas;
-        _canvas._Ready();
-        _canvas.QueueRedraw();
-
-    }
-    private void CleanConsole()
-    {
-        _textEditOutput.Text = userScript + "\n" + ">>>";
-    }
-    private void ResizePressed()
-    {
-        if (!_resizeInput.Visible)
-        {
-            _resizeInput.Visible = true;
-            return;
-        }
-
-        ResizedCanvas(_resizeInput.Text);
 
 
-    }
-     private void ClosePressed()
-    {
-        GetTree().Quit();
-    }
-    private void PressedArchiveControl()
-    {
-        _controlArchives.GetPopup().IdPressed += OnMenuItemPressed;
-    }
-    private void OnMenuItemPressed(long id)
-    {
-        switch (id)
-        {
-            case 0:
-                _loadFileDialog.Popup();
-                break;
-            case 1:
-                _saveFileDialog.Popup();
-                break;
-        }
-    }
-
-    private void GoBack()
-    {
-
-        if (stackGoBack.Count > 0)
-        {
-         
-
-             
-            Canvas current = new Canvas(canvas.Size);
-            CopyMatrix(interpreter.Canvas, current);
-            stackGoNext.Push(current);
-            interpreter.Canvas = stackGoBack.Pop();
-
-
-            _canvas.QueueRedraw();
-        }
-        else
-        {
-            _goBackButton.Visible = false;
-        }
-        _goNextButton.Visible = true;
-
-
-    }
-
-    private void GoNext()
-    {
-    
-        if (stackGoNext.Count > 0)
-        {
-            Canvas current = new Canvas(canvas.Size);
-            CopyMatrix(interpreter.Canvas, current);
-            stackGoBack.Push(current);
-            interpreter.Canvas = stackGoNext.Pop();
-            _canvas.QueueRedraw();
-            _goBackButton.Visible = true;
-        }
-        else
-        {
-            _goNextButton.Visible = false;
-        }
-
-    }
-
-    private void PressedVista()
-    {
-
-    }
-
-
-    #endregion
-    private void ProcessCode(string codeString)
-    {
-
-        Canvas current = new Canvas(canvas.Size);
-        CopyMatrix(canvas, current);
-        stackGoBack.Push(current);
-        interpreter = new Interpreter(canvas, codeString);
-        interpreter.Run();
-
-
-
-        // string userScript = "***D:/.../Archivo  Fecha 🤖***";
-        // Aquí puedes añadir lógica para 'ejecutar' o 'analizar' el código
-        // ... (Por ahora, solo imprimimos y actualizamos el TextEdit)
-        // Mostrar el texto recibido en el TextEdit
-
-        foreach (PixelWallEException error in interpreter.Errors)
-        {
-            _textEditOutput.Text += "\n" + error.Message;
-        }
-        if (interpreter.Errors.Count == 0)
-        {
-            _textEditOutput.Text += "\n Compilado correctamente";
-        }
-
-
-        _textEditOutput.Text += "\n" + userScript + "\n" + ">>>";
-
-
-        _textEditOutput.ScrollVertical = _textEditOutput.GetLineCount();
-        _canvas.QueueRedraw();
-
-        // Si quisieras añadir líneas nuevas en lugar de reemplazar, podrías hacer:
-        // _textEditOutput.Text += "Texto recibido: " + codeString + "\n";
-
-
-        // await ToSignal(GetTree(), "process_frame");
-
-    }
-
-
-    // Función que se llamará cuando se presione el botón (conectada en _Ready o en el editor)
-   
-    // Limpieza cuando el nodo va a ser eliminado (si conectaste señales en _Ready)
-
-
-   
-
-       private void OnFileSelected(string path)
-    {
-        if (!path.EndsWith(".pw"))
-        {
-            _textEditOutput.Text += "\n" + "Solo se admiten archivos terminados en .pw" + "\n" + userScript + "\n" + ">>>";
-            return;
-        }
-
-        string fileContent = File.ReadAllText(path);
-        _codeEditNode.Text = fileContent;
-        CodeChange();
-    }
-
-    private void OnFileSaveSelected(string path)
-    {
-
-        try
-        {
-            File.WriteAllText(path, _codeEditNode.Text);
-
-        }
-        catch (System.Exception error)
-        {
-            _textEditOutput.Text += "\n" + "Error al guardar el archivo" + error + "\n" + userScript + "\n" + ">>>";
-
-        }
-    }
-
+    //-----------------------------------Canvas Manager ---------------------------------------------
     private void ResizedCanvas(string text)
     {
         int number;
@@ -412,16 +333,61 @@ myHighlighter.AddKeywordColor("GoTo", new Godot.Color(0.643f, 0.545f, 1.0f));
 
     private void CloseResize()
     {
-       
-   
-     _resizeInput.Visible = false;
-
-       
+        _resizeInput.Visible = false;
     }
-    //opcion 1 presionando enter en el teclado
+
+
+    private static void CopyMatrix(Canvas canvas, Canvas copy)
+    {
+        for (int i = 0; i < canvas.Size; i++)
+        {
+            for (int j = 0; j < canvas.Size; j++)
+            {
+                copy.Matrix[i, j] = canvas.Matrix[i, j];
+            }
+        }
+    }
+
+
+    //------------------------------------------------------------------------------------------------
 
 
 
 
 
+
+    //-----------------------------------File Manager ---------------------------------------------
+
+    private void OnFileOpenSelected(string path)
+    {
+        if (!path.EndsWith(".pw"))
+        {
+            _consoleOutput.Text += "\n" + "Solo se admiten archivos terminados en .pw" + "\n" + userScript + "\n" + ">>>";
+            return;
+        }
+
+        string fileContent = File.ReadAllText(path);
+        _codeEditNode.Text = fileContent;
+        filePath = path;
+        CodeChange();
+        _consoleOutput.ConsoleLog(infoConsole);
+    }
+
+    private void OnFileSaveSelected(string path)
+    {
+
+        try
+        {
+            File.WriteAllText(path, _codeEditNode.Text);
+            filePath = path;
+
+        }
+        catch (System.Exception error)
+        {
+            _consoleOutput.Text += "\n" + "Error al guardar el archivo" + error + "\n" + userScript + "\n" + ">>>";
+
+        }
+    }
+
+    //------------------------------------------------------------------------------------------------
 }

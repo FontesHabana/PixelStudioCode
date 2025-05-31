@@ -9,7 +9,7 @@ public partial class ShowError : ColorRect
 	public override void _Ready()
 	{
 		CodeHighlighter mySyntaxHighlighter = (CodeHighlighter)_errorMessage.SyntaxHighlighter;
-			mySyntaxHighlighter.AddKeywordColor("Error", new Godot.Color(255, 0, 0));
+		mySyntaxHighlighter.AddKeywordColor("Error", new Godot.Color(255, 0, 0));
 		mySyntaxHighlighter.AddKeywordColor("Syntax", new Godot.Color(255, 0, 0));
 		mySyntaxHighlighter.AddKeywordColor("Lexical", new Godot.Color(255, 0, 0));
 		mySyntaxHighlighter.AddKeywordColor("Semantic", new Godot.Color(255, 0, 0));

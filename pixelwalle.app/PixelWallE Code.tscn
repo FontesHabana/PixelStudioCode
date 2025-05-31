@@ -8,22 +8,13 @@
 [ext_resource type="Theme" uid="uid://ckn0mkxklx1if" path="res://themes/button 2.tres" id="3_x2dav"]
 [ext_resource type="Theme" uid="uid://cnul15ibhyt4c" path="res://themes/buttom.tres" id="4_284gc"]
 [ext_resource type="Texture2D" uid="uid://cxjyqvvjlajh3" path="res://assets/icons/DarkTheme/Close.svg" id="4_hgxs5"]
+[ext_resource type="Script" path="res://scripts/PixelWallE.UI/CodeEdit.cs" id="5_ai80o"]
 [ext_resource type="Texture2D" uid="uid://d4cnukjtfp3cl" path="res://assets/icons/DarkTheme/Trash.svg" id="8_6ufrl"]
 [ext_resource type="Texture2D" uid="uid://bgmjhdqfuo35x" path="res://assets/icons/DarkTheme/PrincipalTrash.svg" id="10_4xcmd"]
 [ext_resource type="Texture2D" uid="uid://cs2u7oqf05djq" path="res://assets/icons/DarkTheme/Play.svg" id="13_svcd3"]
 [ext_resource type="Texture2D" uid="uid://cnejdgmeqr045" path="res://assets/icons/DarkTheme/GoNext.svg" id="14_hq4cd"]
 [ext_resource type="Texture2D" uid="uid://c0ixmulwgxmni" path="res://assets/icons/DarkTheme/Resize.svg" id="14_ke1lv"]
 [ext_resource type="Texture2D" uid="uid://dhf6p72rf4uw0" path="res://assets/icons/DarkTheme/GoBack.svg" id="15_1vx2k"]
-
-[sub_resource type="CodeHighlighter" id="CodeHighlighter_woaua"]
-resource_local_to_scene = true
-number_color = Color(0.780392, 0.580392, 0.615686, 1)
-symbol_color = Color(0.886275, 0.717647, 0.0784314, 1)
-function_color = Color(0.553774, 0.70911, 0.898342, 1)
-member_variable_color = Color(0.945098, 0.945098, 0.945098, 1)
-color_regions = {
-"#": Color(0.481789, 0.48179, 0.481789, 1)
-}
 
 [sub_resource type="CodeHighlighter" id="CodeHighlighter_1v4sa"]
 number_color = Color(0.716234, 0.810914, 1, 1)
@@ -39,7 +30,7 @@ member_keyword_colors = {
 
 [sub_resource type="CanvasTexture" id="CanvasTexture_lhqmy"]
 
-[node name="Control" type="Control" node_paths=PackedStringArray("_codeEditNode", "_saveFileDialog", "_loadFileDialog", "_controlArchives", "_canvas", "_resizeButton", "_resizeInput", "_cleanCanvas", "_cleanConsole", "_processButton", "_closeButton", "_goBackButton", "_goNextButton", "_lineInfo", "_textEditOutput", "_errorTooltip")]
+[node name="Control" type="Control" node_paths=PackedStringArray("_codeEditNode", "_errorTooltip", "_consoleOutput", "_cleanConsole", "_canvas", "_docs", "_saveFileDialog", "_loadFileDialog", "_controlArchives", "_closeButton", "_resizeButton", "_resizeInput", "_cleanCanvas", "_processButton", "_goBackButton", "_goNextButton", "_lineInfo")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -50,21 +41,22 @@ size_flags_horizontal = 6
 size_flags_vertical = 6
 script = ExtResource("1_se0kn")
 _codeEditNode = NodePath("CodeEdit")
+_errorTooltip = NodePath("CodeEdit/ColorRect")
+_consoleOutput = NodePath("Console")
+_cleanConsole = NodePath("Console/Clean Console")
+_canvas = NodePath("Canvas")
+_docs = NodePath("TopLine/Button")
 _saveFileDialog = NodePath("Save")
 _loadFileDialog = NodePath("Load")
 _controlArchives = NodePath("TopLine/ArchivesManager")
-_canvas = NodePath("Canvas")
+_closeButton = NodePath("TopLine/Close")
 _resizeButton = NodePath("CanvasActions/Resize")
 _resizeInput = NodePath("CanvasActions/Resize/ResizeInput")
 _cleanCanvas = NodePath("CanvasActions/Clean Canvas")
-_cleanConsole = NodePath("Console/Clean Console")
 _processButton = NodePath("CanvasActions/Run")
-_closeButton = NodePath("TopLine/Close")
 _goBackButton = NodePath("CanvasActions/GoBack")
 _goNextButton = NodePath("CanvasActions/GoNext")
 _lineInfo = NodePath("DownLine/LineInfo")
-_textEditOutput = NodePath("Console")
-_errorTooltip = NodePath("CodeEdit/ColorRect")
 metadata/_edit_horizontal_guides_ = [-380.0]
 
 [node name="Background" type="ColorRect" parent="."]
@@ -92,7 +84,7 @@ mouse_filter = 1
 mouse_default_cursor_shape = 2
 theme_override_colors/font_color = Color(0.588235, 0.709804, 0.866667, 1)
 theme_override_fonts/font = ExtResource("2_u6nwd")
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 15
 keep_pressed_outside = true
 text = "Archivo"
 item_count = 2
@@ -125,6 +117,18 @@ theme = ExtResource("4_284gc")
 icon = ExtResource("4_hgxs5")
 flat = true
 
+[node name="Button" type="Button" parent="TopLine"]
+layout_mode = 0
+offset_left = 258.0
+offset_top = 7.0
+offset_right = 384.0
+offset_bottom = 53.0
+theme_override_colors/font_color = Color(0.588235, 0.709804, 0.866667, 1)
+theme_override_fonts/font = ExtResource("2_u6nwd")
+theme_override_font_sizes/font_size = 15
+text = "Docs"
+flat = true
+
 [node name="CodeEdit" type="CodeEdit" parent="."]
 layout_mode = 0
 offset_left = 68.0
@@ -142,7 +146,6 @@ theme_override_colors/line_number_color = Color(0.372549, 0.341176, 0.568627, 1)
 wrap_mode = 1
 minimap_draw = true
 caret_blink = true
-syntax_highlighter = SubResource("CodeHighlighter_woaua")
 highlight_all_occurrences = true
 highlight_current_line = true
 gutters_draw_executing_lines = true
@@ -151,6 +154,7 @@ code_completion_enabled = true
 indent_automatic = true
 auto_brace_completion_enabled = true
 auto_brace_completion_highlight_matching = true
+script = ExtResource("5_ai80o")
 
 [node name="ColorRect" type="ColorRect" parent="CodeEdit" node_paths=PackedStringArray("_errorMessage")]
 visible = false
@@ -252,30 +256,30 @@ color = Color(0.0352941, 0.0352941, 0.113725, 1)
 
 [node name="Clean Canvas" type="Button" parent="CanvasActions"]
 layout_mode = 0
-offset_left = 8.0
-offset_top = 170.0
-offset_right = 56.0
-offset_bottom = 218.0
+offset_left = 10.0
+offset_top = 140.0
+offset_right = 48.0
+offset_bottom = 178.0
 theme = ExtResource("4_284gc")
 icon = ExtResource("10_4xcmd")
 flat = true
 
 [node name="Run" type="Button" parent="CanvasActions"]
 layout_mode = 0
-offset_left = 8.0
-offset_top = 32.0
-offset_right = 56.0
-offset_bottom = 80.0
+offset_left = 10.0
+offset_top = 40.0
+offset_right = 48.0
+offset_bottom = 78.0
 theme = ExtResource("4_284gc")
 icon = ExtResource("13_svcd3")
 flat = true
 
 [node name="Resize" type="Button" parent="CanvasActions"]
 layout_mode = 0
-offset_left = 9.0
-offset_top = 103.0
-offset_right = 57.0
-offset_bottom = 151.0
+offset_left = 10.0
+offset_top = 90.0
+offset_right = 48.0
+offset_bottom = 128.0
 theme = ExtResource("4_284gc")
 icon = ExtResource("14_ke1lv")
 flat = true
@@ -298,10 +302,10 @@ alignment = 1
 [node name="GoBack" type="Button" parent="CanvasActions"]
 visible = false
 layout_mode = 0
-offset_left = 8.0
-offset_top = 240.0
-offset_right = 56.0
-offset_bottom = 288.0
+offset_left = 10.0
+offset_top = 190.0
+offset_right = 48.0
+offset_bottom = 228.0
 theme = ExtResource("4_284gc")
 icon = ExtResource("15_1vx2k")
 flat = true
@@ -309,10 +313,10 @@ flat = true
 [node name="GoNext" type="Button" parent="CanvasActions"]
 visible = false
 layout_mode = 0
-offset_left = 7.0
-offset_top = 294.0
-offset_right = 55.0
-offset_bottom = 342.0
+offset_left = 10.0
+offset_top = 240.0
+offset_right = 48.0
+offset_bottom = 278.0
 theme = ExtResource("4_284gc")
 icon = ExtResource("14_hq4cd")
 flat = true
@@ -338,12 +342,13 @@ text = "Line: 0  Column: 0"
 [connection signal="pressed" from="TopLine/Settings" to="." method="PressedArchiveControl"]
 [connection signal="pressed" from="TopLine/Settings" to="." method="PressedVista"]
 [connection signal="pressed" from="TopLine/Close" to="." method="ClosePressed"]
+[connection signal="pressed" from="TopLine/Button" to="." method="DocsPressed"]
 [connection signal="caret_changed" from="CodeEdit" to="." method="CaretChanged"]
 [connection signal="text_changed" from="CodeEdit" to="." method="CodeChange"]
 [connection signal="text_changed" from="Console" to="Console" method="_on_text_changed"]
 [connection signal="pressed" from="Console/Clean Console" to="." method="CleanConsole"]
 [connection signal="file_selected" from="Save" to="." method="OnFileSaveSelected"]
-[connection signal="file_selected" from="Load" to="." method="OnFileSelected"]
+[connection signal="file_selected" from="Load" to="." method="OnFileOpenSelected"]
 [connection signal="pressed" from="CanvasActions/Clean Canvas" to="." method="CleanCanvas"]
 [connection signal="pressed" from="CanvasActions/Run" to="." method="OnButtonPressed"]
 [connection signal="pressed" from="CanvasActions/Resize" to="." method="ResizePressed"]
