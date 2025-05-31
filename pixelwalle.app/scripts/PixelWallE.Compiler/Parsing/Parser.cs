@@ -2,202 +2,251 @@ using PixelWallE.Language.Parsing.Expressions.Literals;
 using PixelWallE.Language.Parsing.Expressions;
 using PixelWallE.Language.Tokens;
 using PixelWallE.Language.Expressions;
-using System.Text.RegularExpressions;
-using System.Runtime.ConstrainedExecution;
 using PixelWallE.Language.Commands;
-using System.Drawing;
-using System.Runtime.InteropServices;
-using System.Security.Cryptography;
-using System.Reflection.Emit;
+
 using System.Collections.Generic;
 using System.Linq;
-using System.ComponentModel.Design;
+
 
 
 
 namespace PixelWallE.Language.Parsing;
 
-public class Parser{
+/// <summary>
+/// Represents a parser for the PixelWallE language.
+/// This class is responsible for converting a stream of tokens into an Abstract Syntax Tree (AST).
+/// </summary>
+public class Parser
+{
+    /// <summary>
+    /// Gets the token stream from which the parser reads tokens.
+    /// </summary>
+    public TokenStream Stream { get; private set; }
+    /// <summary>
+    /// Gets or sets a list to collect any parsing errors encountered.
+    /// </summary>
+    private List<PixelWallEException> Errors { get; set; }
 
-    public TokenStream Stream  {get; private set;}
-    private List<PixelWallEException> Errors{ get; set; }
-
-
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Parser"/> class.
+    /// </summary>
+    /// <param name="stream">The token stream to be parsed.</param>
+    /// <param name="errors">A list to which parsing errors will be added.</param>
     public Parser(TokenStream stream, List<PixelWallEException> errors)
     {
         Stream = stream;
         Errors = errors;
     }
 
- /*
-    public IExecutable ParseInstruction(List<PixelWallEException> errors){
-            Token tokenHead=Stream.Peek();
+    #region Expression parsing
+    /// <summary>
+    /// Parses a general expression, starting from the lowest precedence (logic).
+    /// </summary>
+    /// <returns>An <see cref="Expression"/> representing the parsed expression.</returns>
+    private Expression ParseExpression()
+    {
+        return ParseLogic();
+    }
 
-            if (tokenHead.Type==TokenType.IDENTIFIER)
+
+    /// <summary>
+    /// Parses logical operations (AND, OR).
+    /// </summary>
+    /// <returns>An <see cref="Expression"/> representing the parsed logical operation.</returns>
+    private Expression ParseLogic()
+    {
+        Expression expr = ParseEquality();
+
+        while (Stream.Match(new List<TokenType> { TokenType.AND, TokenType.OR }))
+        {
+            Token thisoperator = Stream.Previous();
+            Expression right = ParseEquality();
+            if (thisoperator.Type == TokenType.AND)
             {
-                //Parse asignación
+                expr = new ANDOperation(thisoperator.Location, expr, right);
             }
-            //Para parsear las instrucciones crear un diccionario con todos los tipos de instrucción
-            if (true)
+            else
             {
-                
+                expr = new OrOperation(thisoperator.Location, expr, right);
             }
 
-
-    }
-    
-*/
-#region Expression parsing
-//separar esto en diferentes tipos de expresiones, por ejemplo, una para cada tipo de expresión y luego metemos todas en primary´
-//Revisar detalles
-private Expression ParseExpression(){
-   
-   
-   
-    return ParseLogic();
-    
-}
-private Expression ParseLogic(){
-    Expression expr=ParseEquality();
-
-    while (Stream.Match(new List<TokenType>{TokenType.AND, TokenType.OR}))
-    {
-        Token thisoperator=Stream.Previous();
-        Expression right=ParseEquality();
-        if (thisoperator.Type==TokenType.AND)
-        {
-             expr=new ANDOperation(thisoperator.Location,expr,right);
-        }
-        else{
-             expr=new OrOperation(thisoperator.Location,expr,right);
-        }
-        
-    }
-    return expr;
-}
-
-private Expression ParseEquality(){
-    Expression expr=ParseComparison();
-
-    while (Stream.Match(new List<TokenType>{TokenType.NOT_EQUAL, TokenType.EQUAL}))
-    {
-        Token thisoperator=Stream.Previous();
-        Expression right=ParseComparison();
-
-        if(thisoperator.Type==TokenType.NOT_EQUAL)
-        {
-            expr=new NotEqualToOperation(thisoperator.Location,expr,right);
-        }
-        else{
-              expr=new EqualToOperation(thisoperator.Location,expr,right);
-        }
-       
-    }
-    return expr;
-}
-
-private Expression ParseComparison(){
-    Expression expr=ParseTerm();
-
-    while (Stream.Match(new List<TokenType>{TokenType.GREATER,TokenType.GREATER_EQUAL,TokenType.LESS,TokenType.LESS_EQUAL}))
-    {
-        Token thisoperator=Stream.Previous();
-        Expression right=ParseTerm();
-
-        if (thisoperator.Type==TokenType.GREATER)
-        {
-            expr=new GreatherThanOperation(thisoperator.Location,expr,right);
-        }
-        else if(thisoperator.Type==TokenType.GREATER_EQUAL)
-        {
-            expr=new GreatherThanOrEqualToOperation(thisoperator.Location,expr,right);
-        }
-        else if(thisoperator.Type==TokenType.LESS)
-        {
-            expr=new LessThanOperation(thisoperator.Location,expr,right);
-        }
-        else{
-            expr=new LessThanOrEqualToOperation(thisoperator.Location,expr,right);
-        }
-        
-    }
-    return expr;
-}
-
-private Expression ParseTerm(){
-    Expression expr=ParseFactor();
-   
-    while (Stream.Match(new List<TokenType>{TokenType.PLUS,TokenType.MINUS}))
-    {   
-        Token thisoperator=Stream.Previous();
-        Expression right=ParseFactor();
-        if (thisoperator.Type==TokenType.PLUS)
-        {
-            expr=new AdditionOperation(thisoperator.Location,expr,right);
-        }
-        else{
-            expr=new SubstractionOperation(thisoperator.Location,expr,right);
-        }
-        
-    }
-    return expr;
-}
-
-private Expression ParseFactor(){
-    Expression expr=ParseExponential();
-
-    while (Stream.Match(new List<TokenType>{TokenType.MULTIPLY,TokenType.DIVIDE,TokenType.MODULO}))
-    {
-        Token thisoperator=Stream.Previous();
-        Expression right=ParseExponential();
-        if (thisoperator.Type==TokenType.MULTIPLY)
-        {
-            expr=new MultiplicationOperation(thisoperator.Location,expr,right);
-        }
-        else if(thisoperator.Type==TokenType.DIVIDE)
-        {
-            expr=new DivisionOperation(thisoperator.Location,expr,right);
-        }
-        else{
-            expr=new ModuloOperation(thisoperator.Location,expr,right);
-        }
-        
-        
-    }
-    return expr;
-}
-
-private Expression ParseExponential(){
-    Expression expr=ParseUnary();
-
-    while (Stream.Match(new List<TokenType>{TokenType.EXPONENTIAL}))
-    {
-        Token thisoperator=Stream.Previous();
-        Expression right=ParseUnary();
-
-       expr=new ExponentiationOperation(thisoperator.Location,expr,right);
-    }
-    return expr;
-}
-
-private Expression ParseUnary() {
-    if (Stream.Match(new List<TokenType>{TokenType.NOT, TokenType.MINUS})) 
-    {   Expression expr=new NotOperation(new CodeLocation(),null);;
-        Token thisoperator = Stream.Previous();
-        Expression right = ParseUnary();
-        if (thisoperator.Type==TokenType.NOT)
-        {
-             expr=new NotOperation(thisoperator.Location,right);
-        }
-        else{
-              expr=new NegationOperation(thisoperator.Location,right);
         }
         return expr;
     }
-    return ParsePrimary();
-}
 
-    //Parsear funciones que retornan valor
+
+    /// <summary>
+    /// Parses equality and inequality operations (==, !=).
+    /// </summary>
+    /// <returns>An <see cref="Expression"/> representing the parsed equality operation.</returns>
+    private Expression ParseEquality()
+    {
+        Expression expr = ParseComparison();
+
+        while (Stream.Match(new List<TokenType> { TokenType.NOT_EQUAL, TokenType.EQUAL }))
+        {
+            Token thisoperator = Stream.Previous();
+            Expression right = ParseComparison();
+
+            if (thisoperator.Type == TokenType.NOT_EQUAL)
+            {
+                expr = new NotEqualToOperation(thisoperator.Location, expr, right);
+            }
+            else
+            {
+                expr = new EqualToOperation(thisoperator.Location, expr, right);
+            }
+
+        }
+        return expr;
+    }
+
+
+    /// <summary>
+    /// Parses comparison operations (>, >=, <, <=).
+    /// </summary>
+    /// <returns>An <see cref="Expression"/> representing the parsed comparison operation.</returns>
+    private Expression ParseComparison()
+    {
+        Expression expr = ParseTerm();
+
+        while (Stream.Match(new List<TokenType> { TokenType.GREATER, TokenType.GREATER_EQUAL, TokenType.LESS, TokenType.LESS_EQUAL }))
+        {
+            Token thisoperator = Stream.Previous();
+            Expression right = ParseTerm();
+
+            if (thisoperator.Type == TokenType.GREATER)
+            {
+                expr = new GreatherThanOperation(thisoperator.Location, expr, right);
+            }
+            else if (thisoperator.Type == TokenType.GREATER_EQUAL)
+            {
+                expr = new GreatherThanOrEqualToOperation(thisoperator.Location, expr, right);
+            }
+            else if (thisoperator.Type == TokenType.LESS)
+            {
+                expr = new LessThanOperation(thisoperator.Location, expr, right);
+            }
+            else
+            {
+                expr = new LessThanOrEqualToOperation(thisoperator.Location, expr, right);
+            }
+
+        }
+        return expr;
+    }
+
+
+    /// <summary>
+    /// Parses term operations (addition, subtraction).
+    /// </summary>
+    /// <returns>An <see cref="Expression"/> representing the parsed term operation.</returns>
+    private Expression ParseTerm()
+    {
+        Expression expr = ParseFactor();
+
+        while (Stream.Match(new List<TokenType> { TokenType.PLUS, TokenType.MINUS }))
+        {
+            Token thisoperator = Stream.Previous();
+            Expression right = ParseFactor();
+            if (thisoperator.Type == TokenType.PLUS)
+            {
+                expr = new AdditionOperation(thisoperator.Location, expr, right);
+            }
+            else
+            {
+                expr = new SubstractionOperation(thisoperator.Location, expr, right);
+            }
+
+        }
+        return expr;
+    }
+
+
+
+    /// <summary>
+    /// Parses factor operations (multiplication, division, modulo).
+    /// </summary>
+    /// <returns>An <see cref="Expression"/> representing the parsed factor operation.</returns>
+    private Expression ParseFactor()
+    {
+        Expression expr = ParseExponential();
+
+        while (Stream.Match(new List<TokenType> { TokenType.MULTIPLY, TokenType.DIVIDE, TokenType.MODULO }))
+        {
+            Token thisoperator = Stream.Previous();
+            Expression right = ParseExponential();
+            if (thisoperator.Type == TokenType.MULTIPLY)
+            {
+                expr = new MultiplicationOperation(thisoperator.Location, expr, right);
+            }
+            else if (thisoperator.Type == TokenType.DIVIDE)
+            {
+                expr = new DivisionOperation(thisoperator.Location, expr, right);
+            }
+            else
+            {
+                expr = new ModuloOperation(thisoperator.Location, expr, right);
+            }
+
+
+        }
+        return expr;
+    }
+
+
+    /// <summary>
+    /// Parses exponential operations.
+    /// </summary>
+    /// <returns>An <see cref="Expression"/> representing the parsed exponential operation.</returns>
+
+    private Expression ParseExponential()
+    {
+        Expression expr = ParseUnary();
+
+        while (Stream.Match(new List<TokenType> { TokenType.EXPONENTIAL }))
+        {
+            Token thisoperator = Stream.Previous();
+            Expression right = ParseUnary();
+
+            expr = new ExponentiationOperation(thisoperator.Location, expr, right);
+        }
+        return expr;
+    }
+
+
+    /// <summary>
+    /// Parses unary operations (NOT, negation).
+    /// </summary>
+    /// <returns>An <see cref="Expression"/> representing the parsed unary operation.</returns>
+    private Expression ParseUnary()
+    {
+        if (Stream.Match(new List<TokenType> { TokenType.NOT, TokenType.MINUS }))
+        {
+            Expression expr = new NotOperation(new CodeLocation(), null); ;
+            Token thisoperator = Stream.Previous();
+            Expression right = ParseUnary();
+            if (thisoperator.Type == TokenType.NOT)
+            {
+                expr = new NotOperation(thisoperator.Location, right);
+            }
+            else
+            {
+                expr = new NegationOperation(thisoperator.Location, right);
+            }
+            return expr;
+        }
+        return ParsePrimary();
+    }
+
+
+
+    /// <summary>
+    /// Parses primary expressions, including literals, parenthesized expressions,
+    /// function calls, and variable references.
+    /// </summary>
+    /// <returns>An <see cref="Expression"/> representing the parsed primary expression.</returns>
+    /// <exception cref="SyntaxException">Thrown if an unexpected token is encountered.</exception>
     private Expression ParsePrimary()
     {
         if (Stream.Match(new List<TokenType> { TokenType.FALSE }))
@@ -225,181 +274,198 @@ private Expression ParseUnary() {
         if (Stream.Match(new List<TokenType> { TokenType.ISBRUSHCOLOR, TokenType.ISBRUSHSIZE, TokenType.ISCANVASCOLOR, TokenType.ISCOLOR, TokenType.GETACTUALX, TokenType.GETACTUALY, TokenType.GETCANVASSIZE, TokenType.GETCOLORCOUNT }))
 
         {
-            return ParseFunction();
+            return (Function)ParseCommandorFunction();
         }
         if (Stream.Match(new List<TokenType> { TokenType.IDENTIFIER }))
         {
-            return new Variable(Stream.Previous().Location, (string)Stream.Previous().Value);
+            return new Variable(Stream.Previous().Location, Stream.Previous().Value);
         }
 
         throw SyntaxException.UnexpectedToken(Stream.Peek().Value.ToString(), "expression", Stream.Peek().Location);
-}
+    }
 
 
 
-#endregion
-
-private void ParseIArgument(IArgument<Expression> argument){
-     Stream.Consume(TokenType.LEFT_PAREN, "(");
-if (!Stream.Check(TokenType.RIGHT_PAREN))
+    #endregion
+    /// <summary>
+    /// Parses arguments for a command or function that implements <see cref="IArgument{Expression}"/>.
+    /// It expects arguments enclosed in parentheses, separated by commas.
+    /// </summary>
+    /// <param name="argument">The command or function object to which arguments will be added.</param>
+    private void ParseIArgument(IArgument<Expression> argument)
     {
-         do{
-            
-
-            Expression? expr=ParseExpression();
-           
-            argument.Args.Add(expr);
-         //  System.Console.WriteLine(expr.Type);
-        
-        
-    }while(Stream.Match(new List<TokenType>{TokenType.COMMA}));
-    
-    }
-   
-   
-    Stream.Consume(TokenType.RIGHT_PAREN, ")' or ',");
-}
-#region Command expression
+        Stream.Consume(TokenType.LEFT_PAREN, "(");
+        if (!Stream.Check(TokenType.RIGHT_PAREN))
+        {
+            do
+            {
 
 
-private Command ParseCommand(){
+                Expression? expr = ParseExpression();
 
-    Token headCommand=Stream.Previous();
-    
-    Command? command= null;
-    if (headCommand.Type==TokenType.COLOR)
-    {
-        command=new ColorCommand(headCommand.Location,TokenType.COLOR, new List<Expression>());
-    }
-    if (headCommand.Type==TokenType.DRAWCIRCLE)
-    {
-        command=new DrawCircleCommand(headCommand.Location,TokenType.DRAWCIRCLE, new List<Expression>());
-    }
-    if (headCommand.Type==TokenType.DRAWLINE)
-    {
-        command=new DrawLineCommand(headCommand.Location,TokenType.DRAWLINE, new List<Expression>());
-    }
-    if (headCommand.Type==TokenType.DRAWRECTANGLE)
-    {
-        command=new DrawRectangleCommand(headCommand.Location,TokenType.DRAWRECTANGLE, new List<Expression>());
-    }
-    if (headCommand.Type==TokenType.FILL)
-    {
-        command=new FillCommand(headCommand.Location,TokenType.FILL, new List<Expression>());
-    }
-    if (headCommand.Type==TokenType.SIZE)
-    {
-        command=new SizeCommand(headCommand.Location,TokenType.SIZE, new List<Expression>());
-    }
-    if (headCommand.Type==TokenType.SPAWN)
-    {
-        command=new SpawnCommand(headCommand.Location,TokenType.SPAWN, new List<Expression>());
-    }
-  
+                argument.Args.Add(expr);
 
-    ParseIArgument(command);
-   
-    return command; 
-}
-//Generar interface tiene argumentos para parsear en un solo metodo funciones y comandos
-private Function ParseFunction(){
 
-    Token headfunction=Stream.Previous();
-    
-    Function? function= null;
-    if (headfunction.Type==TokenType.GETACTUALX)
-    {
-        function=new GetActualXFunction(headfunction.Location,TokenType.GETACTUALX, new List<Expression>());
-    }
-    if (headfunction.Type==TokenType.GETACTUALY)
-    {
-        function=new GetActualYFunction(headfunction.Location,TokenType.GETACTUALY, new List<Expression>());
-    }
-    if (headfunction.Type==TokenType.GETCANVASSIZE)
-    {
-        function=new GetCanvasSizeFunction(headfunction.Location,TokenType.GETCANVASSIZE, new List<Expression>());
-    }
-    if (headfunction.Type==TokenType.GETCOLORCOUNT)
-    {
-        function=new GetColorCountFunction(headfunction.Location,TokenType.GETCOLORCOUNT, new List<Expression>());
-    }
-    if (headfunction.Type==TokenType.ISBRUSHCOLOR)
-    {
-        function=new IsBrushColorFunction(headfunction.Location,TokenType.ISBRUSHCOLOR, new List<Expression>());
-    }
-    if (headfunction.Type==TokenType.ISBRUSHSIZE)
-    {
-        function=new IsBrushSizeFunction(headfunction.Location,TokenType.ISBRUSHSIZE, new List<Expression>());
-    }
-    if (headfunction.Type==TokenType.ISCANVASCOLOR)
-    {
-        function=new IsCanvasColor(headfunction.Location,TokenType.ISCANVASCOLOR, new List<Expression>());
-    }
-    if (headfunction.Type==TokenType.ISCOLOR)
-    {
-        function=new IsColorFunction(headfunction.Location,TokenType.ISCOLOR, new List<Expression>());
-    }
-   
 
-    ParseIArgument(function);
-    return function; 
-}
+            } while (Stream.Match(new List<TokenType> { TokenType.COMMA }));
 
-private AssigmentExpression ParseAssignation(){
-    Stream.MoveBack(1);
-    Variable var= new Variable(Stream.Previous().Location, Stream.Previous().Value);
-    Stream.Advance();
-    Token assigment=Stream.Previous();
-    
-   
-    return new AssigmentExpression(assigment.Location, var, ParseExpression());
+        }
 
-    
-}
 
-private Command ParseGoTo(){
-     Token headCommand=Stream.Previous();
-    
-    GoToCommand? command= new GoToCommand(headCommand.Location,TokenType.GOTO,new List<Expression>(),null);
-    
-      Stream.Consume(TokenType.LEFT_BRACKET, "[");
-  
-
-    if (Stream.Match(new List<TokenType>{TokenType.IDENTIFIER}))
-    {  
-        command.Label=Stream.Previous().Value;
+        Stream.Consume(TokenType.RIGHT_PAREN, ")' or ',");
     }
-    else{
+    #region Command expression
+
+    /// <summary>
+    /// Parses a command or a function call, including its arguments.
+    /// It determines the specific command/function type based on the <paramref name="headCommand"/> token.
+    /// </summary>
+    /// <returns>An <see cref="IArgument{Expression}"/> representing the parsed command or function.</returns>
+
+    private IArgument<Expression> ParseCommandorFunction()
+    {
+
+        Token headCommand = Stream.Previous();
+
+        ASTNode? command = null;
+
+        if (headCommand.Type == TokenType.COLOR)
+        {
+            command = new ColorCommand(headCommand.Location, TokenType.COLOR, new List<Expression>());
+        }
+        if (headCommand.Type == TokenType.DRAWCIRCLE)
+        {
+            command = new DrawCircleCommand(headCommand.Location, TokenType.DRAWCIRCLE, new List<Expression>());
+        }
+        if (headCommand.Type == TokenType.DRAWLINE)
+        {
+            command = new DrawLineCommand(headCommand.Location, TokenType.DRAWLINE, new List<Expression>());
+        }
+        if (headCommand.Type == TokenType.DRAWRECTANGLE)
+        {
+            command = new DrawRectangleCommand(headCommand.Location, TokenType.DRAWRECTANGLE, new List<Expression>());
+        }
+        if (headCommand.Type == TokenType.FILL)
+        {
+            command = new FillCommand(headCommand.Location, TokenType.FILL, new List<Expression>());
+        }
+        if (headCommand.Type == TokenType.SIZE)
+        {
+            command = new SizeCommand(headCommand.Location, TokenType.SIZE, new List<Expression>());
+        }
+        if (headCommand.Type == TokenType.SPAWN)
+        {
+            command = new SpawnCommand(headCommand.Location, TokenType.SPAWN, new List<Expression>());
+        }
+        if (headCommand.Type == TokenType.GETACTUALX)
+        {
+            command = new GetActualXFunction(headCommand.Location, TokenType.GETACTUALX, new List<Expression>());
+        }
+        if (headCommand.Type == TokenType.GETACTUALY)
+        {
+            command = new GetActualYFunction(headCommand.Location, TokenType.GETACTUALY, new List<Expression>());
+        }
+        if (headCommand.Type == TokenType.GETCANVASSIZE)
+        {
+            command = new GetCanvasSizeFunction(headCommand.Location, TokenType.GETCANVASSIZE, new List<Expression>());
+        }
+        if (headCommand.Type == TokenType.GETCOLORCOUNT)
+        {
+            command = new GetColorCountFunction(headCommand.Location, TokenType.GETCOLORCOUNT, new List<Expression>());
+        }
+        if (headCommand.Type == TokenType.ISBRUSHCOLOR)
+        {
+            command = new IsBrushColorFunction(headCommand.Location, TokenType.ISBRUSHCOLOR, new List<Expression>());
+        }
+        if (headCommand.Type == TokenType.ISBRUSHSIZE)
+        {
+            command = new IsBrushSizeFunction(headCommand.Location, TokenType.ISBRUSHSIZE, new List<Expression>());
+        }
+        if (headCommand.Type == TokenType.ISCANVASCOLOR)
+        {
+            command = new IsCanvasColor(headCommand.Location, TokenType.ISCANVASCOLOR, new List<Expression>());
+        }
+
+
+        IArgument<Expression> argument = (IArgument<Expression>)command;
+
+        ParseIArgument(argument);
+
+        return argument;
+    }
+
+    /// <summary>
+    /// Parses an assignment expression (e.g., `variable <- expression`).
+    /// </summary>
+    /// <returns>An <see cref="AssigmentExpression"/> representing the parsed assignment.</returns>
+    private AssigmentExpression ParseAssignation()
+    {
+        Stream.MoveBack(1);
+        Variable var = new Variable(Stream.Previous().Location, Stream.Previous().Value);
+        Stream.Advance();
+        Token assigment = Stream.Previous();
+
+
+        return new AssigmentExpression(assigment.Location, var, ParseExpression());
+
+
+    }
+
+
+    /// <summary>
+    /// Parses a GOTO command, which includes a label and an expression.
+    /// </summary>
+    /// <returns>A <see cref="GoToCommand"/> representing the parsed GOTO command.</returns>
+    /// <exception cref="SyntaxException">Thrown if an expected label or token is not found.</exception>
+    private Command ParseGoTo()
+    {
+        Token headCommand = Stream.Previous();
+
+        GoToCommand? command = new GoToCommand(headCommand.Location, TokenType.GOTO, new List<Expression>(), null);
+
+        Stream.Consume(TokenType.LEFT_BRACKET, "[");
+
+
+        if (Stream.Match(new List<TokenType> { TokenType.IDENTIFIER }))
+        {
+            command.Label = Stream.Previous().Value;
+        }
+        else
+        {
             throw SyntaxException.UnexpectedToken(Stream.Peek().Value.ToString(), "Label", Stream.Peek().Location);
-    }
-     
-    Stream.Consume(TokenType.RIGHT_BRACKET, "]");
+        }
 
-    Stream.Consume(TokenType.LEFT_PAREN, "(");
-    
-    command.Args.Add(ParseExpression());
-    
-    Stream.Consume(TokenType.RIGHT_PAREN, ")' or ',");
- 
-    return command; 
-}
-#endregion
-/*
-    private Expression Expression(){
-        return equality();
+        Stream.Consume(TokenType.RIGHT_BRACKET, "]");
+
+        Stream.Consume(TokenType.LEFT_PAREN, "(");
+
+        command.Args.Add(ParseExpression());
+
+        Stream.Consume(TokenType.RIGHT_PAREN, ")' or ',");
+
+        return command;
     }
-*/
-#region Parse program
-public ElementalProgram Parse(){
-    ElementalProgram program=new ElementalProgram(new CodeLocation(), Errors);
+    #endregion
+
+    #region Parse program
+
+    /// <summary>
+    /// Parses the entire PixelWallE program, including statements and labels.
+    /// It handles the initial 'spawn' command and subsequent commands, assignments, and labels.
+    /// </summary>
+    /// <returns>An <see cref="ElementalProgram"/> representing the parsed program.</returns>
+
+    public ElementalProgram Parse()
+    {
+        ElementalProgram program = new ElementalProgram(new CodeLocation(), Errors);
         HashSet<string> referenceLabel = new HashSet<string>();
-    while (!Stream.IsAtEnd())
+        while (!Stream.IsAtEnd())
         {
             if (Stream.Match(new List<TokenType> { TokenType.SPAWN }))
             {
                 try
                 {
-                    program.Statements.Add(ParseCommand());
+                    program.Statements.Add((Command)ParseCommandorFunction());
 
                 }
                 catch (PixelWallEException error)
@@ -407,11 +473,11 @@ public ElementalProgram Parse(){
                     program.Errors.Add(error);
                     Stream.Synchronize();
                 }
-              
+
 
                 break;
             }
-            else if (!Stream.Match(new List<TokenType> { TokenType.EOL, TokenType.COMENNT}))
+            else if (!Stream.Match(new List<TokenType> { TokenType.EOL }))
             {
                 program.Errors.Add(SyntaxException.SpawnMisplaced(Stream.Peek().Location));
                 break;
@@ -421,9 +487,9 @@ public ElementalProgram Parse(){
         while (!Stream.IsAtEnd())
         {
             bool twoCommandLineError = false;
-            if (Stream.Peek().Location.Line==1&&!Stream.Match(new List<TokenType> { TokenType.EOL, TokenType.COMENNT}))
+            if (Stream.Peek().Location.Line == 1 && !Stream.Match(new List<TokenType> { TokenType.EOL }))
             {
-                  program.Errors.Add(SyntaxException.UnexpectedToken(Stream.Peek().Value.ToString(), "Command or Label", Stream.Peek().Location));
+                program.Errors.Add(SyntaxException.UnexpectedToken(Stream.Peek().Value.ToString(), "Command or Label", Stream.Peek().Location));
             }
             if (Stream.Match(new List<TokenType> { TokenType.SPAWN }))
             {
@@ -435,7 +501,7 @@ public ElementalProgram Parse(){
             {
                 try
                 {
-                    program.Statements.Add(ParseCommand());
+                    program.Statements.Add((Command)ParseCommandorFunction());
                     twoCommandLineError = true;
                 }
                 catch (PixelWallEException error)
@@ -509,40 +575,16 @@ public ElementalProgram Parse(){
                 }
 
             }
-            else if (Stream.Previous().Type == TokenType.EOF)
-            {
-                return program;
-            }
-            //Posible codigo sin uso
-            
-    
-            //Verificar como compruebas quenno existan dos comandos en la misma linea si hay error en el primero sincronizas por lo cual no puedes comprobar el error y si no no lo haces
 
 
         }
-           return program;
-    
+        return program;
+
+    }
+
+
+    #endregion
+
+
 }
 
-
-#endregion
-
-    
-}
-
-/*public class PixelWallEException:System.Exception
-{
-    public Token? Token{get;}
-
-    public PixelWallEException( Token token, string message): base($"[Line {token.Location.Line}:{token.Location.Column}] Parse Error: {message} (Found token: {token.Type}'{token.Value}')")
-    {
-        Token=token;
-    }
-    public PixelWallEException( CodeLocation location, string message): base($"[Line {location.Line}:{location.Column}] Parse Error: {message} )")
-    {
-       Token=default;
-    }
-    public PixelWallEException(string message):base($"Parse error: {message}"){
-        Token=default;
-    }
-}*/
