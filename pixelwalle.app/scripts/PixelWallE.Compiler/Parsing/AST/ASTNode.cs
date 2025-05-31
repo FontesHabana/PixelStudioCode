@@ -5,24 +5,47 @@ using PixelWallE.Language.Parsing.Expressions;
 using PixelWallE.Language.Parsing.Expressions.Literals;
 using PixelWallE.Language.Commands;
 using Godot;
-
 using System.Collections.Generic;
-public abstract class ASTNode
-    {
-        public CodeLocation Location {get; set;}
-      
-        public ASTNode(CodeLocation location)
-        {
-            Location = location;
-        }
-   
-        public abstract void Accept(IVisitor<ASTNode> visitor);
-    }  
 
-//Solo para ver funcionamiento
-//Solo para ver funcionamiento
-//Solo para ver funcionamiento
-public class printAst{
+/// <summary>
+/// Represents the base class for all nodes in the Abstract Syntax Tree (AST).
+/// Each AST node contains a <see cref="CodeLocation"/> and must implement the <see cref="Accept"/> method for the visitor pattern.
+/// </summary>
+public abstract class ASTNode
+{
+    /// <summary>
+    /// Gets or sets the location of the node in the source code.
+    /// </summary>
+    public CodeLocation Location { get; set; }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ASTNode"/> class.
+    /// </summary>
+    /// <param name="location">The code location associated with this node.</param>
+    public ASTNode(CodeLocation location)
+    {
+        Location = location;
+    }
+
+    /// <summary>
+    /// Accepts a visitor for traversing or processing the AST node.
+    /// </summary>
+    /// <param name="visitor">The visitor instance.</param>
+    public abstract void Accept(IVisitor<ASTNode> visitor);
+}
+
+/// <summary>
+/// Utility class for printing the structure of an AST for debugging or visualization purposes.
+/// </summary>
+public class printAst
+{
+    /// <summary>
+    /// Recursively prints the AST node and its children, with indentation representing tree depth.
+    /// Detects cycles and limits recursion depth to prevent stack overflow.
+    /// </summary>
+    /// <param name="node">The AST node to print.</param>
+    /// <param name="depth">The current depth in the tree (for indentation).</param>
+    /// <param name="visitedNodes">A set of already visited nodes to detect cycles.</param>
     public static void printAstNode(ASTNode node, int depth, HashSet<ASTNode> visitedNodes)
     {
         const int MAX_DEPTH = 20; // Limit recursion depth to prevent stack overflow
@@ -117,6 +140,11 @@ public class printAst{
         }
     }
 
+    /// <summary>
+    /// Prints the AST node and its children, starting with a new set for cycle detection.
+    /// </summary>
+    /// <param name="node">The AST node to print.</param>
+    /// <param name="depth">The current depth in the tree (for indentation).</param>
     public static void printAstNode(ASTNode node, int depth)
     {
         printAstNode(node, depth, new HashSet<ASTNode>());
