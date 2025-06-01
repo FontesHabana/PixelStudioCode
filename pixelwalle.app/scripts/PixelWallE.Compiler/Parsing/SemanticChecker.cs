@@ -188,10 +188,7 @@ public class SemanticChecker : IVisitor<ASTNode>
     /// Performs semantic analysis on the given <see cref="IsColorFunction"/>.
     /// </summary>
     /// <param name="function">The function to analyze.</param>
-    public void IsColorFunction(IsColorFunction function)
-    {
-        CheckArguments(new List<ExpressionType>() { ExpressionType.String, ExpressionType.Number, ExpressionType.Number }, function);
-    }
+   
     #endregion
 
 

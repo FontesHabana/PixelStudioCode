@@ -57,7 +57,7 @@ public partial class TextEdit : Godot.TextEdit
 
 	public void ConsoleLog(string text)
 	{
-		Text += $"\n {text}";
+		Text += text;
 	}
 
 
@@ -75,6 +75,7 @@ public partial class TextEdit : Godot.TextEdit
 		custom2.AddColorRegion("***", "***", new Godot.Color(0.5f, 0.5f, 1f));
 		custom2.FunctionColor = new Godot.Color(199 / 255f, 148 / 255f, 157 / 255f);
 		custom2.SymbolColor = new Godot.Color(1f, 1f, 1f);
+		custom2.MemberVariableColor=new Godot.Color(199 / 255f, 148 / 255f, 157 / 255f);
 
 		SyntaxHighlighter = customHighlighter;
 		SyntaxHighlighter = custom2;

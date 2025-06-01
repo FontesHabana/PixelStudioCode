@@ -31,7 +31,7 @@ public interface IVisitor<T>
     void IsBrushColorFunction(IsBrushColorFunction function);
     void IsBrushSizeFunction(IsBrushSizeFunction function);
     void IsCanvasColor(IsCanvasColor function);
-    void IsColorFunction(IsColorFunction function);
+
    #endregion
     // Unary Expressions
     void NotOperation(NotOperation operation);

@@ -52,7 +52,7 @@ public partial class main_ui : Control // partial es importante si adjuntas el s
     private string userScript => $" {DateTime.Now.ToString()} 🤖";
     private string? filePath = null;
 
-    private string? infoConsole => string.IsNullOrEmpty(filePath) ? $"*** New File {userScript} ***" : $"*** {filePath} {userScript} ***";
+    private string? infoConsole => string.IsNullOrEmpty(filePath) ? $"\n *** New File {userScript} ***" : $"\n*** {filePath} {userScript} ***";
 
 
 
@@ -66,6 +66,7 @@ public partial class main_ui : Control // partial es importante si adjuntas el s
     {
         GD.Print("--> Método _Ready() iniciado.");
         _consoleOutput.Text = infoConsole;
+        _consoleOutput.AppendPrompt();
         stackGoBack = new Stack<Canvas>();
         stackGoNext = new Stack<Canvas>();
 
@@ -186,7 +187,10 @@ public partial class main_ui : Control // partial es importante si adjuntas el s
     //------------------------------------------------------------------------------------------------
     private void CleanConsole()
     {
-        _consoleOutput.ConsoleLog(infoConsole);
+        _consoleOutput.Clear();
+        _consoleOutput.ConsoleLog($"{infoConsole}");
+        _consoleOutput.AppendPrompt();
+
     }
 
 
@@ -210,13 +214,13 @@ public partial class main_ui : Control // partial es importante si adjuntas el s
 
         foreach (PixelWallEException error in interpreter.Errors)
         {
-            _consoleOutput.ConsoleLog("\n" + error.Message);
+            _consoleOutput.ConsoleLog($"{error.Message} \n");
 
         }
 
         if (interpreter.Errors.Count == 0)
          {
-             _consoleOutput.Text += "\n Compilado correctamente";
+             _consoleOutput.Text += "Compilado correctamente \n";
          }
 
         _consoleOutput.ConsoleLog("\n" + infoConsole + "\n" + ">>>");
@@ -371,6 +375,7 @@ public partial class main_ui : Control // partial es importante si adjuntas el s
         filePath = path;
         CodeChange();
         _consoleOutput.ConsoleLog(infoConsole);
+        _consoleOutput.AppendPrompt();
     }
 
     private void OnFileSaveSelected(string path)
@@ -389,5 +394,7 @@ public partial class main_ui : Control // partial es importante si adjuntas el s
         }
     }
 
+
+    
     //------------------------------------------------------------------------------------------------
 }

@@ -21,6 +21,8 @@ class RuntimeException : PixelWallEException
     {
         CommandName = commandName;
     }
+   
+   
     /// <summary>
     /// Initializes a new instance of the <see cref="RuntimeException"/> class with an inner exception.
     /// </summary>
@@ -32,6 +34,7 @@ class RuntimeException : PixelWallEException
     {
         CommandName = commandName;
     }
+
 
     /// <summary>
     /// Creates a new <see cref="RuntimeException"/> for a division by zero error.
