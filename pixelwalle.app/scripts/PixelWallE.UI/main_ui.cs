@@ -219,13 +219,13 @@ public partial class main_ui : Control // partial es importante si adjuntas el s
         }
 
         if (interpreter.Errors.Count == 0)
-         {
-             _consoleOutput.Text += "Compilado correctamente \n";
-         }
+        {
+            _consoleOutput.Text += "Compilado correctamente \n";
+        }
 
         _consoleOutput.ConsoleLog("\n" + infoConsole + "\n" + ">>>");
 
-         _consoleOutput.ScrollVertical = _consoleOutput.GetLineCount(); 
+        _consoleOutput.ScrollVertical = _consoleOutput.GetLineCount();
         _canvas.QueueRedraw();
 
         // Si quisieras añadir líneas nuevas en lugar de reemplazar, podrías hacer:
@@ -395,6 +395,21 @@ public partial class main_ui : Control // partial es importante si adjuntas el s
     }
 
 
-    
+    public override void _Input(InputEvent @event)
+    {
+        if (@event.IsActionPressed("SaveCode"))
+        {
+            if (filePath == null)
+            {
+                _saveFileDialog.Popup();
+            }
+        }
+        else
+        {
+             File.WriteAllText(filePath, _codeEditNode.Text);
+        }
+    }
+
+
     //------------------------------------------------------------------------------------------------
 }
