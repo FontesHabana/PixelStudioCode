@@ -89,7 +89,7 @@ public class TokenStream
     /// <returns>True if the current token matches the type; otherwise, false.</returns>
     public bool Check(TokenType type)
     {
-        if (IsAtStreamEnd) return false;
+        //if (IsAtStreamEnd) return false;
         return Peek().Type==type;
     }
 

@@ -209,6 +209,7 @@ theme_override_colors/font_color = Color(0.780392, 0.580392, 0.615686, 1)
 theme_override_fonts/font = ExtResource("2_u6nwd")
 text = "***Welcome Start to Code***"
 context_menu_enabled = false
+shortcut_keys_enabled = false
 selecting_enabled = false
 wrap_mode = 1
 highlight_all_occurrences = true
