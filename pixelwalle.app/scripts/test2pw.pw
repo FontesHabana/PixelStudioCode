@@ -1,5 +1,5 @@
  Spawn(5, 5)
-
+ actual-x <- GetActualX()	
  Color("Black")
 DrawCircle(1,1,5)
 Fill()

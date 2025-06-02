@@ -19,11 +19,6 @@ public class TokenStream
     public List<Token> tokens;
 
     /// <summary>
-    /// Index used for iteration-based navigation (e.g., lookahead).
-    /// </summary>
-    public int iterationIndex;
-
-    /// <summary>
     /// Index representing the current token for parsing operations.
     /// </summary>
     public int index;
@@ -31,7 +26,7 @@ public class TokenStream
     /// <summary>
     /// Gets the current iteration index.
     /// </summary>
-    public int Position { get { return iterationIndex; } }
+    public int Position { get { return index; } }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TokenStream"/> class with the specified tokens.
@@ -40,14 +35,14 @@ public class TokenStream
     public TokenStream(IEnumerable<Token> tokens)
     {
         this.tokens = new List<Token>(tokens);
-        iterationIndex  = 0;
+        index  = 0;
         index=0;
     }
 
     /// <summary>
     /// Gets a value indicating whether the stream is at the last token.
     /// </summary>
-    public bool IsAtStreamEnd => iterationIndex == tokens.Count - 1;
+    public bool IsAtStreamEnd => index == tokens.Count - 1;
 
     /// <summary>
     /// Determines whether the current token is the end-of-file (EOF) token.

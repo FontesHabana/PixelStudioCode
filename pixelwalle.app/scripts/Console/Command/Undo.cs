@@ -38,7 +38,7 @@ public class Undo : IConsoleCommand
             mainInstance.GoBack();
         }
         else {
-         throw new SystemException($"Error: Unknown command {Name}. Type help to see a list of available commands.");
+         throw new SystemException($"Error: Unexpected argument for '{Name}' command. Type 'help' for a list of available commands and their usage.");
     }
         
     }

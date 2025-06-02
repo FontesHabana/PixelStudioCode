@@ -52,7 +52,7 @@ public partial class main_ui : Control // partial es importante si adjuntas el s
     private string userScript => $" {DateTime.Now.ToString()} 🤖";
     private string? filePath = null;
 
-    public string? infoConsole => string.IsNullOrEmpty(filePath) ? $"\n *** New File {userScript} ***" : $"\n*** {filePath} {userScript} ***";
+    public string? infoConsole => string.IsNullOrEmpty(filePath) ? $"*** New File {userScript} ***" : $"*** {filePath} {userScript} ***";
 
 
 
@@ -200,8 +200,8 @@ public partial class main_ui : Control // partial es importante si adjuntas el s
     public void CleanConsole()
     {
         _consoleOutput.Clear();
-        _consoleOutput.ConsoleLog($"{infoConsole}");
-        _consoleOutput.AppendPrompt();
+        _consoleOutput.ConsoleLog($"{infoConsole} \n>>>");
+       // _consoleOutput.AppendPrompt();
 
     }
 
@@ -232,7 +232,7 @@ public partial class main_ui : Control // partial es importante si adjuntas el s
 
         if (interpreter.Errors.Count == 0)
         {
-            _consoleOutput.Text += "Compilado correctamente \n";
+            _consoleOutput.Text += "\n Compilado correctamente \n";
         }
 
         _consoleOutput.ConsoleLog("\n" + infoConsole + "\n" + ">>>");
@@ -251,10 +251,13 @@ public partial class main_ui : Control // partial es importante si adjuntas el s
 
     private void CodeChange()
     {
-        _resizeInput.Visible = false;
+        
+             _resizeInput.Visible = false;
         interpreter = new Interpreter(canvas, _codeEditNode.Text);
         HighlightError(interpreter.Errors);
         // _codeEditNode.Text.ShowErrors(interpreter.Errors);
+       
+       
     }
     private void HighlightError(List<PixelWallEException> exceptions)
     {
@@ -328,22 +331,28 @@ public partial class main_ui : Control // partial es importante si adjuntas el s
                 canvas = new Canvas(number);
                 interpreter.Canvas = canvas;
 
+                _canvas._Ready();
+                _canvas.QueueRedraw();
+                _resizeInput.Text = "";
+                _resizeInput.PlaceholderText = canvas.Size.ToString();
+
+
+                stackGoBack.Clear();
+                stackGoNext.Clear();
+                Canvas current = new Canvas(canvas.Size);
+                CopyMatrix(interpreter.Canvas, current);
+                stackGoBack.Push(current);
+                
+                _goBackButton.Visible = false;
+                 _goNextButton.Visible = false;
+
             }
+
+
         }
-        _canvas._Ready();
-        _canvas.QueueRedraw();
-        _resizeInput.Text = "";
-        _resizeInput.PlaceholderText = canvas.Size.ToString();
+        
 
-
-        stackGoBack.Clear();
-        stackGoNext.Clear();
-        Canvas current = new Canvas(canvas.Size);
-        CopyMatrix(interpreter.Canvas, current);
-        stackGoBack.Push(current);
-
-        _goBackButton.Visible = false;
-        _goNextButton.Visible = false;
+        
         _resizeInput.Visible = false;
 
     }
@@ -387,7 +396,7 @@ public partial class main_ui : Control // partial es importante si adjuntas el s
         _codeEditNode.Text = fileContent;
         filePath = path;
         CodeChange();
-        _consoleOutput.ConsoleLog(infoConsole);
+        _consoleOutput.ConsoleLog($"\n{infoConsole}");
         _consoleOutput.AppendPrompt();
     }
 
@@ -411,7 +420,6 @@ public partial class main_ui : Control // partial es importante si adjuntas el s
     {
         _codeEditNode.Text = "";
         filePath = null;
-        _consoleOutput.ConsoleLog(infoConsole);
     }
 
 

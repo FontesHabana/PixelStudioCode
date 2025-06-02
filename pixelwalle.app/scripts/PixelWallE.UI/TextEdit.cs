@@ -36,17 +36,21 @@ public partial class TextEdit : Godot.TextEdit
 
 			GD.Print("Voy a ejecutar enter");
 			if (keyEvent.Keycode == Key.Enter)
-			{	GD.Print("lo hice enter");
-				
-					MyConsole.Console.HandleInput(ExtractFromUntilChar(this.Text, '>'), (main_ui)GetParent());
-				@event.Dispose();
+			{	AcceptEvent();
+				GD.Print("lo hice enter");
+
+				MyConsole.Console.HandleInput(ExtractFromUntilChar(this.Text, '>'), (main_ui)GetParent());
+
+				return;
 			}
-			
 
-		}
+			}
 
-		
+
 	}
+		
+
+	
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _Process(double delta)
@@ -89,20 +93,46 @@ public partial class TextEdit : Godot.TextEdit
 
 	private void ChangeTheme()
 	{
-		CodeHighlighter customHighlighter = new ConsoleHighlighter(this);
-		CodeHighlighter custom2 = new CodeHighlighter();
-		custom2.NumberColor = new Godot.Color(0.9f, 0.9f, 1f);
-		custom2.AddKeywordColor("Error", new Color(1f, 0f, 0f));
-		custom2.AddKeywordColor("Syntax", new Godot.Color(1f, 0f, 0f));
-		custom2.AddKeywordColor("Lexical", new Godot.Color(1f, 0f, 0f));
-		custom2.AddKeywordColor("Semantic", new Godot.Color(1f, 0f, 0f));
-		custom2.AddKeywordColor("Runtime", new Godot.Color(1f, 0f, 0f));
-		custom2.AddColorRegion("***", "***", new Godot.Color(0.5f, 0.5f, 1f));
-		custom2.FunctionColor = new Godot.Color(199 / 255f, 148 / 255f, 157 / 255f);
-		custom2.SymbolColor = new Godot.Color(1f, 1f, 1f);
-		custom2.MemberVariableColor = new Godot.Color(199 / 255f, 148 / 255f, 157 / 255f);
+		CodeHighlighter custom = new CodeHighlighter();
+		custom.NumberColor = new Godot.Color(0.9f, 0.9f, 1f);
+		custom.AddKeywordColor("Error", new Color(1f, 0f, 0f));
+		custom.AddKeywordColor("Syntax", new Godot.Color(1f, 0f, 0f));
+		custom.AddKeywordColor("Lexical", new Godot.Color(1f, 0f, 0f));
+		custom.AddKeywordColor("Semantic", new Godot.Color(1f, 0f, 0f));
+		custom.AddKeywordColor("Runtime", new Godot.Color(1f, 0f, 0f));
 
-		SyntaxHighlighter = customHighlighter;
-		SyntaxHighlighter = custom2;
+		custom.AddKeywordColor("run",new Godot.Color(0.392f, 0.714f, 1.0f));  
+		custom.AddKeywordColor("Run",new Godot.Color(0.392f, 0.714f, 1.0f)); 
+		custom.AddKeywordColor("clear",new Godot.Color(0.392f, 0.714f, 1.0f)); 
+		custom.AddKeywordColor("Clear",new Godot.Color(0.392f, 0.714f, 1.0f)); 
+		custom.AddKeywordColor("console",new Godot.Color(0.392f, 0.714f, 1.0f)); 
+		custom.AddKeywordColor("Console",new Godot.Color(0.392f, 0.714f, 1.0f)); 
+		custom.AddKeywordColor("Canvas",new Godot.Color(0.392f, 0.714f, 1.0f)); 
+		custom.AddKeywordColor("canvas",new Godot.Color(0.392f, 0.714f, 1.0f)); 
+		custom.AddKeywordColor("resize",new Godot.Color(0.392f, 0.714f, 1.0f)); 
+		custom.AddKeywordColor("Resize",new Godot.Color(0.392f, 0.714f, 1.0f)); 
+		custom.AddKeywordColor("file",new Godot.Color(0.392f, 0.714f, 1.0f)); 
+		custom.AddKeywordColor("File",new Godot.Color(0.392f, 0.714f, 1.0f)); 
+		custom.AddKeywordColor("undo",new Godot.Color(0.392f, 0.714f, 1.0f)); 
+		custom.AddKeywordColor("Undo",new Godot.Color(0.392f, 0.714f, 1.0f)); 
+		custom.AddKeywordColor("redo",new Godot.Color(0.392f, 0.714f, 1.0f)); 
+		custom.AddKeywordColor("Redo",new Godot.Color(0.392f, 0.714f, 1.0f)); 
+		custom.AddKeywordColor("new",new Godot.Color(0.392f, 0.714f, 1.0f)); 
+		custom.AddKeywordColor("New",new Godot.Color(0.392f, 0.714f, 1.0f)); 
+		custom.AddKeywordColor("show",new Godot.Color(0.392f, 0.714f, 1.0f)); 
+		custom.AddKeywordColor("Show",new Godot.Color(0.392f, 0.714f, 1.0f)); 
+		custom.AddKeywordColor("commands",new Godot.Color(0.392f, 0.714f, 1.0f)); 
+		custom.AddKeywordColor("Commands",new Godot.Color(0.392f, 0.714f, 1.0f)); 
+		custom.AddKeywordColor("Help",new Godot.Color(0.392f, 0.714f, 1.0f)); 
+		custom.AddKeywordColor("help",new Godot.Color(0.392f, 0.714f, 1.0f)); 
+
+
+
+		custom.AddColorRegion("***", "***", new Godot.Color(0.5f, 0.5f, 1f));
+		custom.FunctionColor = new Godot.Color(199 / 255f, 148 / 255f, 157 / 255f);
+		custom.SymbolColor = new Godot.Color(1f, 1f, 1f);
+		custom.MemberVariableColor = new Godot.Color(199 / 255f, 148 / 255f, 157 / 255f);
+
+		SyntaxHighlighter = custom;
 	}
 }
