@@ -3,6 +3,7 @@ namespace PixelWallE.Language.Tokens;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Godot;
 using PixelWallE.Language.Expressions;
 using PixelWallE.Language.Parsing;
 using PixelWallE.Language.Parsing.Expressions;
@@ -89,8 +90,9 @@ public class TokenStream
     /// <returns>True if the current token matches the type; otherwise, false.</returns>
     public bool Check(TokenType type)
     {
-        if (IsAtStreamEnd) return false;
-        return Peek().Type==type;
+        //if (IsAtStreamEnd) return false;
+       
+        return Peek().Type == type;
     }
 
     /// <summary>
