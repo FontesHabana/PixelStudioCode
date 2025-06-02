@@ -43,7 +43,7 @@ public partial class main_ui : Control // partial es importante si adjuntas el s
 
     [Export] RichTextLabel _lineInfo;
 
-
+    private bool isRunning = false;
     private static Canvas canvas = new Canvas(25);
     private static Stack<Canvas> stackGoBack;
     private static Stack<Canvas> stackGoNext;
@@ -114,9 +114,13 @@ public partial class main_ui : Control // partial es importante si adjuntas el s
     //------------------------------------------------------------------------------------------------
 
     //-----------------------------------LeftRegionBUttons-----------------------------------------------
-    private void OnButtonPressed()
-    {
-        OnPlayPressedArgs();
+    private async void OnButtonPressed()
+    {   
+
+        await Task.Run(() =>
+        {
+            OnPlayPressedArgs();
+        });
     }
     public void OnPlayPressedArgs(string alternativeCode = null)
     {
