@@ -2,6 +2,7 @@ using Godot;
 using System;
 namespace Editor;
 using System;
+using MyConsole;
 using Godot.Collections;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
@@ -32,7 +33,19 @@ public partial class TextEdit : Godot.TextEdit
 					return;
 				}
 			}
+
+			GD.Print("Voy a ejecutar enter");
+			if (keyEvent.Keycode == Key.Enter)
+			{	GD.Print("lo hice enter");
+				
+					MyConsole.Console.HandleInput(ExtractFromUntilChar(this.Text, '>'), (main_ui)GetParent());
+				@event.Dispose();
+			}
+			
+
 		}
+
+		
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -61,8 +74,20 @@ public partial class TextEdit : Godot.TextEdit
 	}
 
 
+	  private string ExtractFromUntilChar(string input, char delimiter)
+    {
+        int index = input.LastIndexOf(delimiter);
 
-    private void ChangeTheme()
+        if (index == -1)
+        {
+            return input;
+        }
+
+        return input.Substring(index + 1);
+    }
+
+
+	private void ChangeTheme()
 	{
 		CodeHighlighter customHighlighter = new ConsoleHighlighter(this);
 		CodeHighlighter custom2 = new CodeHighlighter();
@@ -75,7 +100,7 @@ public partial class TextEdit : Godot.TextEdit
 		custom2.AddColorRegion("***", "***", new Godot.Color(0.5f, 0.5f, 1f));
 		custom2.FunctionColor = new Godot.Color(199 / 255f, 148 / 255f, 157 / 255f);
 		custom2.SymbolColor = new Godot.Color(1f, 1f, 1f);
-		custom2.MemberVariableColor=new Godot.Color(199 / 255f, 148 / 255f, 157 / 255f);
+		custom2.MemberVariableColor = new Godot.Color(199 / 255f, 148 / 255f, 157 / 255f);
 
 		SyntaxHighlighter = customHighlighter;
 		SyntaxHighlighter = custom2;

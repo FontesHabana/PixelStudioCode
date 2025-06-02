@@ -26,7 +26,7 @@ public class TokenStream
     /// <summary>
     /// Index representing the current token for parsing operations.
     /// </summary>
-    public int currentIndex;
+    public int index;
 
     /// <summary>
     /// Gets the current iteration index.
@@ -41,7 +41,7 @@ public class TokenStream
     {
         this.tokens = new List<Token>(tokens);
         iterationIndex  = 0;
-        currentIndex=0;
+        index=0;
     }
 
     /// <summary>
@@ -64,7 +64,8 @@ public class TokenStream
     /// <returns>The current <see cref="Token"/>.</returns>
     public Token Peek()
     {
-         return tokens[currentIndex];
+        Godot.GD.Print(index);
+         return tokens[index];
     }
 
     /// <summary>
@@ -134,7 +135,7 @@ public class TokenStream
     /// <returns>The previous <see cref="Token"/> before advancing.</returns>
     public Token Advance()
     {
-        if (!IsAtStreamEnd) currentIndex++;
+        if (!IsAtStreamEnd) index++;
         
         return Previous();
     }
@@ -145,7 +146,7 @@ public class TokenStream
     /// <returns>The previous <see cref="Token"/>.</returns>
     public Token Previous()
     {
-        return tokens[currentIndex-1];
+        return tokens[index-1];
     }
 
     /// <summary>
@@ -154,7 +155,7 @@ public class TokenStream
     /// <param name="k">The number of tokens to move back.</param>
     public void MoveBack(int k)
     {
-        currentIndex -= k;
+        index -= k;
     }
 
    

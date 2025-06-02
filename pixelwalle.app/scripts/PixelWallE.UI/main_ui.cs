@@ -16,7 +16,7 @@ public partial class main_ui : Control // partial es importante si adjuntas el s
     [Export] CodeEdit _codeEditNode;
     [Export] ColorRect _errorTooltip;
 
-    [Export] TextEdit _consoleOutput;
+    [Export] public TextEdit _consoleOutput;
     [Export] Button _cleanConsole;
 
     [Export] CanvasController _canvas;
@@ -52,7 +52,8 @@ public partial class main_ui : Control // partial es importante si adjuntas el s
     private string userScript => $" {DateTime.Now.ToString()} 🤖";
     private string? filePath = null;
 
-    private string? infoConsole => string.IsNullOrEmpty(filePath) ? $"\n *** New File {userScript} ***" : $"\n*** {filePath} {userScript} ***";
+    public string? infoConsole => string.IsNullOrEmpty(filePath) ? $"\n *** New File {userScript} ***" : $"\n*** {filePath} {userScript} ***";
+
 
 
 
@@ -115,9 +116,20 @@ public partial class main_ui : Control // partial es importante si adjuntas el s
     //-----------------------------------LeftRegionBUttons-----------------------------------------------
     private void OnButtonPressed()
     {
+        OnPlayPressedArgs();
+    }
+    public void OnPlayPressedArgs(string alternativeCode = null)
+    {
+        
         string codeFromEdit = _codeEditNode.Text; // Obtiene el texto del CodeEdit
+        if (alternativeCode != null)
+        {
+            codeFromEdit = alternativeCode;
+        }
+
         ProcessCode(codeFromEdit); // Llama al método de procesamiento con el texto
         _goBackButton.Visible = true;
+        
     }
     private void ResizePressed()
     {
@@ -131,7 +143,7 @@ public partial class main_ui : Control // partial es importante si adjuntas el s
 
 
     }
-    private void CleanCanvas()
+    public void CleanCanvas()
     {
         Canvas current = new Canvas(canvas.Size);
         CopyMatrix(interpreter.Canvas, current);
@@ -142,7 +154,7 @@ public partial class main_ui : Control // partial es importante si adjuntas el s
         _canvas.QueueRedraw();
 
     }
-    private void GoBack()
+    public void GoBack()
     {
 
         if (stackGoBack.Count > 0)
@@ -166,7 +178,7 @@ public partial class main_ui : Control // partial es importante si adjuntas el s
 
 
     }
-    private void GoNext()
+    public void GoNext()
     {
 
         if (stackGoNext.Count > 0)
@@ -185,7 +197,7 @@ public partial class main_ui : Control // partial es importante si adjuntas el s
 
     }
     //------------------------------------------------------------------------------------------------
-    private void CleanConsole()
+    public void CleanConsole()
     {
         _consoleOutput.Clear();
         _consoleOutput.ConsoleLog($"{infoConsole}");
@@ -203,13 +215,13 @@ public partial class main_ui : Control // partial es importante si adjuntas el s
     private void ProcessCode(string codeString)
     {
 
-        Canvas current = new Canvas(canvas.Size);
+
+   Canvas current = new Canvas(canvas.Size);
         CopyMatrix(canvas, current);
         stackGoBack.Push(current);
         interpreter = new Interpreter(canvas, codeString);
+
         interpreter.Run();
-
-
 
 
         foreach (PixelWallEException error in interpreter.Errors)
@@ -227,6 +239,7 @@ public partial class main_ui : Control // partial es importante si adjuntas el s
 
         _consoleOutput.ScrollVertical = _consoleOutput.GetLineCount();
         _canvas.QueueRedraw();
+
 
         // Si quisieras añadir líneas nuevas en lugar de reemplazar, podrías hacer:
         // _consoleOutput.Text += "Texto recibido: " + codeString + "\n";
@@ -305,7 +318,7 @@ public partial class main_ui : Control // partial es importante si adjuntas el s
 
 
     //-----------------------------------Canvas Manager ---------------------------------------------
-    private void ResizedCanvas(string text)
+    public void ResizedCanvas(string text)
     {
         int number;
         if (int.TryParse(text, out number))
@@ -394,6 +407,16 @@ public partial class main_ui : Control // partial es importante si adjuntas el s
         }
     }
 
+    public void NewFile()
+    {
+        _codeEditNode.Text = "";
+        filePath = null;
+        _consoleOutput.ConsoleLog(infoConsole);
+    }
+
+
+
+
 
     public override void _Input(InputEvent @event)
     {
@@ -406,10 +429,14 @@ public partial class main_ui : Control // partial es importante si adjuntas el s
         }
         else
         {
-             File.WriteAllText(filePath, _codeEditNode.Text);
+            File.WriteAllText(filePath, _codeEditNode.Text);
         }
+
+      
+      
     }
 
 
+    
     //------------------------------------------------------------------------------------------------
 }
