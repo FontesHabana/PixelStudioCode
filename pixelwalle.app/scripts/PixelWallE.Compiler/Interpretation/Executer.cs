@@ -835,7 +835,18 @@ public class Executer : IVisitor<ASTNode>
     /// <param name="command">The spawn command to execute.</param>
     public void SpawnCommand(SpawnCommand command)
     {
-        foreach (Expression item in command.Args)
+        SetRobotPosition(command);
+    }
+
+
+    public void ReSpawnCommand(ReSpawnCommand command)
+    {
+        SetRobotPosition(command);
+    }
+
+    private void SetRobotPosition(IArgument<Expression> command)
+    {
+         foreach (Expression item in command.Args)
         {
             item.Accept(this);
         }
@@ -843,8 +854,14 @@ public class Executer : IVisitor<ASTNode>
         object y = command.Args[1].Value;
         robot.X = (int)x;
         robot.Y = (int)y;
-        RobotOutException(robot.X, robot.Y, canvas.Size, command);
+        RobotOutException(robot.X, robot.Y, canvas.Size, (ASTNode)command);
     }
+
+
+
+
+
+
 
     /// <summary>
     /// Jumps to a specific label in the code if the given condition is true.

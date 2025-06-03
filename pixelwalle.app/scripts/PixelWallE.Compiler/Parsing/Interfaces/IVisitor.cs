@@ -70,6 +70,7 @@ public interface IVisitor<T>
    void FillCommand(FillCommand command);
    void SizeCommand(SizeCommand command);
    void SpawnCommand(SpawnCommand command);
+    void ReSpawnCommand(ReSpawnCommand command);
    void GoToCommand(GoToCommand command);
    void PrintCommand(PrintCommand command);
     #endregion

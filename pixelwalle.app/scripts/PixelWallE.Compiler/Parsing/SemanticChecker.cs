@@ -455,6 +455,10 @@ public class SemanticChecker : IVisitor<ASTNode>
         CheckArguments(new List<ExpressionType>() { ExpressionType.Number, ExpressionType.Number }, command);
 
     }
+    public void ReSpawnCommand(ReSpawnCommand command)
+    {
+          CheckArguments(new List<ExpressionType>() { ExpressionType.Number, ExpressionType.Number }, command);
+    }
     /// <summary>
     /// Performs semantic analysis on the given <see cref="GoToCommand"/>.
     /// </summary>

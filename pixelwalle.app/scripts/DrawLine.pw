@@ -1,5 +1,15 @@
 Spawn(0,0)
+n<-0
 
 Color("Red")
-Print(4==2)
-DrawLine(1,0,4)
+GoTo[redLine](true)
+blueLine
+Color("Blue")
+redLine
+ReSpawn(0,n)
+DrawLine(1,0,99)
+DrawLine(0,1,1)
+n<-n+2
+GoTo[redLine](n<100)
+n<-1
+GoTo[blueLine](n<100)

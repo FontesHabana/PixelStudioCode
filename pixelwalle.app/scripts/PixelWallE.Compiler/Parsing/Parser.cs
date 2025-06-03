@@ -392,7 +392,7 @@ public class Parser
                 Stream.Synchronize();
                 continue;
             }
-            else if (Stream.Match(new List<TokenType> { TokenType.COLOR, TokenType.DRAWCIRCLE, TokenType.DRAWLINE, TokenType.DRAWRECTANGLE, TokenType.FILL, TokenType.SIZE, TokenType.PRINT }))
+            else if (Stream.Match(new List<TokenType> { TokenType.COLOR, TokenType.DRAWCIRCLE, TokenType.DRAWLINE, TokenType.DRAWRECTANGLE, TokenType.FILL, TokenType.SIZE, TokenType.PRINT , TokenType.RESPAWN}))
             {
                 try
                 {
@@ -510,7 +510,10 @@ public class Parser
         {
             return new SpawnCommand(headCommand.Location, TokenType.SPAWN, new List<Expression>());
         }
-
+         if (headCommand.Type == TokenType.RESPAWN)
+        {
+            return new ReSpawnCommand(headCommand.Location, TokenType.RESPAWN, new List<Expression>());
+        }
         if (headCommand.Type == TokenType.PRINT)
         {
             return new PrintCommand(headCommand.Location, TokenType.PRINT, new List<Expression>());

@@ -63,6 +63,7 @@ public class LexerProvider
                 __LexicalProcess.RegisterKeyword("GoTo", TokenType.GOTO);
                 __LexicalProcess.RegisterKeyword("Size", TokenType.SIZE);
                 __LexicalProcess.RegisterKeyword("Spawn", TokenType.SPAWN);
+                __LexicalProcess.RegisterKeyword("ReSpawn", TokenType.RESPAWN);
                 __LexicalProcess.RegisterKeyword("Fill", TokenType.FILL);
                 __LexicalProcess.RegisterKeyword("Print", TokenType.PRINT);
                 __LexicalProcess.RegisterKeyword("GetActualX", TokenType.GETACTUALX);
