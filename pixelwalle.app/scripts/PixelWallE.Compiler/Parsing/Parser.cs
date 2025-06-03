@@ -295,62 +295,7 @@ public class Parser
 
         ASTNode? command = null;
 
-        if (headCommand.Type == TokenType.COLOR)
-        {
-            command = new ColorCommand(headCommand.Location, TokenType.COLOR, new List<Expression>());
-        }
-        if (headCommand.Type == TokenType.DRAWCIRCLE)
-        {
-            command = new DrawCircleCommand(headCommand.Location, TokenType.DRAWCIRCLE, new List<Expression>());
-        }
-        if (headCommand.Type == TokenType.DRAWLINE)
-        {
-            command = new DrawLineCommand(headCommand.Location, TokenType.DRAWLINE, new List<Expression>());
-        }
-        if (headCommand.Type == TokenType.DRAWRECTANGLE)
-        {
-            command = new DrawRectangleCommand(headCommand.Location, TokenType.DRAWRECTANGLE, new List<Expression>());
-        }
-        if (headCommand.Type == TokenType.FILL)
-        {
-            command = new FillCommand(headCommand.Location, TokenType.FILL, new List<Expression>());
-        }
-        if (headCommand.Type == TokenType.SIZE)
-        {
-            command = new SizeCommand(headCommand.Location, TokenType.SIZE, new List<Expression>());
-        }
-        if (headCommand.Type == TokenType.SPAWN)
-        {
-            command = new SpawnCommand(headCommand.Location, TokenType.SPAWN, new List<Expression>());
-        }
-        if (headCommand.Type == TokenType.GETACTUALX)
-        {
-            command = new GetActualXFunction(headCommand.Location, TokenType.GETACTUALX, new List<Expression>());
-        }
-        if (headCommand.Type == TokenType.GETACTUALY)
-        {
-            command = new GetActualYFunction(headCommand.Location, TokenType.GETACTUALY, new List<Expression>());
-        }
-        if (headCommand.Type == TokenType.GETCANVASSIZE)
-        {
-            command = new GetCanvasSizeFunction(headCommand.Location, TokenType.GETCANVASSIZE, new List<Expression>());
-        }
-        if (headCommand.Type == TokenType.GETCOLORCOUNT)
-        {
-            command = new GetColorCountFunction(headCommand.Location, TokenType.GETCOLORCOUNT, new List<Expression>());
-        }
-        if (headCommand.Type == TokenType.ISBRUSHCOLOR)
-        {
-            command = new IsBrushColorFunction(headCommand.Location, TokenType.ISBRUSHCOLOR, new List<Expression>());
-        }
-        if (headCommand.Type == TokenType.ISBRUSHSIZE)
-        {
-            command = new IsBrushSizeFunction(headCommand.Location, TokenType.ISBRUSHSIZE, new List<Expression>());
-        }
-        if (headCommand.Type == TokenType.ISCANVASCOLOR)
-        {
-            command = new IsCanvasColor(headCommand.Location, TokenType.ISCANVASCOLOR, new List<Expression>());
-        }
+        command = CommandFunctionProvider(headCommand);
 
 
         IArgument<Expression> argument = (IArgument<Expression>)command;
@@ -429,6 +374,7 @@ public class Parser
             else if (!Stream.Match(new List<TokenType> { TokenType.EOL }))
             {
                 program.Errors.Add(SyntaxException.SpawnMisplaced(Stream.Peek().Location));
+                Stream.Synchronize();
                 break;
             }
         }
@@ -446,7 +392,7 @@ public class Parser
                 Stream.Synchronize();
                 continue;
             }
-            else if (Stream.Match(new List<TokenType> { TokenType.COLOR, TokenType.DRAWCIRCLE, TokenType.DRAWLINE, TokenType.DRAWRECTANGLE, TokenType.FILL, TokenType.SIZE }))
+            else if (Stream.Match(new List<TokenType> { TokenType.COLOR, TokenType.DRAWCIRCLE, TokenType.DRAWLINE, TokenType.DRAWRECTANGLE, TokenType.FILL, TokenType.SIZE, TokenType.PRINT }))
             {
                 try
                 {
@@ -534,6 +480,78 @@ public class Parser
 
     #endregion
 
+    private ASTNode? CommandFunctionProvider(Token headCommand)
+    {
+        if (headCommand.Type == TokenType.COLOR)
+        {
+            return new ColorCommand(headCommand.Location, TokenType.COLOR, new List<Expression>());
+        }
+        if (headCommand.Type == TokenType.DRAWCIRCLE)
+        {
+            return new DrawCircleCommand(headCommand.Location, TokenType.DRAWCIRCLE, new List<Expression>());
+        }
+        if (headCommand.Type == TokenType.DRAWLINE)
+        {
+            return new DrawLineCommand(headCommand.Location, TokenType.DRAWLINE, new List<Expression>());
+        }
+        if (headCommand.Type == TokenType.DRAWRECTANGLE)
+        {
+            return new DrawRectangleCommand(headCommand.Location, TokenType.DRAWRECTANGLE, new List<Expression>());
+        }
+        if (headCommand.Type == TokenType.FILL)
+        {
+            return new FillCommand(headCommand.Location, TokenType.FILL, new List<Expression>());
+        }
+        if (headCommand.Type == TokenType.SIZE)
+        {
+            return new SizeCommand(headCommand.Location, TokenType.SIZE, new List<Expression>());
+        }
+        if (headCommand.Type == TokenType.SPAWN)
+        {
+            return new SpawnCommand(headCommand.Location, TokenType.SPAWN, new List<Expression>());
+        }
 
+        if (headCommand.Type == TokenType.PRINT)
+        {
+            return new PrintCommand(headCommand.Location, TokenType.PRINT, new List<Expression>());
+        }
+
+
+
+
+
+
+
+        if (headCommand.Type == TokenType.GETACTUALX)
+        {
+            return new GetActualXFunction(headCommand.Location, TokenType.GETACTUALX, new List<Expression>());
+        }
+        if (headCommand.Type == TokenType.GETACTUALY)
+        {
+            return new GetActualYFunction(headCommand.Location, TokenType.GETACTUALY, new List<Expression>());
+        }
+        if (headCommand.Type == TokenType.GETCANVASSIZE)
+        {
+            return new GetCanvasSizeFunction(headCommand.Location, TokenType.GETCANVASSIZE, new List<Expression>());
+        }
+        if (headCommand.Type == TokenType.GETCOLORCOUNT)
+        {
+            return new GetColorCountFunction(headCommand.Location, TokenType.GETCOLORCOUNT, new List<Expression>());
+        }
+        if (headCommand.Type == TokenType.ISBRUSHCOLOR)
+        {
+            return new IsBrushColorFunction(headCommand.Location, TokenType.ISBRUSHCOLOR, new List<Expression>());
+        }
+        if (headCommand.Type == TokenType.ISBRUSHSIZE)
+        {
+            return new IsBrushSizeFunction(headCommand.Location, TokenType.ISBRUSHSIZE, new List<Expression>());
+        }
+        if (headCommand.Type == TokenType.ISCANVASCOLOR)
+        {
+            return new IsCanvasColor(headCommand.Location, TokenType.ISCANVASCOLOR, new List<Expression>());
+        }
+        return null;
+    }
+   
 }
 

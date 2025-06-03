@@ -24,7 +24,7 @@ public class Executer : IVisitor<ASTNode>
     /// A list to store any errors encountered during the execution of the program.
     /// </summary>
     public List<PixelWallEException> errors;
-
+    public List<string> ConsoleMessages;
     private Canvas canvas;
     private RobotState robot;
     /// <summary>
@@ -42,11 +42,12 @@ public class Executer : IVisitor<ASTNode>
     /// <param name="canvas">The canvas to be manipulated.</param>
     /// <param name="robot">The robot state to be updated.</param>
     /// <param name="error">The list to store any errors encountered during execution.</param>
-    public Executer(Scope scope, Canvas canvas, RobotState robot, List<PixelWallEException> error)
+    public Executer(Scope scope, Canvas canvas, RobotState robot, List<PixelWallEException> error,List<string> consoleMessages)
     {
         this.scope = scope;
         this.canvas = canvas;
         this.robot = robot;
+        ConsoleMessages = consoleMessages;
 
         errors = error;
         Index = 0;
@@ -237,9 +238,9 @@ public class Executer : IVisitor<ASTNode>
             function.Value = false;
         else
             if (canvas.Matrix[robot.Y + (int)y, robot.X + (int)x] == (string)color)
-                function.Value = true;
-            else
-                function.Value = false;
+            function.Value = true;
+        else
+            function.Value = false;
     }
 
     #endregion
@@ -871,5 +872,15 @@ public class Executer : IVisitor<ASTNode>
         }
     }
 
+
+
+    public void PrintCommand(PrintCommand command)
+    {
+        foreach (Expression item in command.Args)
+        {
+            item.Accept(this);
+        }
+        ConsoleMessages.Add(command.Args[0].Value.ToString());
+    }
     #endregion
 }

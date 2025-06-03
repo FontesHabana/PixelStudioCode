@@ -9,6 +9,7 @@ using System.Linq;
 using PixelWallE.Language;
 using System;
 using System.Xml;
+using System.Runtime.InteropServices;
 
 /// <summary>
 /// Performs semantic analysis on the Abstract Syntax Tree (AST).
@@ -104,7 +105,7 @@ public class SemanticChecker : IVisitor<ASTNode>
                 {
                     if (!scope.IsDeclared(function.Args[i].ToString(), scope.colors))
                     {
-                        SemanticException.UndeclaredColor(function.Args[i].ToString(), node.Location);
+                        errors.Add(SemanticException.UndeclaredColor(function.Args[i].ToString(), node.Location));
                     }
                 }
 
@@ -188,7 +189,7 @@ public class SemanticChecker : IVisitor<ASTNode>
     /// Performs semantic analysis on the given <see cref="IsColorFunction"/>.
     /// </summary>
     /// <param name="function">The function to analyze.</param>
-   
+
     #endregion
 
 
@@ -466,6 +467,21 @@ public class SemanticChecker : IVisitor<ASTNode>
             errors.Add(SemanticException.LabelNotFound(command.Label, command.Location));
         }
 
+    }
+
+
+    public void PrintCommand(PrintCommand command)
+    {
+        foreach (Expression item in command.Args)
+        {
+            item.Accept(this);
+        }
+        if (command.Args.Count() != 1)
+        {
+             errors.Add(SemanticException.IncorrectArgumentCount(command.Name,1,command.Args.Count(), command.Location));
+        }
+       
+         
     }
     #endregion
 
