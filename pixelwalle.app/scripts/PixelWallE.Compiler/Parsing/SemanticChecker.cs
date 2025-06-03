@@ -8,8 +8,6 @@ using System.Collections.Generic;
 using System.Linq;
 using PixelWallE.Language;
 using System;
-using System.Xml;
-using System.Runtime.InteropServices;
 
 /// <summary>
 /// Performs semantic analysis on the Abstract Syntax Tree (AST).
@@ -101,9 +99,11 @@ public class SemanticChecker : IVisitor<ASTNode>
                 {
                     errors.Add(SemanticException.TypeMismatch(name, argsType[i], function.Args[i].Type, node.Location));
                 }
+                
                 if (function.Args[i].Type == ExpressionType.String)
                 {
-                    if (!scope.IsDeclared(function.Args[i].ToString(), scope.colors))
+                   
+                    if (!scope.IsDeclared(function.Args[i].Value.ToString(), scope.colors))
                     {
                         errors.Add(SemanticException.UndeclaredColor(function.Args[i].ToString(), node.Location));
                     }
