@@ -877,7 +877,7 @@ public class Executer : IVisitor<ASTNode>
     /// <exception cref="RuntimeException">Thrown when a possibly infinite loop is detected.</exception>
     public void GoToCommand(GoToCommand command)
     {
-        if (true) //10**6
+        if (command.InfinteCycle<1000000) //10**6
         {
             foreach (Expression arg in command.Args)
             {
