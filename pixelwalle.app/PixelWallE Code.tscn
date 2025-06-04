@@ -348,8 +348,8 @@ theme_override_fonts/normal_font = ExtResource("2_u6nwd")
 text = "Line: 0  Column: 0"
 
 [connection signal="pressed" from="TopLine/ArchivesManager" to="." method="PressedArchiveControl"]
-[connection signal="pressed" from="TopLine/Settings" to="." method="PressedArchiveControl"]
 [connection signal="pressed" from="TopLine/Settings" to="." method="PressedVista"]
+[connection signal="pressed" from="TopLine/Settings" to="." method="PressedArchiveControl"]
 [connection signal="pressed" from="TopLine/Close" to="." method="ClosePressed"]
 [connection signal="pressed" from="TopLine/Button" to="." method="DocsPressed"]
 [connection signal="caret_changed" from="CodeEdit" to="." method="CaretChanged"]

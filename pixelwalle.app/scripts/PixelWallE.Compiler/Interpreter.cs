@@ -20,20 +20,37 @@ public  class Interpreter{
    /// A list to store any errors encountered during the interpretation process.
    /// </summary>
    public  List<PixelWallEException> Errors { get;  set;}
+   
+
+
+   public List<string> ConsoleMessage{ get; set; }
+
+
+
+
+
    /// <summary>
-   /// The canvas on which the PixelWallE program will operate.
-   /// </summary>
-   public  Canvas Canvas { get;  set;}
+  /// The canvas on which the PixelWallE program will operate.
+  /// </summary>
+  public Canvas Canvas { get; set; }
    /// <summary>
    /// The scope that manages variables and labels during semantic analysis and execution.
    /// </summary>
    public Scope Scope{ get; set; }
   
-   /// <summary>
-   /// The parsed representation of the PixelWallE program.
-   /// </summary>
-   private ElementalProgram Program{ get; set; }
+  
+   
 
+
+
+   /// <summary>
+  /// The parsed representation of the PixelWallE program.
+  /// </summary>
+  private ElementalProgram Program { get; set; }
+
+
+
+  
   /// <summary>
   /// Initializes a new instance of the <see cref="Interpreter"/> class.
   /// </summary>
@@ -43,8 +60,9 @@ public  class Interpreter{
   {
     Canvas = canvas;
     Errors = new List<PixelWallEException>();
+    ConsoleMessage = new List<string>();
     Interpetation(code);
-    
+
   }
 
 
@@ -92,7 +110,7 @@ public  class Interpreter{
       RobotState robot = new RobotState();
 
 
-      Executer executer = new Executer(Scope, Canvas, robot, Errors);
+      Executer executer = new Executer(Scope, Canvas, robot, Errors, ConsoleMessage);
       Program.Accept(executer);
     }
   }

@@ -24,7 +24,7 @@ public class Executer : IVisitor<ASTNode>
     /// A list to store any errors encountered during the execution of the program.
     /// </summary>
     public List<PixelWallEException> errors;
-
+    public List<string> ConsoleMessages;
     private Canvas canvas;
     private RobotState robot;
     /// <summary>
@@ -42,11 +42,12 @@ public class Executer : IVisitor<ASTNode>
     /// <param name="canvas">The canvas to be manipulated.</param>
     /// <param name="robot">The robot state to be updated.</param>
     /// <param name="error">The list to store any errors encountered during execution.</param>
-    public Executer(Scope scope, Canvas canvas, RobotState robot, List<PixelWallEException> error)
+    public Executer(Scope scope, Canvas canvas, RobotState robot, List<PixelWallEException> error,List<string> consoleMessages)
     {
         this.scope = scope;
         this.canvas = canvas;
         this.robot = robot;
+        ConsoleMessages = consoleMessages;
 
         errors = error;
         Index = 0;
@@ -237,9 +238,9 @@ public class Executer : IVisitor<ASTNode>
             function.Value = false;
         else
             if (canvas.Matrix[robot.Y + (int)y, robot.X + (int)x] == (string)color)
-                function.Value = true;
-            else
-                function.Value = false;
+            function.Value = true;
+        else
+            function.Value = false;
     }
 
     #endregion
@@ -834,7 +835,25 @@ public class Executer : IVisitor<ASTNode>
     /// <param name="command">The spawn command to execute.</param>
     public void SpawnCommand(SpawnCommand command)
     {
-        foreach (Expression item in command.Args)
+        SetRobotPosition(command);
+    }
+
+    /// <summary>
+    /// Resets the position of the robot on the canvas.
+    /// </summary>
+    /// <param name="command">The respawn command to execute.</param>
+    public void ReSpawnCommand(ReSpawnCommand command)
+    {
+        SetRobotPosition(command);
+    }
+
+    /// <summary>
+    /// Sets the robot's position based on the provided command arguments.
+    /// </summary>
+    /// <param name="command">The command containing the x and y coordinates.</param>
+    private void SetRobotPosition(IArgument<Expression> command)
+    {
+         foreach (Expression item in command.Args)
         {
             item.Accept(this);
         }
@@ -842,8 +861,14 @@ public class Executer : IVisitor<ASTNode>
         object y = command.Args[1].Value;
         robot.X = (int)x;
         robot.Y = (int)y;
-        RobotOutException(robot.X, robot.Y, canvas.Size, command);
+        RobotOutException(robot.X, robot.Y, canvas.Size, (ASTNode)command);
     }
+
+
+
+
+
+
 
     /// <summary>
     /// Jumps to a specific label in the code if the given condition is true.
@@ -852,7 +877,7 @@ public class Executer : IVisitor<ASTNode>
     /// <exception cref="RuntimeException">Thrown when a possibly infinite loop is detected.</exception>
     public void GoToCommand(GoToCommand command)
     {
-        if (command.InfinteCycle < 1000000) //10**6
+        if (true) //10**6
         {
             foreach (Expression arg in command.Args)
             {
@@ -864,6 +889,7 @@ public class Executer : IVisitor<ASTNode>
                 Index = label.CommandIndicator - 1;
             }
             command.InfinteCycle++;
+            Godot.GD.Print("goto ejecutado");
         }
         else
         {
@@ -871,5 +897,15 @@ public class Executer : IVisitor<ASTNode>
         }
     }
 
+
+
+    public void PrintCommand(PrintCommand command)
+    {
+        foreach (Expression item in command.Args)
+        {
+            item.Accept(this);
+        }
+        ConsoleMessages.Add(command.Args[0].Value.ToString());
+    }
     #endregion
 }
