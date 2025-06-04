@@ -838,12 +838,19 @@ public class Executer : IVisitor<ASTNode>
         SetRobotPosition(command);
     }
 
-
+    /// <summary>
+    /// Resets the position of the robot on the canvas.
+    /// </summary>
+    /// <param name="command">The respawn command to execute.</param>
     public void ReSpawnCommand(ReSpawnCommand command)
     {
         SetRobotPosition(command);
     }
 
+    /// <summary>
+    /// Sets the robot's position based on the provided command arguments.
+    /// </summary>
+    /// <param name="command">The command containing the x and y coordinates.</param>
     private void SetRobotPosition(IArgument<Expression> command)
     {
          foreach (Expression item in command.Args)

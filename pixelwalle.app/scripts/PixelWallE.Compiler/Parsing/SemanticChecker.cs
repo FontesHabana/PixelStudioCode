@@ -474,6 +474,10 @@ public class SemanticChecker : IVisitor<ASTNode>
     }
 
 
+    /// <summary>
+    /// Performs semantic analysis on the given <see cref="PrintCommand"/>.
+    /// </summary>
+    /// <param name="command">The command to analyze.</param>
     public void PrintCommand(PrintCommand command)
     {
         foreach (Expression item in command.Args)

@@ -6,7 +6,9 @@ using PixelWallE.Language.Expressions;
 using PixelWallE.Language.Tokens;
 using System.Collections.Generic;
 
-
+/// <summary>
+/// Represents a command to print a value to the console.
+/// </summary>
 public class PrintCommand : Command
 {
    
@@ -17,6 +19,10 @@ public class PrintCommand : Command
     }
 
    
+    /// <summary>
+    /// Accepts a visitor to perform specific operations on this command.
+    /// </summary>
+    /// <param name="visitor">The visitor to accept.</param>
     public override void Accept(IVisitor<ASTNode> visitor)
     {
         visitor.PrintCommand(this);
