@@ -892,7 +892,6 @@ public class Executer : IVisitor<ASTNode>
 
 
 
-    public delegate void ConsoleMessageAddedEventHandler(string message);
     public void PrintCommand(PrintCommand command)
     {
         foreach (Expression item in command.Args)
@@ -900,7 +899,6 @@ public class Executer : IVisitor<ASTNode>
             item.Accept(this);
         }
         ConsoleMessages.Add(command.Args[0].Value.ToString());
-    
     }
     #endregion
 }
