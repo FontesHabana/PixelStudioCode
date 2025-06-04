@@ -1,7 +1,7 @@
 ﻿using System;
 
-namespace PixelWallE.Core
-{
+namespace PixelWallE.Core;
+
     /// <summary>
     /// Represents a canvas for drawing pixels.
     /// </summary>
@@ -36,4 +36,4 @@ namespace PixelWallE.Core
 
         
     }
-}
+
