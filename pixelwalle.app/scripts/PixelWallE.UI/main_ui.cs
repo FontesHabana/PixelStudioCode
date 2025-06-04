@@ -116,8 +116,7 @@ public partial class main_ui : Control // partial es importante si adjuntas el s
     //-----------------------------------LeftRegionBUttons-----------------------------------------------
     private async void OnButtonPressed()
     {
-
-        await Task.Run(() =>
+      await Task.Run(() =>
         {
             OnPlayPressedArgs();
         });
@@ -228,13 +227,17 @@ public partial class main_ui : Control // partial es importante si adjuntas el s
 
         interpreter.Run();
 
+        foreach (string message in interpreter.ConsoleMessage)
+        {
+            _consoleOutput.ConsoleLog($"{message} \n");
 
+        }
         foreach (PixelWallEException error in interpreter.Errors)
         {
             _consoleOutput.ConsoleLog($"{error.Message} \n");
 
         }
-
+        
         if (interpreter.Errors.Count == 0)
         {
             _consoleOutput.Text += "\n Compilado correctamente \n";

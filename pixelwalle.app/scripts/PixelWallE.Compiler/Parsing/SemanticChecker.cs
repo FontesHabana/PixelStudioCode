@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Linq;
 using PixelWallE.Language;
 using System;
-using System.Xml;
 
 /// <summary>
 /// Performs semantic analysis on the Abstract Syntax Tree (AST).
@@ -100,11 +99,13 @@ public class SemanticChecker : IVisitor<ASTNode>
                 {
                     errors.Add(SemanticException.TypeMismatch(name, argsType[i], function.Args[i].Type, node.Location));
                 }
+                
                 if (function.Args[i].Type == ExpressionType.String)
                 {
-                    if (!scope.IsDeclared(function.Args[i].ToString(), scope.colors))
+                   
+                    if (!scope.IsDeclared(function.Args[i].Value.ToString(), scope.colors))
                     {
-                        SemanticException.UndeclaredColor(function.Args[i].ToString(), node.Location);
+                        errors.Add(SemanticException.UndeclaredColor(function.Args[i].ToString(), node.Location));
                     }
                 }
 
@@ -188,7 +189,7 @@ public class SemanticChecker : IVisitor<ASTNode>
     /// Performs semantic analysis on the given <see cref="IsColorFunction"/>.
     /// </summary>
     /// <param name="function">The function to analyze.</param>
-   
+
     #endregion
 
 
@@ -454,6 +455,10 @@ public class SemanticChecker : IVisitor<ASTNode>
         CheckArguments(new List<ExpressionType>() { ExpressionType.Number, ExpressionType.Number }, command);
 
     }
+    public void ReSpawnCommand(ReSpawnCommand command)
+    {
+          CheckArguments(new List<ExpressionType>() { ExpressionType.Number, ExpressionType.Number }, command);
+    }
     /// <summary>
     /// Performs semantic analysis on the given <see cref="GoToCommand"/>.
     /// </summary>
@@ -466,6 +471,25 @@ public class SemanticChecker : IVisitor<ASTNode>
             errors.Add(SemanticException.LabelNotFound(command.Label, command.Location));
         }
 
+    }
+
+
+    /// <summary>
+    /// Performs semantic analysis on the given <see cref="PrintCommand"/>.
+    /// </summary>
+    /// <param name="command">The command to analyze.</param>
+    public void PrintCommand(PrintCommand command)
+    {
+        foreach (Expression item in command.Args)
+        {
+            item.Accept(this);
+        }
+        if (command.Args.Count() != 1)
+        {
+             errors.Add(SemanticException.IncorrectArgumentCount(command.Name,1,command.Args.Count(), command.Location));
+        }
+       
+         
     }
     #endregion
 

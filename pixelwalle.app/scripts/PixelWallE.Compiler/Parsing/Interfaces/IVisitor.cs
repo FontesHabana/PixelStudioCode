@@ -12,64 +12,66 @@ namespace PixelWallE.Language.Parsing;
 /// <typeparam name="T">The return type for the visitor methods (often unused).</typeparam>
 public interface IVisitor<T>
 {
-    /// <summary>
-    /// Visits an ElementalProgram node.
-    /// </summary>
-    void ElementalProgram(ElementalProgram program);
+   /// <summary>
+   /// Visits an ElementalProgram node.
+   /// </summary>
+   void ElementalProgram(ElementalProgram program);
 
-    #region Expressions
+   #region Expressions
 
-    void ParenthesizedExpression(ParenthesizedExpression parenthesizedExpression);
-    void Variable(Variable var);
+   void ParenthesizedExpression(ParenthesizedExpression parenthesizedExpression);
+   void Variable(Variable var);
 
    #region  Functions
 
-    void GetActualXFunction(GetActualXFunction function);
-    void GetActualYFunction(GetActualYFunction function);
-    void GetCanvasSizeFunction(GetCanvasSizeFunction function);
-    void GetColorCountFunction(GetColorCountFunction function);
-    void IsBrushColorFunction(IsBrushColorFunction function);
-    void IsBrushSizeFunction(IsBrushSizeFunction function);
-    void IsCanvasColor(IsCanvasColor function);
+   void GetActualXFunction(GetActualXFunction function);
+   void GetActualYFunction(GetActualYFunction function);
+   void GetCanvasSizeFunction(GetCanvasSizeFunction function);
+   void GetColorCountFunction(GetColorCountFunction function);
+   void IsBrushColorFunction(IsBrushColorFunction function);
+   void IsBrushSizeFunction(IsBrushSizeFunction function);
+   void IsCanvasColor(IsCanvasColor function);
 
    #endregion
-    // Unary Expressions
-    void NotOperation(NotOperation operation);
-    void NegationOperation(NegationOperation operation);
+   // Unary Expressions
+   void NotOperation(NotOperation operation);
+   void NegationOperation(NegationOperation operation);
 
-    // Binary Expressions
-    #region Arithmetic Operation
-     void AdditionOperation(AdditionOperation operation);
-     void DivisionOperation(DivisionOperation operation);
-     void ExponentiationOperation(ExponentiationOperation operation);
-     void ModuloOperation(ModuloOperation operation);
-     void MultiplicationOperation(MultiplicationOperation operation);
-     void SubstractionOperation(SubstractionOperation operation);
-    #endregion
-    
-    #region Logic Operation
-    void ANDOperation(ANDOperation operation);
-    void OrOperation(OrOperation operation);
-    void EqualToOperation(EqualToOperation operation);
-    void GreatherThanOperation(GreatherThanOperation operation);
-    void GreatherThanOrEqualToOperation(GreatherThanOrEqualToOperation operation);
-    void LessThanOperation(LessThanOperation operation);
-    void LessThanOrEqualToOperation(LessThanOrEqualToOperation operation);
-    void NotEqualToOperation(NotEqualToOperation operation);
-    #endregion
-    #endregion 
+   // Binary Expressions
+   #region Arithmetic Operation
+   void AdditionOperation(AdditionOperation operation);
+   void DivisionOperation(DivisionOperation operation);
+   void ExponentiationOperation(ExponentiationOperation operation);
+   void ModuloOperation(ModuloOperation operation);
+   void MultiplicationOperation(MultiplicationOperation operation);
+   void SubstractionOperation(SubstractionOperation operation);
+   #endregion
+
+   #region Logic Operation
+   void ANDOperation(ANDOperation operation);
+   void OrOperation(OrOperation operation);
+   void EqualToOperation(EqualToOperation operation);
+   void GreatherThanOperation(GreatherThanOperation operation);
+   void GreatherThanOrEqualToOperation(GreatherThanOrEqualToOperation operation);
+   void LessThanOperation(LessThanOperation operation);
+   void LessThanOrEqualToOperation(LessThanOrEqualToOperation operation);
+   void NotEqualToOperation(NotEqualToOperation operation);
+   #endregion
+   #endregion
 
 
- #region Command
-  
-    void AssigmentExpression(AssigmentExpression command);
-    void ColorCommand(ColorCommand command);
-    void DrawCircleCommand(DrawCircleCommand command);
-    void DrawLineCommand(DrawLineCommand command);
-    void DrawRectangleCommand(DrawRectangleCommand command);
-    void FillCommand(FillCommand command);
-    void SizeCommand(SizeCommand command);
-    void SpawnCommand(SpawnCommand command);
-    void GoToCommand(GoToCommand command);
+   #region Command
+
+   void AssigmentExpression(AssigmentExpression command);
+   void ColorCommand(ColorCommand command);
+   void DrawCircleCommand(DrawCircleCommand command);
+   void DrawLineCommand(DrawLineCommand command);
+   void DrawRectangleCommand(DrawRectangleCommand command);
+   void FillCommand(FillCommand command);
+   void SizeCommand(SizeCommand command);
+   void SpawnCommand(SpawnCommand command);
+    void ReSpawnCommand(ReSpawnCommand command);
+   void GoToCommand(GoToCommand command);
+   void PrintCommand(PrintCommand command);
     #endregion
-   }
+}
