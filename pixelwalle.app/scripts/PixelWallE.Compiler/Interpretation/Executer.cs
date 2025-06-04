@@ -898,7 +898,11 @@ public class Executer : IVisitor<ASTNode>
     }
 
 
-
+/// <summary>
+    /// Print a string in console.
+    /// </summary>
+    /// <param name="command">The go-to command to execute.</param>
+    /// <exception cref="RuntimeException">Thrown when a possibly infinite loop is detected.</exception>
     public void PrintCommand(PrintCommand command)
     {
         foreach (Expression item in command.Args)
