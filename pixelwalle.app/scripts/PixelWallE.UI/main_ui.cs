@@ -116,8 +116,16 @@ public partial class main_ui : Control // partial es importante si adjuntas el s
     //-----------------------------------LeftRegionBUttons-----------------------------------------------
     private async void OnButtonPressed()
     {
-      
+      try
+      {
         OnPlayPressedArgs();
+      }
+      catch (System.Exception error)
+      {
+
+            GD.Print(error);
+      }
+        
          _canvas.QueueRedraw();
     }
     public void OnPlayPressedArgs(string alternativeCode = null)

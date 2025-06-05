@@ -2,14 +2,14 @@ using PixelWallE.Language.Parsing.Expressions;
 using PixelWallE.Language.Parsing;
 using PixelWallE.Language.Tokens;
 using System.Collections.Generic;
-
+using PixelWallE.Core;
 namespace PixelWallE.Language.Expressions;
 
 /// <summary>
 /// Represents a function that checks if a specific pixel on the canvas matches a given color in the PixelWallE language AST.
 /// </summary>
-public class IsCanvasColor : Function
-{
+public class IsCanvasColor : Function, IColor
+{    public PixelColor color{ get; set; }
     /// <summary>
     /// Gets or sets the list of arguments (color, x, y).
     /// </summary>

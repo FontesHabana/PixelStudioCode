@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using PixelWallE.Language;
 using System;
+using PixelWallE.Core;
 
 /// <summary>
 /// Performs semantic analysis on the Abstract Syntax Tree (AST).
@@ -100,14 +101,14 @@ public class SemanticChecker : IVisitor<ASTNode>
                     errors.Add(SemanticException.TypeMismatch(name, argsType[i], function.Args[i].Type, node.Location));
                 }
                 
-                if (function.Args[i].Type == ExpressionType.String)
+               /* if (function.Args[i].Type == ExpressionType.String)
                 {
                    
                     if (!scope.IsDeclared(function.Args[i].Value.ToString(), scope.colors))
                     {
                         errors.Add(SemanticException.UndeclaredColor(function.Args[i].ToString(), node.Location));
                     }
-                }
+                }*/
 
 
             }
@@ -121,9 +122,22 @@ public class SemanticChecker : IVisitor<ASTNode>
 
     }
 
+    private void CheckColor(Expression posibleColor, out PixelColor myColor)
+    {
+        myColor = new PixelColor(0, 0, 0);
+        if (posibleColor.Type == ExpressionType.String)
+        {
+
+            if (!PixelColor.TryParse(posibleColor.Value.ToString(), out PixelColor color))
+            {
+                errors.Add(SemanticException.UndeclaredColor(posibleColor.ToString(), posibleColor.Location));
+            }
+            myColor = color;
+        }
+    }
 
     #region functions
-    //Functions
+
     /// <summary>
     /// Performs semantic analysis on the given <see cref="GetActualXFunction"/>.
     /// </summary>
@@ -157,6 +171,8 @@ public class SemanticChecker : IVisitor<ASTNode>
     public void GetColorCountFunction(GetColorCountFunction function)
     {
         CheckArguments(new List<ExpressionType>() { ExpressionType.String, ExpressionType.Number, ExpressionType.Number, ExpressionType.Number, ExpressionType.Number }, function);
+        CheckColor(function.Args[0], out PixelColor color);
+        function.color = color;
 
     }
     /// <summary>
@@ -166,7 +182,8 @@ public class SemanticChecker : IVisitor<ASTNode>
     public void IsBrushColorFunction(IsBrushColorFunction function)
     {
         CheckArguments(new List<ExpressionType>() { ExpressionType.String }, function);
-
+        CheckColor(function.Args[0], out PixelColor color);
+        function.color = color;
     }
     /// <summary>
     /// Performs semantic analysis on the given <see cref="IsBrushSizeFunction"/>.
@@ -183,12 +200,11 @@ public class SemanticChecker : IVisitor<ASTNode>
     public void IsCanvasColor(IsCanvasColor function)
     {
         CheckArguments(new List<ExpressionType>() { ExpressionType.String, ExpressionType.Number, ExpressionType.Number }, function);
+        CheckColor(function.Args[0], out PixelColor color);
+        function.color = color;
 
     }
-    /// <summary>
-    /// Performs semantic analysis on the given <see cref="IsColorFunction"/>.
-    /// </summary>
-    /// <param name="function">The function to analyze.</param>
+ 
 
     #endregion
 
@@ -403,6 +419,8 @@ public class SemanticChecker : IVisitor<ASTNode>
     public void ColorCommand(ColorCommand command)
     {
         CheckArguments(new List<ExpressionType>() { ExpressionType.String }, command);
+        CheckColor(command.Args[0], out PixelColor color);
+        command.color = color;
 
     }
     /// <summary>

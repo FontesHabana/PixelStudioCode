@@ -74,7 +74,7 @@ public class Executer : IVisitor<ASTNode>
             }
             catch (System.Exception error)
             {
-                errors.Add(new RuntimeException(error.Message, program.Statements[Index].Location));
+                errors.Add(new RuntimeException(error.ToString(), program.Statements[Index].Location));
                 Godot.GD.Print(error);
                 return;
             }
@@ -143,11 +143,12 @@ public class Executer : IVisitor<ASTNode>
             item.Accept(this);
         }
 
-        object color = function.Args[0];
-        object x1 = function.Args[1];
-        object y1 = function.Args[2];
-        object x2 = function.Args[3];
-        object y2 = function.Args[4];
+        object color = function.Args[0].Value;
+        object x1 = function.Args[1].Value;
+        object y1 = function.Args[2].Value;
+        object x2 = function.Args[3].Value;
+        object y2 = function.Args[4].Value;
+        
 
         if ((int)x1 < 0 || (int)x1 >= canvas.Size || (int)x2 < 0 || (int)x2 >= canvas.Size || (int)y1 < 0 || (int)y1 >= canvas.Size || (int)y2 < 0 || (int)y2 >= canvas.Size)
         {
@@ -174,7 +175,7 @@ public class Executer : IVisitor<ASTNode>
         {
             for (int x = (int)x1; x < (int)x2; x++)
             {
-                if (canvas.Matrix[y, x] == (string)color)
+                if (canvas.Matrix[y, x] == function.color)
                 {
                     colorCount++;
                 }
@@ -195,7 +196,7 @@ public class Executer : IVisitor<ASTNode>
         }
 
         object color = function.Args[0].Value;
-        if (robot.BrushColor == (string)color)
+        if (robot.BrushColor == function.color)
             function.Value = true;
         else
             function.Value = false;
@@ -212,7 +213,7 @@ public class Executer : IVisitor<ASTNode>
             item.Accept(this);
         }
 
-        object size = function.Args[0];
+        object size = function.Args[0].Value;
         if (robot.BrushSize == (int)size)
             function.Value = true;
         else
@@ -230,14 +231,13 @@ public class Executer : IVisitor<ASTNode>
             item.Accept(this);
         }
 
-        object color = function.Args[0];
-        object x = function.Args[1];
-        object y = function.Args[2];
+        object color = function.Args[0].Value;
+        int x = (int)function.Args[1].Value;
+        int y =(int) function.Args[2].Value;
 
-        if ((int)x < 0 || (int)x >= canvas.Size || (int)y < 0 || (int)y >= canvas.Size)
+        if ( robot.X + x < 0 ||  robot.X + x >= canvas.Size || robot.Y + y < 0 || robot.Y + y >= canvas.Size)
             function.Value = false;
-        else
-            if (canvas.Matrix[robot.Y + (int)y, robot.X + (int)x] == (string)color)
+        else if (canvas.Matrix[robot.Y + y, robot.X + x] == function.color)
             function.Value = true;
         else
             function.Value = false;
@@ -568,7 +568,7 @@ public class Executer : IVisitor<ASTNode>
         {
             for (int x = 0; x < robot.BrushSize; x++)
             {
-                if (CheckPosition(X + x, Y + y, canvas.Size) && robot.BrushColor != "Transparent")
+                if (CheckPosition(X + x, Y + y, canvas.Size) && robot.BrushColor.Alpha != 0)
                 {
                     canvas.Matrix[Y + y, X + x] = robot.BrushColor;
                 }
@@ -610,7 +610,7 @@ public class Executer : IVisitor<ASTNode>
             item.Accept(this);
         }
         object color = command.Args[0].Value;
-        robot.BrushColor = (string)color;
+        robot.BrushColor = command.color;
     }
 
     /// <summary>
@@ -767,7 +767,7 @@ public class Executer : IVisitor<ASTNode>
     /// <param name="command">The fill command to execute.</param>
     public void FillCommand(FillCommand command)
     {
-        string currentColor = canvas.Matrix[robot.Y, robot.X];
+        PixelColor currentColor = canvas.Matrix[robot.Y, robot.X];
         Stack<(int, int)> cells = new Stack<(int, int)>();
         List<(int, int)> visited = new List<(int, int)>();
         cells.Push((robot.Y, robot.X));
@@ -877,7 +877,7 @@ public class Executer : IVisitor<ASTNode>
     /// <exception cref="RuntimeException">Thrown when a possibly infinite loop is detected.</exception>
     public void GoToCommand(GoToCommand command)
     {
-        if (command.InfinteCycle<1000000) //10**6
+        if (true) //10**6
         {
             foreach (Expression arg in command.Args)
             {
@@ -898,11 +898,7 @@ public class Executer : IVisitor<ASTNode>
     }
 
 
-/// <summary>
-    /// Print a string in console.
-    /// </summary>
-    /// <param name="command">The go-to command to execute.</param>
-    /// <exception cref="RuntimeException">Thrown when a possibly infinite loop is detected.</exception>
+
     public void PrintCommand(PrintCommand command)
     {
         foreach (Expression item in command.Args)

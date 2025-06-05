@@ -2,14 +2,18 @@ using PixelWallE.Language.Parsing.Expressions;
 using PixelWallE.Language.Parsing;
 using PixelWallE.Language.Tokens;
 using System.Collections.Generic;
+using System.Drawing;
+using PixelWallE.Core;
 
 namespace PixelWallE.Language.Expressions;
 
 /// <summary>
 /// Represents a function that retrieves the count of a specific color within a rectangular region of the canvas in the PixelWallE language AST.
 /// </summary>
-public class GetColorCountFunction : Function
+public class GetColorCountFunction : Function, IColor
 {
+
+    public PixelColor color{ get; set; }
     /// <summary>
     /// Gets or sets the list of arguments (color, x1, y1, x2, y2).
     /// </summary>

@@ -20,7 +20,7 @@ public class RobotState
     /// <summary>
     /// Gets or sets the color of the robot's brush.
     /// </summary>
-    public string BrushColor{get; set;}
+    public PixelColor BrushColor{get; set;}
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RobotState"/> class with default values.
@@ -29,7 +29,7 @@ public class RobotState
         X=0;
         Y=0;
         BrushSize=1;
-        BrushColor="transparent";
+        BrushColor=new PixelColor(0,0,0,0);
     }
 
     

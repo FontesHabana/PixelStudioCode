@@ -9,7 +9,7 @@ public readonly struct PixelColor
     public byte Blue { get; }
     public byte Alpha { get; }
 
-    PixelColor(byte red, byte green, byte blue, byte alpha = 255)
+    public PixelColor(byte red, byte green, byte blue, byte alpha = 255)
     {
         Red = red;
         Green = green;

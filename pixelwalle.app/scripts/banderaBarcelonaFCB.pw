@@ -5,7 +5,7 @@ Color("Red")
 GoTo[redLine](true)
 blueLine
 
-Color("Blue")
+Color("#0000ff")
 #Print("45")
 redLine
 ReSpawn(0,n)
