@@ -732,12 +732,12 @@ public class Executer : IVisitor<ASTNode>
         }
 
         CheckDirection(command);
-        object x = command.Args[0].Value;
-        object y = command.Args[1].Value;
-        object distance = command.Args[2].Value;
+        int x =(int) command.Args[0].Value;
+        int y =(int) command.Args[1].Value;
+        int distance =(int) command.Args[2].Value;
 
-        object width = command.Args[3].Value;
-        object height = command.Args[4].Value;
+        int width =(int) command.Args[3].Value;
+        int height =(int) command.Args[4].Value;
 
         Godot.GD.Print(x);
         Godot.GD.Print(y);
@@ -746,18 +746,20 @@ public class Executer : IVisitor<ASTNode>
         Godot.GD.Print(height);
         for (int i = 0; i < (int)distance; i++)
         {
-            MoveRobot((int)x, (int)y, command);
+            MoveRobot(x,y, command);
         }
+        
+        
 
-        for (int i = robot.Y - (int)width + 1; i < robot.Y + (int)width; i++)
+        for (int i = robot.Y - height + 1; i < robot.Y + height; i++)
         {
-            DrawPixel(robot.Y + (int)height - 1, i);
-            DrawPixel(robot.Y - (int)height + 1, i);
+            DrawPixel(robot.X + width - 1, i);
+            DrawPixel(robot.X - width + 1, i);
         }
-        for (int i = robot.X - (int)height + 1; i < robot.X + (int)height; i++)
+        for (int i = robot.X -width + 1; i < robot.X +width; i++)
         {
-            DrawPixel(i, robot.X + (int)width - 1);
-            DrawPixel(i, robot.X - (int)width + 1);
+            DrawPixel(i, robot.Y +height - 1);
+            DrawPixel(i, robot.Y -height + 1);
         }
     }
 

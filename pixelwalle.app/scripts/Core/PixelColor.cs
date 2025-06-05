@@ -1,5 +1,6 @@
 using System.Globalization;
 using System;
+using System.Collections.Generic;
 namespace PixelWallE.Core;
 
 public readonly struct PixelColor
@@ -22,7 +23,7 @@ public readonly struct PixelColor
         color = default;
         if (string.IsNullOrWhiteSpace(colorString)) return false;
 
-        var normalizedString = colorString.Trim().ToLowerInvariant();
+        string normalizedString = colorString.Trim().ToLowerInvariant();
 
         // Nombres predefinidos
         switch (normalizedString)
@@ -81,7 +82,10 @@ public readonly struct PixelColor
             }
         }
 
-        return false;
+
+        return TryParseRGB(normalizedString, out color);
+        
+       // return false;
     }
 
     private static bool TryParseHexPacked(string hexString, out PixelColor color)
@@ -102,6 +106,54 @@ public readonly struct PixelColor
 
         return false;
     }
+
+
+    private static bool TryParseRGB(string rgbString, out PixelColor color)
+    {
+        color = new PixelColor(0, 0, 0, 255);
+        string[] separateColor = rgbString.Split(',');
+        if (separateColor.Length >= 3 && separateColor.Length <= 4)
+        {
+            foreach (string item in separateColor)
+            {
+                if (!int.TryParse(item, out int n))
+                {
+                    return false;
+                }
+            }
+            int.TryParse(separateColor[0], out int red);
+            int.TryParse(separateColor[0], out int green);
+            int.TryParse(separateColor[0], out int blue);
+            int value = 0;
+            if (separateColor.Length == 4)
+            {
+                return int.TryParse(separateColor[3], out value);
+            }
+
+            int alpha = 255 - value;
+            color = new PixelColor((byte)NormalizeRGB(red), (byte)NormalizeRGB(green), (byte)NormalizeRGB(blue), (byte)NormalizeRGB(alpha));
+            return true;
+
+        }
+
+        return false;
+        
+        
+
+
+
+       
+    }
+    private static int NormalizeRGB(int number)
+    {
+        if (number > 255)
+            return 255;
+        if (number < 0)
+            return 0;
+        else
+            return number;
+    }
+
 
     public override string ToString()
     {
