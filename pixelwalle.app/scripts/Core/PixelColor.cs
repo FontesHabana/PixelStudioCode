@@ -1,6 +1,7 @@
 using System.Globalization;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 namespace PixelWallE.Core;
 
 public readonly struct PixelColor
@@ -83,22 +84,30 @@ public readonly struct PixelColor
         }
 
 
+        
         return TryParseRGB(normalizedString, out color);
         
        // return false;
     }
 
+    /// <summary>
+    /// Tries to parse a hexadecimal color string in the format #AARRGGBB and converts it to a PixelColor.
+    /// </summary>
+    /// <param name="hexString">The hexadecimal color string to parse.</param>
+    /// <param name="color">When this method returns, contains the parsed PixelColor, or default if the parsing fails.</param>
+    /// <returns>True if the parsing was successful; otherwise, false.</returns>
     private static bool TryParseHexPacked(string hexString, out PixelColor color)
     {
         color = default;
         if (uint.TryParse(hexString, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var packedValue))
         {
-            byte a = 255, r, g, b; // Alfa por defecto opaco
+           byte r, g, b, a;
 
-            a = (byte)((packedValue >> 24) & 0xFF);
-            r = (byte)((packedValue >> 16) & 0xFF);
-            g = (byte)((packedValue >> 8) & 0xFF);
-            b = (byte)(packedValue & 0xFF);
+            r = (byte)((packedValue >> 24) & 0xFF);
+            g = (byte)((packedValue >> 16) & 0xFF);
+            b = (byte)((packedValue >> 8) & 0xFF);
+            a = (byte)(packedValue & 0xFF);
+
 
             color = new PixelColor(r, g, b, a);
             return true;
@@ -122,16 +131,20 @@ public readonly struct PixelColor
                 }
             }
             int.TryParse(separateColor[0], out int red);
-            int.TryParse(separateColor[0], out int green);
-            int.TryParse(separateColor[0], out int blue);
+            int.TryParse(separateColor[1], out int green);
+            int.TryParse(separateColor[2], out int blue);
             int value = 0;
-            if (separateColor.Length == 4)
+            if (separateColor.Count() == 4)
             {
-                return int.TryParse(separateColor[3], out value);
+                int.TryParse(separateColor[3], out value);
+            }        
+            else
+            {
+                value = 255;
             }
-
-            int alpha = 255 - value;
+            int alpha = value;
             color = new PixelColor((byte)NormalizeRGB(red), (byte)NormalizeRGB(green), (byte)NormalizeRGB(blue), (byte)NormalizeRGB(alpha));
+
             return true;
 
         }
