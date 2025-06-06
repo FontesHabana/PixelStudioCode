@@ -77,7 +77,7 @@ public class SyntaxException : PixelWallEException
         string message = $"Syntax Error: The label {label} has already exist. Error at line {location.Line}, column {location.Column}.";
         return new SyntaxException(message, location);
     }
-    
+
     /// <summary>
     /// Creates a new <see cref="SyntaxException"/> for a missing new line after a command.
     /// </summary>
@@ -89,4 +89,6 @@ public class SyntaxException : PixelWallEException
         string message = $"Syntax Error: Expected a new line or end of file after command or label, but found '{offendingTokenValue}'. Error at line {location.Line}, column {location.Column}.";
         return new SyntaxException(message, location);
     }
+    
+
 }

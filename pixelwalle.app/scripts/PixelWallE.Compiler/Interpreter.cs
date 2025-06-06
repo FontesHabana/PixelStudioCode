@@ -79,6 +79,8 @@ public  class Interpreter{
     IEnumerable<Token> tokens = lex.GetTokens("test", source, Errors);
     TokenStream stream = new TokenStream(tokens);
    
+    
+   
    //-----------------Parser-----------------------------
     Parser parser = new Parser(stream, Errors);
     Program = parser.Parse();

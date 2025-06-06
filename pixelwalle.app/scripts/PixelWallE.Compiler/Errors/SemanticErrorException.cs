@@ -26,7 +26,7 @@ public class SemanticException : PixelWallEException
         OffendingIdentifier = offendingIdentifier;
     }
 
-   
+
     /// <summary>
     /// Creates a new <see cref="SemanticException"/> for an undeclared variable.
     /// </summary>
@@ -88,7 +88,7 @@ public class SemanticException : PixelWallEException
         string message = $"Semantic Error: Operation '{operation}' is not defined for type '{operandType}'. Error at line {location.Line}, column {location.Column}";
         return new SemanticException(message, location, operandType.ToString());
     }
-    
+
     /// <summary>
     /// Creates a new <see cref="SemanticException"/> for an incorrect number of arguments.
     /// </summary>
@@ -97,10 +97,12 @@ public class SemanticException : PixelWallEException
     /// <param name="actualArgs">The actual number of arguments.</param>
     /// <param name="location">The location in the code where the error occurred.</param>
     /// <returns>A new <see cref="SemanticException"/> instance.</returns>
-    public static SemanticException IncorrectArgumentCount(string functionName,int expectedArgs, int actualArgs, CodeLocation location)
+    public static SemanticException IncorrectArgumentCount(string functionName, int expectedArgs, int actualArgs, CodeLocation location)
     {
         string message = $"Semantic Error: Function '{functionName}' expects '{expectedArgs}' argument(s) but was called with {actualArgs}. Error at line {location.Line}, column {location.Column}";
         return new SemanticException(message, location, functionName);
     }
+    
 
+   
 }

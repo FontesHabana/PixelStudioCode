@@ -73,6 +73,8 @@ public class SemanticChecker : IVisitor<ASTNode>
     }
 
 
+    
+
     /// <summary>
     /// Helper method to check arguments for functions or commands.
     /// It iterates through provided arguments, visits them, checks their types against expected types,
@@ -98,17 +100,17 @@ public class SemanticChecker : IVisitor<ASTNode>
             {
                 if (function.Args[i].Type != argsType[i])
                 {
-                    errors.Add(SemanticException.TypeMismatch(name, argsType[i], function.Args[i].Type, node.Location));
+                    errors.Add(SemanticException.TypeMismatch(name, argsType[i], function.Args[i].Type, function.Args[i].Location));
                 }
-                
-               /* if (function.Args[i].Type == ExpressionType.String)
-                {
-                   
-                    if (!scope.IsDeclared(function.Args[i].Value.ToString(), scope.colors))
-                    {
-                        errors.Add(SemanticException.UndeclaredColor(function.Args[i].ToString(), node.Location));
-                    }
-                }*/
+
+                /* if (function.Args[i].Type == ExpressionType.String)
+                 {
+
+                     if (!scope.IsDeclared(function.Args[i].Value.ToString(), scope.colors))
+                     {
+                         errors.Add(SemanticException.UndeclaredColor(function.Args[i].ToString(), node.Location));
+                     }
+                 }*/
 
 
             }

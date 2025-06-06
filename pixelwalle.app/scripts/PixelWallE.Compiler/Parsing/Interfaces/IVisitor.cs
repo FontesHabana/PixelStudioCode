@@ -21,10 +21,11 @@ public interface IVisitor<T>
 
    void ParenthesizedExpression(ParenthesizedExpression parenthesizedExpression);
    void Variable(Variable var);
+   
 
    #region  Functions
 
-   void GetActualXFunction(GetActualXFunction function);
+    void GetActualXFunction(GetActualXFunction function);
    void GetActualYFunction(GetActualYFunction function);
    void GetCanvasSizeFunction(GetCanvasSizeFunction function);
    void GetColorCountFunction(GetColorCountFunction function);

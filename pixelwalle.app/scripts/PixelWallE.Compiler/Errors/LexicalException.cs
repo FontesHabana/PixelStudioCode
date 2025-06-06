@@ -31,7 +31,14 @@ class LexicalException : PixelWallEException
     public static LexicalException UnexpectedCharacter(char character, CodeLocation location)
     {
         string message = $"Lexical Error: Unexpected character '{character}' found at line {location.Line}, column {location.Column}.";
-        return new LexicalException(message, location); 
-         
+        return new LexicalException(message, location);
+
     }
+
+    public static LexicalException InvalidNumber(string numberValue, CodeLocation location)
+    {
+        string message = $"Lexical Error: '{numberValue}' is not a valid number. Error at line {location.Line}, column {location.Column}";
+        return new LexicalException(message, location);
+    }
+
 }

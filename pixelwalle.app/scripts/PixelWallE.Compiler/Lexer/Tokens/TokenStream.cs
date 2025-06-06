@@ -111,12 +111,12 @@ public class TokenStream
     /// Advances the stream until an end-of-line (EOL) token is found or the end of the stream is reached.
     /// Used for error recovery and synchronization.
     /// </summary>
-    public void Synchronize()
+    public void Synchronize(TokenType type=TokenType.EOL)
     {
         //Advance();
         while (!IsAtEnd())
         {    
-            if (Peek().Type == TokenType.EOL)
+            if (Peek().Type == type)
             {
                 Advance();
                 return;

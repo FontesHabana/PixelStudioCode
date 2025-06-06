@@ -160,7 +160,12 @@ public class Lexer
             }
 
             if (stream.ReadNumber(out value))
-            {
+            {   if (!int.TryParse(value, out int number) )
+                {
+                    errors.Add(LexicalException.InvalidNumber(value, stream.Location));
+                    continue;
+                }
+
                 tokens.Add(new Token(TokenType.NUMBER, value, int.Parse(value), stream.Location));
                 continue;
             }

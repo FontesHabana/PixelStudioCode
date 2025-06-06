@@ -271,7 +271,7 @@ public class Parser
             do
             {
 
-
+                
                 Expression? expr = ParseExpression();
 
                 argument.Args.Add(expr);
@@ -353,6 +353,7 @@ public class Parser
     {
         ElementalProgram program = new ElementalProgram(new CodeLocation(), Errors);
         HashSet<string> referenceLabel = new HashSet<string>();
+        
         while (!Stream.IsAtEnd())
         {
             if (Stream.Match(new List<TokenType> { TokenType.SPAWN }))
@@ -360,7 +361,6 @@ public class Parser
                 try
                 {
                     program.Statements.Add((Command)ParseCommandorFunction());
-
                 }
                 catch (PixelWallEException error)
                 {
@@ -372,7 +372,8 @@ public class Parser
                 break;
             }
             else if (!Stream.Match(new List<TokenType> { TokenType.EOL }))
-            {
+            {   
+
                 program.Errors.Add(SyntaxException.SpawnMisplaced(Stream.Peek().Location));
                 Stream.Synchronize();
                 break;

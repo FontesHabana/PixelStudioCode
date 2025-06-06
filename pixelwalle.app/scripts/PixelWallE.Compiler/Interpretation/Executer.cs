@@ -102,6 +102,7 @@ public class Executer : IVisitor<ASTNode>
         var.Value = scope.GetVariable(var.VariableName);
     }
 
+    
     #region functions
 
     /// <summary>

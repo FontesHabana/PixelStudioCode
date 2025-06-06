@@ -306,11 +306,20 @@ public partial class main_ui : Control // partial es importante si adjuntas el s
                 _errorTooltip.Position = new Vector2(60, _codeEditNode.GetCaretDrawPos().Y - 110);
 
             string message = "Mensaje desconocido";
-            foreach (var item in interpreter.Errors)
+            for (int i = interpreter.Errors.Count - 1; i >= 0; i--)
             {
-                if (item.Location.Line - 1 == _codeEditNode.GetCaretLine())
+                if (interpreter.Errors[i].Location.Line - 1 == _codeEditNode.GetCaretLine())
                 {
-                    message = item.Message;
+                    message = interpreter.Errors[i].Message;
+                }
+                
+            }
+            for (int i = 0; i < interpreter.Errors.Count ; i++)    
+            {   
+                ////Arreglar esto
+                if (interpreter.Errors[i].Location.Column  <= _codeEditNode.GetCaretColumn())
+                {
+                   message = interpreter.Errors[i].Message;
                 }
             }
             Godot.TextEdit label = (Godot.TextEdit)_errorTooltip.GetChild(0);
