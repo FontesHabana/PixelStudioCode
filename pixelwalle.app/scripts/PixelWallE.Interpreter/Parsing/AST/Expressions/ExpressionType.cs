@@ -6,5 +6,8 @@ namespace PixelWallE.Language.Parsing.Expressions;
         String,
         Number,
         Bool,
+        ListNumber,
+        ListString,
+        ListBool,
         ErrorType
     }

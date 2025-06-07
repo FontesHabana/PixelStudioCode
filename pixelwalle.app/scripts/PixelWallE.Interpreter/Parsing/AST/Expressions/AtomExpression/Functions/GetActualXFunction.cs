@@ -34,7 +34,7 @@ public class GetActualXFunction : Function
     public GetActualXFunction(CodeLocation location, TokenType functionName, List<Expression?> args) : base(location, functionName, args)
     {
         Type = ExpressionType.Number;
-        Name = "GetrrActualX"; // Note: Typo in original code, should be GetActualX
+        Name = "GetActualX"; // Note: Typo in original code, should be GetActualX
     }
 
     /// <summary>

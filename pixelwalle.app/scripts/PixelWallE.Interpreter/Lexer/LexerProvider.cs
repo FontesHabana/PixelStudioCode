@@ -49,7 +49,7 @@ public class LexerProvider
                 __LexicalProcess.RegisterOperator(")", TokenType.RIGHT_PAREN);
                 __LexicalProcess.RegisterOperator("[", TokenType.LEFT_BRACKET);
                 __LexicalProcess.RegisterOperator("]", TokenType.RIGHT_BRACKET);
-                __LexicalProcess.RegisterKeyword(".", TokenType.DOT);
+                __LexicalProcess.RegisterOperator(".", TokenType.DOT);
                 __LexicalProcess.RegisterOperator("\n", TokenType.NEW_LINE);
 
 
@@ -64,7 +64,7 @@ public class LexerProvider
                 __LexicalProcess.RegisterKeyword("Clear", TokenType.CLEAR);
                 __LexicalProcess.RegisterKeyword("RemoveAt", TokenType.REMOVEAT);
                 __LexicalProcess.RegisterKeyword("Add", TokenType.ADD);
-                __LexicalProcess.RegisterKeyword("Lenght", TokenType.LENGHT);
+                __LexicalProcess.RegisterKeyword("Count", TokenType.COUNT);
                 __LexicalProcess.RegisterKeyword("Color", TokenType.COLOR);
                 __LexicalProcess.RegisterKeyword("DrawCircle", TokenType.DRAWCIRCLE);
                 __LexicalProcess.RegisterKeyword("DrawLine", TokenType.DRAWLINE);

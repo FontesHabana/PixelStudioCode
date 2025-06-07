@@ -36,8 +36,8 @@ public class TokenStream
     public TokenStream(IEnumerable<Token> tokens)
     {
         this.tokens = new List<Token>(tokens);
-        index  = 0;
-        index=0;
+        index = 0;
+        index = 0;
     }
 
     /// <summary>
@@ -61,7 +61,7 @@ public class TokenStream
     public Token Peek()
     {
         Godot.GD.Print(index);
-         return tokens[index];
+        return tokens[index];
     }
 
     /// <summary>
@@ -90,8 +90,8 @@ public class TokenStream
     /// <returns>True if the current token matches the type; otherwise, false.</returns>
     public bool Check(TokenType type)
     {
-       // if (IsAtStreamEnd) return false;
-        return Peek().Type==type;
+        // if (IsAtStreamEnd) return false;
+        return Peek().Type == type;
     }
 
     /// <summary>
@@ -103,19 +103,22 @@ public class TokenStream
     /// <exception cref="SyntaxException">Thrown if the current token does not match the expected type.</exception>
     public Token? Consume(TokenType type, string expected)
     {
-         if (Check(type)) return Advance();
-        throw SyntaxException.UnexpectedToken(type.ToString(), expected, Peek().Location);
+        if (Check(type))
+        {
+            return Advance();
+        }
+        throw SyntaxException.UnexpectedToken(Peek().Value, expected, Peek().Location);
     }
 
     /// <summary>
     /// Advances the stream until an end-of-line (EOL) token is found or the end of the stream is reached.
     /// Used for error recovery and synchronization.
     /// </summary>
-    public void Synchronize(TokenType type=TokenType.EOL)
+    public void Synchronize(TokenType type = TokenType.EOL)
     {
         //Advance();
         while (!IsAtEnd())
-        {    
+        {
             if (Peek().Type == type)
             {
                 Advance();
@@ -132,7 +135,7 @@ public class TokenStream
     public Token Advance()
     {
         if (!IsAtStreamEnd) index++;
-        
+
         return Previous();
     }
 
@@ -142,7 +145,7 @@ public class TokenStream
     /// <returns>The previous <see cref="Token"/>.</returns>
     public Token Previous()
     {
-        return tokens[index-1];
+        return tokens[index - 1];
     }
 
     /// <summary>
@@ -154,7 +157,11 @@ public class TokenStream
         index -= k;
     }
 
-   
+    public void MoveNext(int k)
+    {
+        index += k;
+    }
+
 
 
 }

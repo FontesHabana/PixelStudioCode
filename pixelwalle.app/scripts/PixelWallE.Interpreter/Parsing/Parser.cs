@@ -6,6 +6,7 @@ using PixelWallE.Language.Commands;
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 
 
@@ -27,7 +28,7 @@ public class Parser
     /// </summary>
     private List<PixelWallEException> Errors { get; set; }
 
- /// <summary>
+    /// <summary>
     /// Initializes a new instance of the <see cref="Parser"/> class.
     /// </summary>
     /// <param name="stream">The token stream to be parsed.</param>
@@ -221,7 +222,35 @@ public class Parser
         return ParsePrimary();
     }
 
-    //Parsear funciones que retornan valor
+
+    private List ParseList()
+    {
+        Token headToken = Stream.Previous();
+
+        Stream.Consume(TokenType.LESS, "<");
+        TokenType argsType = Stream.Peek().Type;
+        ExpressionType listType;
+        if (argsType == TokenType.STRINGTYPE)
+            listType = ExpressionType.ListString;
+        else if (argsType == TokenType.INTTYPE)
+            listType = ExpressionType.ListNumber;
+        else if (argsType == TokenType.BOOLTYPE)
+            listType = ExpressionType.ListBool;
+        else
+            throw SyntaxException.UnexpectedToken(argsType.ToString(), "string || int || bool", headToken.Location);
+        Stream.Advance();
+        Stream.Consume(TokenType.GREATER, ">");
+
+        List list = new List(headToken.Location, null, listType);
+
+      
+
+        Stream.Consume(TokenType.LEFT_BRACKET, "[");
+        ParseArgument(list, TokenType.RIGHT_BRACKET);
+        Stream.Consume(TokenType.RIGHT_BRACKET, "]' or ',");
+        return list;
+    }
+
     private Expression ParsePrimary()
     {
         if (Stream.Match(new List<TokenType> { TokenType.FALSE }))
@@ -246,14 +275,34 @@ public class Parser
             Stream.Consume(TokenType.RIGHT_PAREN, ")");
             return new ParenthesizedExpression(Stream.Previous().Location, expr);
         }
-        if (Stream.Match(new List<TokenType> { TokenType.ISBRUSHCOLOR, TokenType.ISBRUSHSIZE, TokenType.ISCANVASCOLOR,TokenType.GETACTUALX, TokenType.GETACTUALY, TokenType.GETCANVASSIZE, TokenType.GETCOLORCOUNT }))
+        if (Stream.Match(new List<TokenType> { TokenType.ISBRUSHCOLOR, TokenType.ISBRUSHSIZE, TokenType.ISCANVASCOLOR, TokenType.GETACTUALX, TokenType.GETACTUALY, TokenType.GETCANVASSIZE, TokenType.GETCOLORCOUNT }))
 
         {
             return (Function)ParseCommandorFunction();
         }
-        if (Stream.Match(new List<TokenType> { TokenType.IDENTIFIER }))
+        if (Stream.Match(new List<TokenType> { TokenType.LIST }))
         {
-            return new Variable(Stream.Previous().Location, Stream.Previous().Value);
+            return ParseList();
+        }
+        if (Stream.Match(new List<TokenType> { TokenType.IDENTIFIER }))
+        { Token identifier = Stream.Previous();
+            if (Stream.Match(new List<TokenType> { TokenType.LEFT_BRACKET }))
+            {
+                Expression index = ParseExpression();
+                Stream.Consume(TokenType.RIGHT_BRACKET, "]");
+                
+                return new ListElement(identifier.Location, identifier.Value, index);
+            }
+            if (Stream.Match(new List<TokenType> { TokenType.DOT }))
+            {
+                  if (Stream.Match(new List<TokenType> { TokenType.COUNT }))
+            {
+
+                return (Function)ParseListCommand();
+            }
+            }
+          
+            return new Variable(identifier.Location, identifier.Value);
         }
 
         throw SyntaxException.UnexpectedToken(Stream.Peek().Value.ToString(), "expression", Stream.Peek().Location);
@@ -266,12 +315,21 @@ public class Parser
     private void ParseIArgument(IArgument<Expression> argument)
     {
         Stream.Consume(TokenType.LEFT_PAREN, "(");
-        if (!Stream.Check(TokenType.RIGHT_PAREN))
-        {
+        ParseArgument(argument, TokenType.RIGHT_PAREN);
+
+
+        Stream.Consume(TokenType.RIGHT_PAREN, ")' or ',");
+      
+    }
+    private void ParseArgument(IArgument<Expression> argument, TokenType end)
+    {
+       
+        if (!Stream.Check(end))
+        {   
             do
             {
 
-                
+
                 Expression? expr = ParseExpression();
 
                 argument.Args.Add(expr);
@@ -281,9 +339,6 @@ public class Parser
             } while (Stream.Match(new List<TokenType> { TokenType.COMMA }));
 
         }
-
-
-        Stream.Consume(TokenType.RIGHT_PAREN, ")' or ',");
     }
     #region Command expression
 
@@ -301,6 +356,28 @@ public class Parser
         IArgument<Expression> argument = (IArgument<Expression>)command;
 
         ParseIArgument(argument);
+
+        return argument;
+    }
+
+    private IArgument<Expression> ParseListCommand()
+    {
+        Stream.MoveBack(2);
+        Token headCommand = Stream.Previous();
+        Stream.MoveNext(2);
+        
+        ASTNode? command = CommandFunctionProvider(Stream.Previous());
+        IArgument<Expression> argument = (IArgument<Expression>)command;
+
+        ParseIArgument(argument);
+        foreach (var item in argument.Args)
+        {
+            Godot.GD.Print(item);
+        }
+        IListReference listCommand = (IListReference)argument;
+        Godot.GD.Print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+        Godot.GD.Print(headCommand.Value.ToString());
+        listCommand.ListReference=headCommand.Value.ToString();
 
         return argument;
     }
@@ -353,7 +430,7 @@ public class Parser
     {
         ElementalProgram program = new ElementalProgram(new CodeLocation(), Errors);
         HashSet<string> referenceLabel = new HashSet<string>();
-        
+
         while (!Stream.IsAtEnd())
         {
             if (Stream.Match(new List<TokenType> { TokenType.SPAWN }))
@@ -372,7 +449,7 @@ public class Parser
                 break;
             }
             else if (!Stream.Match(new List<TokenType> { TokenType.EOL }))
-            {   
+            {
 
                 program.Errors.Add(SyntaxException.SpawnMisplaced(Stream.Peek().Location));
                 Stream.Synchronize();
@@ -393,7 +470,7 @@ public class Parser
                 Stream.Synchronize();
                 continue;
             }
-            else if (Stream.Match(new List<TokenType> { TokenType.COLOR, TokenType.DRAWCIRCLE, TokenType.DRAWLINE, TokenType.DRAWRECTANGLE, TokenType.FILL, TokenType.SIZE, TokenType.PRINT , TokenType.RESPAWN}))
+            else if (Stream.Match(new List<TokenType> { TokenType.COLOR, TokenType.DRAWCIRCLE, TokenType.DRAWLINE, TokenType.DRAWRECTANGLE, TokenType.FILL, TokenType.SIZE, TokenType.PRINT, TokenType.RESPAWN }))
             {
                 try
                 {
@@ -438,6 +515,25 @@ public class Parser
                         program.Errors.Add(error);
                         Stream.Synchronize();
                         continue;
+                    }
+                }
+                else if (Stream.Match(new List<TokenType> { TokenType.DOT }))
+                {
+                    Godot.GD.Print("Vamos a tratar de parsear un ocmando de lsita");
+                    if (Stream.Match(new List<TokenType> { TokenType.ADD, TokenType.CLEAR, TokenType.REMOVEAT }))
+                    {
+
+                        try
+                        {   
+                            program.Statements.Add((ListCommand)ParseListCommand());
+                            twoCommandLineError = true;
+                        }
+                        catch (PixelWallEException error)
+                        {
+                            program.Errors.Add(error);
+                            Stream.Synchronize();
+                            continue;
+                        }
                     }
                 }
                 else
@@ -511,7 +607,7 @@ public class Parser
         {
             return new SpawnCommand(headCommand.Location, TokenType.SPAWN, new List<Expression>());
         }
-         if (headCommand.Type == TokenType.RESPAWN)
+        if (headCommand.Type == TokenType.RESPAWN)
         {
             return new ReSpawnCommand(headCommand.Location, TokenType.RESPAWN, new List<Expression>());
         }
@@ -519,6 +615,25 @@ public class Parser
         {
             return new PrintCommand(headCommand.Location, TokenType.PRINT, new List<Expression>());
         }
+
+        if (headCommand.Type == TokenType.ADD)
+        {
+            return new AddCommand(headCommand.Location, TokenType.ADD, new List<Expression>());
+        }
+
+        if (headCommand.Type == TokenType.CLEAR)
+        {
+            return new ClearCommand(headCommand.Location, TokenType.CLEAR, new List<Expression>());
+        }
+        if (headCommand.Type == TokenType.REMOVEAT)
+        {
+            return new RemoveAtCommand(headCommand.Location, TokenType.REMOVEAT, new List<Expression>());
+        }
+        if (headCommand.Type == TokenType.COUNT)
+        {
+            return new CountCommand(headCommand.Location, TokenType.COUNT, new List<Expression>());
+        }
+
 
 
 
@@ -556,6 +671,6 @@ public class Parser
         }
         return null;
     }
-   
+
 }
 

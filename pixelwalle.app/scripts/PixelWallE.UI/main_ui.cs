@@ -296,7 +296,7 @@ public partial class main_ui : Control // partial es importante si adjuntas el s
         _lineInfo.Text = $"Line: {_codeEditNode.GetCaretLine()}  Column: {_codeEditNode.GetCaretColumn()}";
 
         Godot.Color errorLineColor = new Godot.Color(1, 0.3f, 0.3f, 0.3f); // Rojo suave
-        GD.Print(_codeEditNode.GetLineBackgroundColor(_codeEditNode.GetCaretLine()));
+    
         if (_codeEditNode.GetLineBackgroundColor(_codeEditNode.GetCaretLine()) == errorLineColor)
         {
             _errorTooltip.Visible = true;

@@ -1,3 +1,4 @@
+
 using PixelWallE.Language.Parsing.Expressions;
 using System.Collections.Generic;
 using System.Drawing;
@@ -113,7 +114,10 @@ public class Scope
     {
         if (variables.ContainsKey(name))
         {
+            Godot.GD.Print(name);
+            Godot.GD.Print("aAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAaaaaaaa");
             variables[name] = (value, type);
+             Godot.GD.Print(value);
             return true;
         }
         else if (parent != null)

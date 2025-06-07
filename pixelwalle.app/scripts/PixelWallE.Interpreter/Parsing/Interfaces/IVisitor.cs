@@ -2,6 +2,7 @@ using System.Linq.Expressions;
 using PixelWallE.Language.Commands;
 using PixelWallE.Language.Expressions;
 using PixelWallE.Language.Parsing.Expressions;
+using PixelWallE.Language.Parsing.Expressions.Literals;
 
 namespace PixelWallE.Language.Parsing;
 
@@ -21,7 +22,8 @@ public interface IVisitor<T>
 
    void ParenthesizedExpression(ParenthesizedExpression parenthesizedExpression);
    void Variable(Variable var);
-   
+    void List(List list);
+    void ListElement(ListElement element);
 
    #region  Functions
 
@@ -57,13 +59,18 @@ public interface IVisitor<T>
    void LessThanOperation(LessThanOperation operation);
    void LessThanOrEqualToOperation(LessThanOrEqualToOperation operation);
    void NotEqualToOperation(NotEqualToOperation operation);
-   #endregion
-   #endregion
+    #endregion
+    #endregion
 
 
-   #region Command
-
-   void AssigmentExpression(AssigmentExpression command);
+    #region Command
+    #region ListCommand
+    void AddCommand(AddCommand command);
+    void ClearCommand(ClearCommand command);
+    void RemoveAtCommand(RemoveAtCommand command);
+    void CountCommand(CountCommand command);
+    #endregion
+    void AssigmentExpression(AssigmentExpression command);
    void ColorCommand(ColorCommand command);
    void DrawCircleCommand(DrawCircleCommand command);
    void DrawLineCommand(DrawLineCommand command);

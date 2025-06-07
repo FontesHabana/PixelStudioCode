@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System;
 using System.Threading.Tasks;
 using System.Runtime.Intrinsics.Arm;
+using PixelWallE.Language.Parsing.Expressions.Literals;
 
 
 //using Godot;
@@ -102,6 +103,72 @@ public class Executer : IVisitor<ASTNode>
         var.Value = scope.GetVariable(var.VariableName);
     }
 
+
+
+     private ExpressionType GetExpressionType(ExpressionType type)
+    {
+        ExpressionType argType = ExpressionType.Anytype;
+        if (type == ExpressionType.ListBool)
+            argType = ExpressionType.Bool;
+        if (type == ExpressionType.ListString)
+            argType = ExpressionType.String;
+        if (type == ExpressionType.ListNumber)
+            argType = ExpressionType.Number;
+        return argType;
+    }
+    private void MakeValues(ExpressionType type,List list) {
+
+        switch (type)
+        {
+            case ExpressionType.ListNumber:
+                List<int> returnlist = new List<int>();
+                foreach (var item in list.Args)
+                {
+                    returnlist.Add((int)item.Value);
+                }
+                list.Value = returnlist;
+                return;
+            case ExpressionType.ListString:
+                List<string> returnlist2 = new List<string>();
+                foreach (var item in list.Args)
+                {
+                    returnlist2.Add((string)item.Value);
+                }
+                list.Value = returnlist2;
+                return;
+            case ExpressionType.ListBool:
+                List<bool> returnlist3 = new List<bool>();
+                foreach (var item in list.Args)
+                {
+                    returnlist3.Add((bool)item.Value);
+                }
+                list.Value = returnlist3;
+                return;
+            default:
+                return;
+        }
+    }
+    public void List(List list)
+    {
+        ExpressionType argType = GetExpressionType(list.Type);
+        foreach (Expression item in list.Args)
+        {
+            item.Accept(this);
+        }
+        list.Value = list.Args;
+
+    }
+    public void ListElement(ListElement element)
+    {
+        List<Expression> list = (List<Expression>)scope.GetVariable(element.ListReference);
+        element.Index.Accept(this);
+        if ((int)element.Index.Value < list.Count&&(int)element.Index.Value>=0)
+        {
+            element.Value = list[(int)element.Index.Value].Value;
+            return;
+        }
+         throw new  RuntimeException($"Index was out of range. Must be non-negative and less than the size of the collection. (Parameter 'index')", element.Location, "ListElement");
+    }
     
     #region functions
 
@@ -506,6 +573,44 @@ public class Executer : IVisitor<ASTNode>
     #endregion
 
     #region Command
+
+    #region ListCommand
+ public void AddCommand(AddCommand command)
+    {
+        command.Args[0].Accept(this);
+       
+        List<Expression> list = (List<Expression>)scope.GetVariable(command.ListReference);
+        list.Add(command.Args[0]);
+    }
+    public void RemoveAtCommand(RemoveAtCommand command)
+    {
+        command.Args[0].Accept(this);
+        int index = (int)command.Args[0].Value;
+        List<Expression> list = (List<Expression>)scope.GetVariable(command.ListReference);
+        if (index < list.Count&&index>=0)
+        {
+            list.RemoveAt(index);
+            return;
+        }
+         throw new  RuntimeException($"Index was out of range. Must be non-negative and less than the size of the collection. (Parameter 'index')", command.Location, "Listcommand");
+
+    }
+    public void ClearCommand(ClearCommand command)
+    {
+       
+      
+        List<Expression> list = (List<Expression>)scope.GetVariable(command.ListReference);
+      
+            list.Clear();
+          
+    }
+    public void CountCommand(CountCommand command)
+    {
+         List<Expression> list = (List<Expression>)scope.GetVariable(command.ListReference);
+      
+        command.Value= list.Count;
+    }
+    #endregion
 
     /// <summary>
     /// Checks if the given coordinates are within the bounds of the canvas.

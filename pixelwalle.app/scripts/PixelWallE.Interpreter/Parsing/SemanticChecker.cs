@@ -9,6 +9,7 @@ using System.Linq;
 using PixelWallE.Language;
 using System;
 using PixelWallE.Core;
+using PixelWallE.Language.Parsing.Expressions.Literals;
 
 /// <summary>
 /// Performs semantic analysis on the Abstract Syntax Tree (AST).
@@ -72,8 +73,63 @@ public class SemanticChecker : IVisitor<ASTNode>
         var.Type = scope.GetVariableType(var.VariableName);
     }
 
-
+    private ExpressionType GetExpressionType(ExpressionType type)
+    {
+        ExpressionType argType = ExpressionType.Anytype;
+        if (type == ExpressionType.ListBool)
+            argType = ExpressionType.Bool;
+        if (type == ExpressionType.ListString)
+            argType = ExpressionType.String;
+        if (type == ExpressionType.ListNumber)
+            argType = ExpressionType.Number;
+        return argType;
+    }
     
+
+    public void List(List list)
+    { List<ExpressionType> typeExpression = new List<ExpressionType>();
+        ExpressionType argType = GetExpressionType(list.Type);
+
+
+        foreach (Expression expression in list.Args)
+        {
+
+            typeExpression.Add(argType);
+        }
+        CheckArguments(typeExpression, list);
+    }
+
+    public void ListElement(ListElement element)
+    {
+     
+        if (!scope.IsDeclared(element.ListReference, scope.variables)) // Verifica si la variable de la lista está declarada
+        {
+            errors.Add(SemanticException.UndeclaredVariable(element.ListReference, element.Location));
+            return; // Detiene verificaciones adicionales si la lista no está declarada
+        }
+        bool declaredVar = scope.IsDeclared(element.ListReference, scope.variables);
+       
+         
+        if (declaredVar) // Verifica si la variable declarada es una instancia de List
+        {
+
+            element.Index.Accept(this);
+            if (element.Index.Type == ExpressionType.Number)
+            {
+                element.Type = ExpressionType.Number;
+            }
+            else
+            {
+                errors.Add(SemanticException.TypeMismatch("index", ExpressionType.Number, element.Index.Type, element.Index.Location));
+            }
+
+        }
+        else
+        {
+            errors.Add(new SemanticException($"Variable '{element.ListReference}' is notdeclared.", element.Location, "ListElementSemanticError"));
+        }
+    }
+
 
     /// <summary>
     /// Helper method to check arguments for functions or commands.
@@ -93,7 +149,11 @@ public class SemanticChecker : IVisitor<ASTNode>
 
             foreach (Expression arg in function.Args)
             {
+                Godot.GD.Print(arg);
                 arg.Accept(this);
+                
+                Godot.GD.Print("Checkear argumento");
+                Godot.GD.Print(arg.Type);
             }
 
             for (int i = 0; i < Math.Min(function.Args.Count, argsType.Count); i++)
@@ -393,6 +453,41 @@ public class SemanticChecker : IVisitor<ASTNode>
     #endregion
 
     #region Command
+
+    #region ListCommand
+    public void AddCommand(AddCommand command)
+    {
+        if (!scope.IsDeclared(command.ListReference, scope.variables)) // Verifica si la variable de la lista está declarada
+        {
+            errors.Add(SemanticException.UndeclaredVariable(command.ListReference, command.Location));
+            return; // Detiene verificaciones adicionales si la lista no está declarada
+        }
+        ExpressionType declaredVar = scope.GetVariableType(command.ListReference);
+        ExpressionType argType = GetExpressionType(declaredVar);
+        
+        CheckArguments(new List<ExpressionType> { argType}, command);
+    }
+    public void RemoveAtCommand(RemoveAtCommand command)
+    {
+        
+        CheckArguments(new List<ExpressionType> { ExpressionType.Number }, command);
+    }
+    public void ClearCommand(ClearCommand command)
+    {
+         CheckArguments(new List<ExpressionType>(), command);
+    }
+    public void CountCommand(CountCommand command)
+    {
+         CheckArguments(new List<ExpressionType>(), command);
+    }
+    #endregion
+
+
+
+
+
+
+
     /// <summary>
     /// Performs semantic analysis on the given <see cref="AssigmentExpression"/>.
     /// </summary>

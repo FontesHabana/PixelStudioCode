@@ -17,9 +17,7 @@ public partial class CanvasController : TextureRect
         
         int size = interpreter.Canvas.Size;
         float space = Size.X / size;
-        GD.Print(Size.X);
-        GD.Print(size);
-        GD.Print(space);
+        
 
 
         DrawColor(size, space, interpreter);
