@@ -303,7 +303,7 @@ public partial class main_ui : Control // partial es importante si adjuntas el s
             if (_codeEditNode.GetCaretDrawPos().Y < 200)
                 _errorTooltip.Position = new Vector2(60, 10 + _codeEditNode.GetCaretDrawPos().Y);
             else
-                _errorTooltip.Position = new Vector2(60, _codeEditNode.GetCaretDrawPos().Y - 110);
+                _errorTooltip.Position = new Vector2(60, _codeEditNode.GetCaretDrawPos().Y - 150);
 
             string message = "Mensaje desconocido";
             for (int i = interpreter.Errors.Count - 1; i >= 0; i--)
@@ -314,12 +314,17 @@ public partial class main_ui : Control // partial es importante si adjuntas el s
                 }
                 
             }
-            for (int i = 0; i < interpreter.Errors.Count ; i++)    
-            {   
+            int proxError = 0;
+            for (int i = 0; i < interpreter.Errors.Count; i++)
+            {
                 ////Arreglar esto
-                if (interpreter.Errors[i].Location.Column  <= _codeEditNode.GetCaretColumn())
-                {
-                   message = interpreter.Errors[i].Message;
+                if (interpreter.Errors[i].Location.Column <= _codeEditNode.GetCaretColumn())
+                {   if (interpreter.Errors[i].Location.Column >= proxError)
+                    {
+                        message = interpreter.Errors[i].Message;
+                        proxError = (int)interpreter.Errors[i].Location.Column;
+                     }
+                   
                 }
             }
             Godot.TextEdit label = (Godot.TextEdit)_errorTooltip.GetChild(0);
