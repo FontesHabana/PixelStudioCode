@@ -8,6 +8,7 @@ using PixelWallE.Core;
 using Godot;
 using System.Collections.Generic;
 using GodotPlugins.Game;
+using System.Linq;
 
 namespace PixelWallE.Language;
 
@@ -78,14 +79,14 @@ public  class Interpreter{
     Lexer.Lexer lex = LexerProvider.Lexical;
     IEnumerable<Token> tokens = lex.GetTokens("test", source, Errors);
     TokenStream stream = new TokenStream(tokens);
-   
-    
-   
-   //-----------------Parser-----------------------------
+
+
+
+    //-----------------Parser-----------------------------
     Parser parser = new Parser(stream, Errors);
     Program = parser.Parse();
-    
-   
+
+
 
     //---------------SemanticChecker-------------------------
     Scope = new Scope(Program.Labels);
@@ -99,6 +100,7 @@ public  class Interpreter{
       GD.Print(token.ToString());
     }
     printAst.printAstNode(Program, 0);
+    Errors = Errors.OrderBy(x => x.Location.Line).ThenBy(x => x.Location.Column).ToList();
   }
   
    /// <summary>

@@ -293,7 +293,7 @@ public partial class main_ui : Control // partial es importante si adjuntas el s
     private void CaretChanged()
     {
 
-        _lineInfo.Text = $"Line: {_codeEditNode.GetCaretLine()}  Column: {_codeEditNode.GetCaretColumn()}";
+        _lineInfo.Text = $"Line: {_codeEditNode.GetCaretLine()+1}  Column: {_codeEditNode.GetCaretColumn()}";
 
         Godot.Color errorLineColor = new Godot.Color(1, 0.3f, 0.3f, 0.3f); // Rojo suave
     
@@ -305,28 +305,32 @@ public partial class main_ui : Control // partial es importante si adjuntas el s
             else
                 _errorTooltip.Position = new Vector2(60, _codeEditNode.GetCaretDrawPos().Y - 150);
 
-            string message = "Mensaje desconocido";
+            string message = "Unknow Message";
+             
             for (int i = interpreter.Errors.Count - 1; i >= 0; i--)
             {
                 if (interpreter.Errors[i].Location.Line - 1 == _codeEditNode.GetCaretLine())
                 {
-                    message = interpreter.Errors[i].Message;
-                }
-                
-            }
-            int proxError = 0;
-            for (int i = 0; i < interpreter.Errors.Count; i++)
-            {
-                ////Arreglar esto
-                if (interpreter.Errors[i].Location.Column <= _codeEditNode.GetCaretColumn())
-                {   if (interpreter.Errors[i].Location.Column >= proxError)
+                    if (_codeEditNode.GetCaretColumn() >= interpreter.Errors[i].Location.Column)
+                    {
+                        GD.Print("columna del cursor");
+                        GD.Print(_codeEditNode.GetCaretColumn());
+                        GD.Print(interpreter.Errors[i].Location.Column);
+                        GD.Print(interpreter.Errors[i]);
+                        message = interpreter.Errors[i].Message;
+                        break;
+                    }
+                    else
                     {
                         message = interpreter.Errors[i].Message;
-                        proxError = (int)interpreter.Errors[i].Location.Column;
-                     }
-                   
+                    }
+
+                   // message = interpreter.Errors[i].Message;
                 }
+
             }
+           
+           
             Godot.TextEdit label = (Godot.TextEdit)_errorTooltip.GetChild(0);
             GD.Print("guardado valor con exito");
             label.Text = message;
