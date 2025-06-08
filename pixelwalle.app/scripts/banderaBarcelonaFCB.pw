@@ -11,7 +11,7 @@ redLine
 ReSpawn(0,n)
 DrawLine(1,0,99)
 DrawLine(0,1,1)
-n<-n+2
+n<-n*2
 GoTo[redLine](n<100)
 GoTo[end](IsBrushColor("Blue"))
 n<-1

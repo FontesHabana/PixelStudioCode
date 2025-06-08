@@ -24,26 +24,13 @@ public class Scope
     /// <summary>
     /// Dictionary storing predefined colors.
     /// </summary>
-    public readonly Dictionary<string, Godot.Color> colors = new()
-    {
-          {"Transparent", new  Godot.Color(1f, 1f, 1f, 0)},
-            {"Red", new  Godot.Color(1f, 0, 0)},
-            {"Blue", new  Godot.Color(0, 0, 1f)},
-            {"Green", new  Godot.Color(0, 1f, 0f)},
-            {"Yellow", new  Godot.Color(1f, 1f, 0f)},
-            {"Orange", new  Godot.Color(1f, 165/255f, 0/255f)},
-            {"Purple", new  Godot.Color(160/255f, 32/255f, 240/255f)},
-            {"Black", new  Godot.Color(0f, 0f, 0f)},
-            {"White", new  Godot.Color(1f, 1f, 1f)},
-            {"Pink", new  Godot.Color(1f, 80/255f, 220/255f)},
-
-    };
-    //
+   
+    
     /// <summary>
     /// The parent scope, used for resolving variables and labels in outer scopes.
     /// </summary>
     private readonly Scope? parent;
-    //Se pueden agregar las funciones aquí;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="Scope"/> class.
     /// </summary>
@@ -114,10 +101,8 @@ public class Scope
     {
         if (variables.ContainsKey(name))
         {
-            Godot.GD.Print(name);
-            Godot.GD.Print("aAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAaaaaaaa");
+          
             variables[name] = (value, type);
-             Godot.GD.Print(value);
             return true;
         }
         else if (parent != null)
@@ -175,19 +160,5 @@ public class Scope
         return parent?.GetLabel(name);
     }
     #endregion
-    #region Color
-    /// <summary>
-    /// Gets a color from the current scope or a parent scope.
-    /// </summary>
-    /// <param name="name">The name of the color.</param>
-    /// <returns>The color if found, otherwise null.</returns>
-    public Godot.Color? GetColor(string name)
-    {
-        if (colors.ContainsKey(name))
-        {
-            return colors[name];
-        }
-        return parent?.GetColor(name);
-    }
-    #endregion
+   
 }

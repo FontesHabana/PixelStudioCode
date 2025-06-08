@@ -2,33 +2,33 @@
 
 public enum TokenType
 {  
-    //Single character token
+    // Single character token
     LEFT_PAREN, RIGHT_PAREN,LEFT_BRACKET,RIGHT_BRACKET, COMMA, NEW_LINE, 
-    //Operators token
+    // Operators token
     ASSIGNMENT, MINUS, PLUS, DIVIDE, MULTIPLY, MODULO, EXPONENTIAL,
     EQUAL,
     NOT_EQUAL, NOT, 
     GREATER, GREATER_EQUAL,
     LESS, LESS_EQUAL,
     AND, OR,
-    //Comment token
+    // Comment token
     COMENNT, DOT,
     
-    //Literals
+    // Literals
     IDENTIFIER, STRING, NUMBER,
     
-    //KEYWORD
+    // KEYWORD
 	FALSE,TRUE, COLOR, LIST, INTTYPE, BOOLTYPE, STRINGTYPE,
-		//COMMAND
+		// COMMAND
 		 DRAWCIRCLE, DRAWLINE, DRAWRECTANGLE, FILL, GOTO, SIZE, SPAWN,PRINT,RESPAWN, RUN,
-    //LIST COMMAND
+    // LIST COMMAND
          ADD,REMOVEAT,CLEAR,COUNT,
-		//FUNCTION
+		// FUNCTION
     GETACTUALX,GETACTUALY,GETCANVASSIZE,GETCOLORCOUNT,ISBRUSHCOLOR,ISBRUSHSIZE,ISCANVASCOLOR, 
     
-    //End of file
+    // End of file
     EOF,
-    //End of Line
+    // End of Line
     EOL,
     
     UNKNOW

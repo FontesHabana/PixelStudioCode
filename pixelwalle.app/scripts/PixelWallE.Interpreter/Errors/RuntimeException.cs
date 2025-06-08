@@ -21,8 +21,8 @@ class RuntimeException : PixelWallEException
     {
         CommandName = commandName;
     }
-   
-   
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="RuntimeException"/> class with an inner exception.
     /// </summary>
@@ -110,4 +110,46 @@ class RuntimeException : PixelWallEException
         return new RuntimeException(message, location);
     }
 
+
+
+    /// <summary>
+    /// Creates a new <see cref="RuntimeException"/> for an index that is out of range.
+    /// </summary>
+    /// <param name="index">The index that is out of range.</param>
+    /// <param name="collectionSize">The size of the collection.</param>
+    /// <param name="commandName">The name of the command that was being executed when the error occurred.</param>
+    /// <param name="location">The location in the code where the error occurred.</param>
+    /// <returns>A new <see cref="RuntimeException"/> instance.</returns>
+
+    public static RuntimeException IndexOutOfRange(int index, int collectionSize, string commandName, CodeLocation location)
+    {
+        string message = $"Runtime Error in command '{commandName}': Index '{index}'  was out of range. It must be non-negative and less than the size of the collection ({collectionSize}).";
+        return new RuntimeException(message, location);
+    }
+
+
+
+    /// <summary>
+    /// Creates a new <see cref="RuntimeException"/> for general errors found within a specified path.
+    /// </summary>
+    /// <param name="path">The path where the errors were found (e.g., file path).</param>
+    /// <returns>A new <see cref="RuntimeException"/> instance.</returns>
+    public static RuntimeException ErrorsInPath(string path)
+    {
+        string message = $"Runtime Error: Multiple errors detected in '{path}'. Please review the file for issues.";
+        return new RuntimeException(message, new CodeLocation());
+    }
+
+    /// <summary>
+    /// Creates a new <see cref="RuntimeException"/> for an exception encountered during a 'find' operation within a specified path.
+    /// </summary>
+    /// <param name="path">The path where the find operation failed.</param>
+    /// <param name="innerException">The actual exception that caused the find operation to fail (optional).</param>
+    /// <returns>A new <see cref="RuntimeException"/> instance.</returns>
+    public static RuntimeException FindExceptionInPath(string path, Exception? innerException = null)
+    {
+        string message = $"Runtime Error: An exception occurred while trying to find or access resources at '{path}'.";
+        // Using a default CodeLocation as the error pertains to the path itself rather than a specific code line.
+        return innerException != null ? new RuntimeException(message, new CodeLocation(), innerException) : new RuntimeException(message, new CodeLocation());
+    }
 }

@@ -72,7 +72,11 @@ public class SemanticChecker : IVisitor<ASTNode>
         }
         var.Type = scope.GetVariableType(var.VariableName);
     }
-
+ /// <summary>
+    /// Gets the expression type based on the given list type.
+    /// </summary>
+    /// <param name="type">The list type.</param>
+    /// <returns>The expression type.</returns>
     private ExpressionType GetExpressionType(ExpressionType type)
     {
         ExpressionType argType = ExpressionType.Anytype;
@@ -85,7 +89,11 @@ public class SemanticChecker : IVisitor<ASTNode>
         return argType;
     }
 
-
+  /// <summary>
+    /// Performs semantic analysis on a list, checking the types of its arguments.
+    /// </summary>
+    /// <param name="list">The list to analyze.</param>
+  
     public void List(List list)
     {
         List<ExpressionType> typeExpression = new List<ExpressionType>();
@@ -99,7 +107,11 @@ public class SemanticChecker : IVisitor<ASTNode>
         }
         CheckArguments(typeExpression, list);
     }
-
+  /// <summary>
+    /// Performs semantic analysis on a list element, ensuring the list is declared and the index is a number.
+    /// </summary>
+    /// <param name="element">The list element to analyze.</param>
+   
     public void ListElement(ListElement element)
     {
 
@@ -117,7 +129,8 @@ public class SemanticChecker : IVisitor<ASTNode>
             element.Index.Accept(this);
             if (element.Index.Type == ExpressionType.Number)
             {
-                element.Type = ExpressionType.Number;
+                ExpressionType type = GetExpressionType(scope.GetVariableType(element.ListReference));
+                element.Type = type;
             }
             else
             {
@@ -127,7 +140,7 @@ public class SemanticChecker : IVisitor<ASTNode>
         }
         else
         {
-            errors.Add(new SemanticException($"Variable '{element.ListReference}' is notdeclared.", element.Location, "ListElementSemanticError"));
+            errors.Add(SemanticException.UndeclaredVariable(element.ListReference, element.Location));
         }
     }
 
@@ -308,11 +321,11 @@ public class SemanticChecker : IVisitor<ASTNode>
 
         if (operation.Left.Type != type)
         {
-            errors.Add(SemanticException.InvalidOperation(operation.ToString(), operation.Left.Type, operation.Location));
+            errors.Add(SemanticException.InvalidOperation(operation.ToString(), operation.Left.Type, operation.Right.Type, operation.Location));
         }
         if (operation.Right.Type != type)
         {
-            errors.Add(SemanticException.InvalidOperation(operation.ToString(), operation.Right.Type, operation.Location));
+            errors.Add(SemanticException.InvalidOperation(operation.ToString(), operation.Right.Type, operation.Left.Type, operation.Location));
         }
     }
 
@@ -323,7 +336,17 @@ public class SemanticChecker : IVisitor<ASTNode>
     /// <param name="operation">The operation to analyze.</param>
     public void AdditionOperation(AdditionOperation operation)
     {
-        BinaryExpression(operation, ExpressionType.Number);
+        if (operation.Left.Type == ExpressionType.Number)
+        {
+            BinaryExpression(operation, ExpressionType.Number);
+            operation.Type = ExpressionType.Number;
+        }
+        else
+        {
+            BinaryExpression(operation, ExpressionType.String);
+            operation.Type = ExpressionType.String;
+        }
+      
     }
     /// <summary>
     /// Performs semantic analysis on the given <see cref="DivisionOperation"/>.
@@ -456,6 +479,10 @@ public class SemanticChecker : IVisitor<ASTNode>
     #region Command
 
     #region ListCommand
+    /// <summary>
+    /// Performs semantic analysis on the given <see cref="AddCommand"/>.
+    /// </summary>
+    /// <param name="command">The command to analyze.</param>
     public void AddCommand(AddCommand command)
     {
         if (!scope.IsDeclared(command.ListReference, scope.variables)) // Verifica si la variable de la lista está declarada
@@ -468,15 +495,27 @@ public class SemanticChecker : IVisitor<ASTNode>
 
         CheckArguments(new List<ExpressionType> { argType }, command);
     }
+    /// <summary>
+    /// Performs semantic analysis on the given <see cref="RemoveAtCommand"/>.
+    /// </summary>
+    /// <param name="command">The command to analyze.</param>
     public void RemoveAtCommand(RemoveAtCommand command)
     {
 
         CheckArguments(new List<ExpressionType> { ExpressionType.Number }, command);
     }
+   /// <summary>
+    /// Performs semantic analysis on the given <see cref="ClearCommand"/>.
+    /// </summary>
+    /// <param name="command">The command to analyze.</param>
     public void ClearCommand(ClearCommand command)
     {
         CheckArguments(new List<ExpressionType>(), command);
     }
+     /// <summary>
+    /// Performs semantic analysis on the given <see cref="CountCommand"/>.
+    /// </summary>
+    /// <param name="command">The command to analyze.</param>
     public void CountCommand(CountCommand command)
     {
         CheckArguments(new List<ExpressionType>(), command);
@@ -571,6 +610,10 @@ public class SemanticChecker : IVisitor<ASTNode>
         CheckArguments(new List<ExpressionType>() { ExpressionType.Number, ExpressionType.Number }, command);
 
     }
+    /// <summary>
+    /// Performs semantic analysis on the given <see cref="ReSpawnCommand"/>.
+    /// </summary>
+    /// <param name="command">The command to analyze.</param>
     public void ReSpawnCommand(ReSpawnCommand command)
     {
         CheckArguments(new List<ExpressionType>() { ExpressionType.Number, ExpressionType.Number }, command);
@@ -609,10 +652,14 @@ public class SemanticChecker : IVisitor<ASTNode>
     }
    
    
+    /// <summary>
+    /// Performs semantic analysis on the given <see cref="RunCommand"/>.
+    /// </summary>
+    /// <param name="command">The command to analyze.</param>
     public void RunCommand(RunCommand command)
     {
         CheckArguments(new List<ExpressionType>() { ExpressionType.String }, command);
-       
+      
 
     }
     #endregion

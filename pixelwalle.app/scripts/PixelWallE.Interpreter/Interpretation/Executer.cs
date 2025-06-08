@@ -12,9 +12,6 @@ using PixelWallE.Language.Parsing.Expressions.Literals;
 using System.IO;
 
 
-//using Godot;
-//using Godot;
-
 /// <summary>
 /// The <c>Executer</c> class is responsible for interpreting and executing the parsed Abstract Syntax Tree (AST) of the PixelWallE language.
 /// It traverses the AST, evaluates expressions, and performs commands to manipulate the canvas and robot state.
@@ -26,8 +23,17 @@ public class Executer : IVisitor<ASTNode>
     /// A list to store any errors encountered during the execution of the program.
     /// </summary>
     public List<PixelWallEException> errors;
+    /// <summary>
+    /// A list to store messages to be displayed on the console.
+    /// </summary>
     public List<string> ConsoleMessages;
+    /// <summary>
+    /// The canvas on which the robot will draw.
+    /// </summary>
     private Canvas canvas;
+    /// <summary>
+    /// The state of the robot.
+    /// </summary>
     private RobotState robot;
     /// <summary>
     /// Gets or sets the current index of the statement being executed in the program.
@@ -117,39 +123,6 @@ public class Executer : IVisitor<ASTNode>
             argType = ExpressionType.Number;
         return argType;
     }
-    private void MakeValues(ExpressionType type, List list)
-    {
-
-        switch (type)
-        {
-            case ExpressionType.ListNumber:
-                List<int> returnlist = new List<int>();
-                foreach (var item in list.Args)
-                {
-                    returnlist.Add((int)item.Value);
-                }
-                list.Value = returnlist;
-                return;
-            case ExpressionType.ListString:
-                List<string> returnlist2 = new List<string>();
-                foreach (var item in list.Args)
-                {
-                    returnlist2.Add((string)item.Value);
-                }
-                list.Value = returnlist2;
-                return;
-            case ExpressionType.ListBool:
-                List<bool> returnlist3 = new List<bool>();
-                foreach (var item in list.Args)
-                {
-                    returnlist3.Add((bool)item.Value);
-                }
-                list.Value = returnlist3;
-                return;
-            default:
-                return;
-        }
-    }
     public void List(List list)
     {
         ExpressionType argType = GetExpressionType(list.Type);
@@ -169,7 +142,7 @@ public class Executer : IVisitor<ASTNode>
             element.Value = list[(int)element.Index.Value].Value;
             return;
         }
-        throw new RuntimeException($"Index was out of range. Must be non-negative and less than the size of the collection. (Parameter 'index')", element.Location, "ListElement");
+        throw RuntimeException.IndexOutOfRange((int)element.Index.Value,list.Count, "Get element", element.Index.Location);
     }
 
     #region functions
@@ -353,9 +326,19 @@ public class Executer : IVisitor<ASTNode>
     {
         operation.Left.Accept(this);
         operation.Right.Accept(this);
-        int left = (int)operation.Left.Value;
-        int right = (int)operation.Right.Value;
-        operation.Value = left + right;
+        if (operation.Left.Type == ExpressionType.Number)
+        {
+            int left = (int)operation.Left.Value;
+            int right = (int)operation.Right.Value;
+            operation.Value = left + right;
+        }
+        if (operation.Left.Type==ExpressionType.String)
+        {
+             string left = (string)operation.Left.Value;
+             string right = (string)operation.Right.Value;
+             operation.Value = left + right;
+        }
+        
     }
 
     /// <summary>
@@ -478,13 +461,8 @@ public class Executer : IVisitor<ASTNode>
         operation.Left.Accept(this);
         operation.Right.Accept(this);
 
-        if (operation.Left.Type == ExpressionType.String)
-        {
-            operation.Value = operation.Left.Equals(operation.Right.Value);
-            return;
-        }
-        int left = (int)operation.Left.Value;
-        int right = (int)operation.Right.Value;
+        object left = operation.Left.Value;
+        object right = operation.Right.Value;
 
         operation.Value = left.Equals(right);
     }
@@ -577,6 +555,10 @@ public class Executer : IVisitor<ASTNode>
     #region Command
 
     #region ListCommand
+    /// <summary>
+    /// Adds an element to the end of the list.
+    /// </summary>
+    /// <param name="command">The add command to execute.The Args[0] is the element to add to the list.</param>
     public void AddCommand(AddCommand command)
     {
         command.Args[0].Accept(this);
@@ -584,6 +566,12 @@ public class Executer : IVisitor<ASTNode>
         List<Expression> list = (List<Expression>)scope.GetVariable(command.ListReference);
         list.Add(command.Args[0]);
     }
+    /// <summary>
+    /// Removes the element at the specified index of the list.
+    /// </summary>
+    /// <param name="command">The remove at command to execute.The Args[0] is the index to remove from the list.</param>
+    /// <exception cref="RuntimeException">Thrown when the index is out of range.</exception>
+
     public void RemoveAtCommand(RemoveAtCommand command)
     {
         command.Args[0].Accept(this);
@@ -594,9 +582,14 @@ public class Executer : IVisitor<ASTNode>
             list.RemoveAt(index);
             return;
         }
-        throw new RuntimeException($"Index was out of range. Must be non-negative and less than the size of the collection. (Parameter 'index')", command.Location, "Listcommand");
+        throw RuntimeException.IndexOutOfRange(index,list.Count,command.Name, command.Args[0].Location);
 
     }
+    /// <summary>
+    /// Removes all elements from the list.
+    /// </summary>
+    /// <param name="command">The clear command to execute.</param>
+
     public void ClearCommand(ClearCommand command)
     {
 
@@ -606,6 +599,11 @@ public class Executer : IVisitor<ASTNode>
         list.Clear();
 
     }
+    /// <summary>
+    /// Gets the number of elements contained in the list.
+    /// </summary>
+    /// <param name="command">The count command to execute.</param>
+
     public void CountCommand(CountCommand command)
     {
         List<Expression> list = (List<Expression>)scope.GetVariable(command.ListReference);
@@ -935,8 +933,16 @@ public class Executer : IVisitor<ASTNode>
         {
             item.Accept(this);
         }
-        object size = command.Args[0].Value;
-        robot.BrushSize = (int)size;
+        int size = (int)command.Args[0].Value;
+        if (size >= 0)
+        {
+            robot.BrushSize = size;
+        }
+        else
+        {
+            throw RuntimeException.ArgumentMostBePositive("Size", size, command.Args[0].Location);
+        }
+      
     }
 
     /// <summary>
@@ -974,12 +980,6 @@ public class Executer : IVisitor<ASTNode>
         RobotOutException(robot.X, robot.Y, canvas.Size, (ASTNode)command);
     }
 
-
-
-
-
-
-
     /// <summary>
     /// Jumps to a specific label in the code if the given condition is true.
     /// </summary>
@@ -1008,7 +1008,10 @@ public class Executer : IVisitor<ASTNode>
     }
 
 
-
+    /// <summary>
+    /// Prints the value of the argument to the console.
+    /// </summary>
+    /// <param name="command">The print command to execute.</param>
     public void PrintCommand(PrintCommand command)
     {
         foreach (Expression item in command.Args)
@@ -1019,6 +1022,11 @@ public class Executer : IVisitor<ASTNode>
     }
 
 
+    /// <summary>
+    /// Executes a script from a specified file path.
+    /// </summary>
+    /// <param name="command">The run command to execute.</param>
+    /// <exception cref="RuntimeException">Thrown when the file does not exist or when errors are found in the executed script.</exception>
 
     public void RunCommand(RunCommand command)
     {
@@ -1029,7 +1037,7 @@ public class Executer : IVisitor<ASTNode>
         string path = (string)command.Args[0].Value;
         if (!File.Exists(path))
         {
-            throw new RuntimeException($"La direccion que quiere proporcionar no existe", command.Args[0].Location);
+            throw RuntimeException.FindExceptionInPath(path);
         }
         string source = File.ReadAllText(path);
         Godot.GD.Print(source);
@@ -1042,21 +1050,21 @@ public class Executer : IVisitor<ASTNode>
         {
 
         }
-        
-         foreach (var item in localInterpreter.ConsoleMessage)
+
+        foreach (var item in localInterpreter.ConsoleMessage)
         {
             ConsoleMessages.Add(item);
         }
         if (localInterpreter.Errors.Count > 0)
         {
-            errors.Add(new RuntimeException($"Errors in {path}", new CodeLocation()));
+            errors.Add(RuntimeException.ErrorsInPath(path));
             foreach (var item in localInterpreter.Errors)
             {
                 errors.Add(item);
             }
-            throw new RuntimeException($"Find Exception at {path}", new CodeLocation());
+            throw RuntimeException.ErrorsInPath(path);
         }
-       
+
 
     }
     #endregion

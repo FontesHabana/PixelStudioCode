@@ -83,6 +83,12 @@ public class SemanticException : PixelWallEException
     /// <param name="operandType">The type of the operand.</param>
     /// <param name="location">The location in the code where the error occurred.</param>
     /// <returns>A new <see cref="SemanticException"/> instance.</returns>
+    public static SemanticException InvalidOperation(string operation, ExpressionType operandType,ExpressionType operandType2, CodeLocation location)
+    {
+        string message = $"Semantic Error: Operation '{operation}' is not defined for type '{operandType}' with type '{operandType2}'. Error at line {location.Line}, column {location.Column}";
+        return new SemanticException(message, location, operandType.ToString());
+    }
+
     public static SemanticException InvalidOperation(string operation, ExpressionType operandType, CodeLocation location)
     {
         string message = $"Semantic Error: Operation '{operation}' is not defined for type '{operandType}'. Error at line {location.Line}, column {location.Column}";
