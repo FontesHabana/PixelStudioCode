@@ -82,6 +82,7 @@ public class LexerProvider
                 __LexicalProcess.RegisterKeyword("IsBrushColor", TokenType.ISBRUSHCOLOR);
                 __LexicalProcess.RegisterKeyword("IsBrushSize", TokenType.ISBRUSHSIZE);
                 __LexicalProcess.RegisterKeyword("IsCanvasColor", TokenType.ISCANVASCOLOR);
+                __LexicalProcess.RegisterKeyword("Run", TokenType.RUN);
 
                 /*  */
                 __LexicalProcess.RegisterText("\"", "\"");

@@ -29,7 +29,7 @@ public  class Interpreter{
 
 
 
-   /// <summary>
+  /// <summary>
   /// The canvas on which the PixelWallE program will operate.
   /// </summary>
   public Canvas Canvas { get; set; }

@@ -9,6 +9,7 @@ using System;
 using System.Threading.Tasks;
 using System.Runtime.Intrinsics.Arm;
 using PixelWallE.Language.Parsing.Expressions.Literals;
+using System.IO;
 
 
 //using Godot;
@@ -43,7 +44,7 @@ public class Executer : IVisitor<ASTNode>
     /// <param name="canvas">The canvas to be manipulated.</param>
     /// <param name="robot">The robot state to be updated.</param>
     /// <param name="error">The list to store any errors encountered during execution.</param>
-    public Executer(Scope scope, Canvas canvas, RobotState robot, List<PixelWallEException> error,List<string> consoleMessages)
+    public Executer(Scope scope, Canvas canvas, RobotState robot, List<PixelWallEException> error, List<string> consoleMessages)
     {
         this.scope = scope;
         this.canvas = canvas;
@@ -105,7 +106,7 @@ public class Executer : IVisitor<ASTNode>
 
 
 
-     private ExpressionType GetExpressionType(ExpressionType type)
+    private ExpressionType GetExpressionType(ExpressionType type)
     {
         ExpressionType argType = ExpressionType.Anytype;
         if (type == ExpressionType.ListBool)
@@ -116,7 +117,8 @@ public class Executer : IVisitor<ASTNode>
             argType = ExpressionType.Number;
         return argType;
     }
-    private void MakeValues(ExpressionType type,List list) {
+    private void MakeValues(ExpressionType type, List list)
+    {
 
         switch (type)
         {
@@ -162,14 +164,14 @@ public class Executer : IVisitor<ASTNode>
     {
         List<Expression> list = (List<Expression>)scope.GetVariable(element.ListReference);
         element.Index.Accept(this);
-        if ((int)element.Index.Value < list.Count&&(int)element.Index.Value>=0)
+        if ((int)element.Index.Value < list.Count && (int)element.Index.Value >= 0)
         {
             element.Value = list[(int)element.Index.Value].Value;
             return;
         }
-         throw new  RuntimeException($"Index was out of range. Must be non-negative and less than the size of the collection. (Parameter 'index')", element.Location, "ListElement");
+        throw new RuntimeException($"Index was out of range. Must be non-negative and less than the size of the collection. (Parameter 'index')", element.Location, "ListElement");
     }
-    
+
     #region functions
 
     /// <summary>
@@ -216,7 +218,7 @@ public class Executer : IVisitor<ASTNode>
         object y1 = function.Args[2].Value;
         object x2 = function.Args[3].Value;
         object y2 = function.Args[4].Value;
-        
+
 
         if ((int)x1 < 0 || (int)x1 >= canvas.Size || (int)x2 < 0 || (int)x2 >= canvas.Size || (int)y1 < 0 || (int)y1 >= canvas.Size || (int)y2 < 0 || (int)y2 >= canvas.Size)
         {
@@ -301,9 +303,9 @@ public class Executer : IVisitor<ASTNode>
 
         object color = function.Args[0].Value;
         int x = (int)function.Args[1].Value;
-        int y =(int) function.Args[2].Value;
+        int y = (int)function.Args[2].Value;
 
-        if ( robot.X + x < 0 ||  robot.X + x >= canvas.Size || robot.Y + y < 0 || robot.Y + y >= canvas.Size)
+        if (robot.X + x < 0 || robot.X + x >= canvas.Size || robot.Y + y < 0 || robot.Y + y >= canvas.Size)
             function.Value = false;
         else if (canvas.Matrix[robot.Y + y, robot.X + x] == function.color)
             function.Value = true;
@@ -575,10 +577,10 @@ public class Executer : IVisitor<ASTNode>
     #region Command
 
     #region ListCommand
- public void AddCommand(AddCommand command)
+    public void AddCommand(AddCommand command)
     {
         command.Args[0].Accept(this);
-       
+
         List<Expression> list = (List<Expression>)scope.GetVariable(command.ListReference);
         list.Add(command.Args[0]);
     }
@@ -587,28 +589,28 @@ public class Executer : IVisitor<ASTNode>
         command.Args[0].Accept(this);
         int index = (int)command.Args[0].Value;
         List<Expression> list = (List<Expression>)scope.GetVariable(command.ListReference);
-        if (index < list.Count&&index>=0)
+        if (index < list.Count && index >= 0)
         {
             list.RemoveAt(index);
             return;
         }
-         throw new  RuntimeException($"Index was out of range. Must be non-negative and less than the size of the collection. (Parameter 'index')", command.Location, "Listcommand");
+        throw new RuntimeException($"Index was out of range. Must be non-negative and less than the size of the collection. (Parameter 'index')", command.Location, "Listcommand");
 
     }
     public void ClearCommand(ClearCommand command)
     {
-       
-      
+
+
         List<Expression> list = (List<Expression>)scope.GetVariable(command.ListReference);
-      
-            list.Clear();
-          
+
+        list.Clear();
+
     }
     public void CountCommand(CountCommand command)
     {
-         List<Expression> list = (List<Expression>)scope.GetVariable(command.ListReference);
-      
-        command.Value= list.Count;
+        List<Expression> list = (List<Expression>)scope.GetVariable(command.ListReference);
+
+        command.Value = list.Count;
     }
     #endregion
 
@@ -838,12 +840,12 @@ public class Executer : IVisitor<ASTNode>
         }
 
         CheckDirection(command);
-        int x =(int) command.Args[0].Value;
-        int y =(int) command.Args[1].Value;
-        int distance =(int) command.Args[2].Value;
+        int x = (int)command.Args[0].Value;
+        int y = (int)command.Args[1].Value;
+        int distance = (int)command.Args[2].Value;
 
-        int width =(int) command.Args[3].Value;
-        int height =(int) command.Args[4].Value;
+        int width = (int)command.Args[3].Value;
+        int height = (int)command.Args[4].Value;
 
         Godot.GD.Print(x);
         Godot.GD.Print(y);
@@ -852,20 +854,20 @@ public class Executer : IVisitor<ASTNode>
         Godot.GD.Print(height);
         for (int i = 0; i < (int)distance; i++)
         {
-            MoveRobot(x,y, command);
+            MoveRobot(x, y, command);
         }
-        
-        
+
+
 
         for (int i = robot.Y - height + 1; i < robot.Y + height; i++)
         {
             DrawPixel(robot.X + width - 1, i);
             DrawPixel(robot.X - width + 1, i);
         }
-        for (int i = robot.X -width + 1; i < robot.X +width; i++)
+        for (int i = robot.X - width + 1; i < robot.X + width; i++)
         {
-            DrawPixel(i, robot.Y +height - 1);
-            DrawPixel(i, robot.Y -height + 1);
+            DrawPixel(i, robot.Y + height - 1);
+            DrawPixel(i, robot.Y - height + 1);
         }
     }
 
@@ -961,7 +963,7 @@ public class Executer : IVisitor<ASTNode>
     /// <param name="command">The command containing the x and y coordinates.</param>
     private void SetRobotPosition(IArgument<Expression> command)
     {
-         foreach (Expression item in command.Args)
+        foreach (Expression item in command.Args)
         {
             item.Accept(this);
         }
@@ -1014,6 +1016,48 @@ public class Executer : IVisitor<ASTNode>
             item.Accept(this);
         }
         ConsoleMessages.Add(command.Args[0].Value.ToString());
+    }
+
+
+
+    public void RunCommand(RunCommand command)
+    {
+        foreach (var item in command.Args)
+        {
+            item.Accept(this);
+        }
+        string path = (string)command.Args[0].Value;
+        if (!File.Exists(path))
+        {
+            throw new RuntimeException($"La direccion que quiere proporcionar no existe", command.Args[0].Location);
+        }
+        string source = File.ReadAllText(path);
+        Godot.GD.Print(source);
+        Interpreter localInterpreter = new Interpreter(canvas, source);
+        try
+        {
+            localInterpreter.Run();
+        }
+        catch (SystemException)
+        {
+
+        }
+        
+         foreach (var item in localInterpreter.ConsoleMessage)
+        {
+            ConsoleMessages.Add(item);
+        }
+        if (localInterpreter.Errors.Count > 0)
+        {
+            errors.Add(new RuntimeException($"Errors in {path}", new CodeLocation()));
+            foreach (var item in localInterpreter.Errors)
+            {
+                errors.Add(item);
+            }
+            throw new RuntimeException($"Find Exception at {path}", new CodeLocation());
+        }
+       
+
     }
     #endregion
 }

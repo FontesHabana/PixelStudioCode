@@ -84,10 +84,11 @@ public class SemanticChecker : IVisitor<ASTNode>
             argType = ExpressionType.Number;
         return argType;
     }
-    
+
 
     public void List(List list)
-    { List<ExpressionType> typeExpression = new List<ExpressionType>();
+    {
+        List<ExpressionType> typeExpression = new List<ExpressionType>();
         ExpressionType argType = GetExpressionType(list.Type);
 
 
@@ -101,15 +102,15 @@ public class SemanticChecker : IVisitor<ASTNode>
 
     public void ListElement(ListElement element)
     {
-     
+
         if (!scope.IsDeclared(element.ListReference, scope.variables)) // Verifica si la variable de la lista está declarada
         {
             errors.Add(SemanticException.UndeclaredVariable(element.ListReference, element.Location));
             return; // Detiene verificaciones adicionales si la lista no está declarada
         }
         bool declaredVar = scope.IsDeclared(element.ListReference, scope.variables);
-       
-         
+
+
         if (declaredVar) // Verifica si la variable declarada es una instancia de List
         {
 
@@ -151,7 +152,7 @@ public class SemanticChecker : IVisitor<ASTNode>
             {
                 Godot.GD.Print(arg);
                 arg.Accept(this);
-                
+
                 Godot.GD.Print("Checkear argumento");
                 Godot.GD.Print(arg.Type);
             }
@@ -266,7 +267,7 @@ public class SemanticChecker : IVisitor<ASTNode>
         function.color = color;
 
     }
- 
+
 
     #endregion
 
@@ -464,21 +465,21 @@ public class SemanticChecker : IVisitor<ASTNode>
         }
         ExpressionType declaredVar = scope.GetVariableType(command.ListReference);
         ExpressionType argType = GetExpressionType(declaredVar);
-        
-        CheckArguments(new List<ExpressionType> { argType}, command);
+
+        CheckArguments(new List<ExpressionType> { argType }, command);
     }
     public void RemoveAtCommand(RemoveAtCommand command)
     {
-        
+
         CheckArguments(new List<ExpressionType> { ExpressionType.Number }, command);
     }
     public void ClearCommand(ClearCommand command)
     {
-         CheckArguments(new List<ExpressionType>(), command);
+        CheckArguments(new List<ExpressionType>(), command);
     }
     public void CountCommand(CountCommand command)
     {
-         CheckArguments(new List<ExpressionType>(), command);
+        CheckArguments(new List<ExpressionType>(), command);
     }
     #endregion
 
@@ -572,7 +573,7 @@ public class SemanticChecker : IVisitor<ASTNode>
     }
     public void ReSpawnCommand(ReSpawnCommand command)
     {
-          CheckArguments(new List<ExpressionType>() { ExpressionType.Number, ExpressionType.Number }, command);
+        CheckArguments(new List<ExpressionType>() { ExpressionType.Number, ExpressionType.Number }, command);
     }
     /// <summary>
     /// Performs semantic analysis on the given <see cref="GoToCommand"/>.
@@ -601,10 +602,18 @@ public class SemanticChecker : IVisitor<ASTNode>
         }
         if (command.Args.Count() != 1)
         {
-             errors.Add(SemanticException.IncorrectArgumentCount(command.Name,1,command.Args.Count(), command.Location));
+            errors.Add(SemanticException.IncorrectArgumentCount(command.Name, 1, command.Args.Count(), command.Location));
         }
+
+
+    }
+   
+   
+    public void RunCommand(RunCommand command)
+    {
+        CheckArguments(new List<ExpressionType>() { ExpressionType.String }, command);
        
-         
+
     }
     #endregion
 

@@ -470,7 +470,7 @@ public class Parser
                 Stream.Synchronize();
                 continue;
             }
-            else if (Stream.Match(new List<TokenType> { TokenType.COLOR, TokenType.DRAWCIRCLE, TokenType.DRAWLINE, TokenType.DRAWRECTANGLE, TokenType.FILL, TokenType.SIZE, TokenType.PRINT, TokenType.RESPAWN }))
+            else if (Stream.Match(new List<TokenType> { TokenType.COLOR, TokenType.DRAWCIRCLE, TokenType.DRAWLINE, TokenType.DRAWRECTANGLE, TokenType.FILL, TokenType.SIZE, TokenType.PRINT, TokenType.RESPAWN , TokenType.RUN}))
             {
                 try
                 {
@@ -668,6 +668,10 @@ public class Parser
         if (headCommand.Type == TokenType.ISCANVASCOLOR)
         {
             return new IsCanvasColor(headCommand.Location, TokenType.ISCANVASCOLOR, new List<Expression>());
+        }
+         if (headCommand.Type == TokenType.RUN)
+        {
+            return new RunCommand(headCommand.Location, TokenType.RUN, new List<Expression>());
         }
         return null;
     }
