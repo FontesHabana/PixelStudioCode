@@ -31,11 +31,11 @@ class Run:IConsoleCommand
     /// <param name="args">The arguments passed to the command. If any arguments are passed, an exception is thrown.</param>
     /// <param name="mainInstance">The main UI instance.</param>
     /// <exception cref="System.Exception">Thrown when unknown arguments are passed to the command.</exception>
-    public virtual void Execute(string[] args, main_ui mainInstance)
+    public async virtual void Execute(string[] args, main_ui mainInstance)
     {
         if (args.Count() == 0)
         {
-            mainInstance.OnPlayPressedArgs();
+           await mainInstance.OnPlayPressedArgsAsync();
         }
         else
         {

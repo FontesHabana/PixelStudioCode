@@ -9,6 +9,7 @@ using Godot;
 using System.Collections.Generic;
 using GodotPlugins.Game;
 using System.Linq;
+using System.Threading; 
 
 namespace PixelWallE.Language;
 
@@ -106,15 +107,16 @@ public  class Interpreter{
    /// <summary>
    /// Executes the interpreted PixelWallE program.
    /// </summary>
-  public void Run()
+   ///  /// <param name="cancellationToken">A token to observe for cancellation requests.</param> 
+    public void Run(CancellationToken cancellationToken)
   {
-   
+     cancellationToken.ThrowIfCancellationRequested();
     if (Errors.Count == 0)
     {
       RobotState robot = new RobotState();
 
 
-      Executer executer = new Executer(Scope, Canvas, robot, Errors, ConsoleMessage);
+      Executer executer = new Executer(Scope, Canvas, robot, Errors, ConsoleMessage, cancellationToken);
       Program.Accept(executer);
     }
   }

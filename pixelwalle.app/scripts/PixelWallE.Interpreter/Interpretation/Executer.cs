@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Runtime.Intrinsics.Arm;
 using PixelWallE.Language.Parsing.Expressions.Literals;
 using System.IO;
+using System.Threading;
 
 
 /// <summary>
@@ -43,6 +44,9 @@ public class Executer : IVisitor<ASTNode>
     /// </value>
     public int Index { get; set; }
 
+
+    CancellationToken cancellationToken;
+
     /// <summary>
     /// Initializes a new instance of the <c>Executer</c> class.
     /// </summary>
@@ -50,7 +54,9 @@ public class Executer : IVisitor<ASTNode>
     /// <param name="canvas">The canvas to be manipulated.</param>
     /// <param name="robot">The robot state to be updated.</param>
     /// <param name="error">The list to store any errors encountered during execution.</param>
-    public Executer(Scope scope, Canvas canvas, RobotState robot, List<PixelWallEException> error, List<string> consoleMessages)
+    /// /// <param name="consoleMessages">The list to store messages for the console.</param>
+    /// <param name="cancellationToken">A token to observe for cancellation requests.</param> 
+    public Executer(Scope scope, Canvas canvas, RobotState robot, List<PixelWallEException> error, List<string> consoleMessages, CancellationToken cancellationToken)
     {
         this.scope = scope;
         this.canvas = canvas;
@@ -59,6 +65,8 @@ public class Executer : IVisitor<ASTNode>
 
         errors = error;
         Index = 0;
+
+        this.cancellationToken = cancellationToken;
     }
 
     /// <summary>
@@ -70,7 +78,7 @@ public class Executer : IVisitor<ASTNode>
         while (program.Statements.Count > Index)
         {
             try
-            {
+            {   cancellationToken.ThrowIfCancellationRequested();
                 program.Statements[Index].Accept(this);
                 Index++;
             }
@@ -1044,7 +1052,7 @@ public class Executer : IVisitor<ASTNode>
         Interpreter localInterpreter = new Interpreter(canvas, source);
         try
         {
-            localInterpreter.Run();
+            localInterpreter.Run(cancellationToken);
         }
         catch (SystemException)
         {
