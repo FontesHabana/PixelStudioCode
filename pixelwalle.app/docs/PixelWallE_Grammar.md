@@ -54,9 +54,32 @@ Functions return values and can be used as literals in expressions.
 ```
 literal         ::= number
                  | string
-                 | "true"
-                 | "false"
+                 | bool
                  | function_call
+                 | "List" "<" baseType ">"
+
+baseType        ::= number
+                 | string
+                 | bool
+
+
+declaration     ::=Type Identifier "=" listInit 
+
+listInit        ::= "[" expressionList? "]" 
+
+expressionList  ::= expression ("," expression)*
+
+expression      ::= identifier "[" expression "]"
+statement       ::= identifier "[" expression "]" "<-" expression
+
+expression      ::= identifier "." methdCall
+methodCall      ::= "Add" "(" expression ")" 
+                 |  "RemoveAt" "(" expression ")"
+                 |  "Clear" "(" ")"
+                 |  "Lenght
+
+
+
 
 function_call   ::= function_name "(" argument_list? ")"
 function_name   ::= "GetActualX" | "GetActualY" | "GetCanvasSize" | "GetColorCount" 
@@ -81,8 +104,7 @@ expression      ::= literal
 
 literal         ::= number
                  | string
-                 | "true"
-                 | "false"
+                 | bool
                  | function_call
 
 grouping        ::= "(" expression ")"
@@ -106,6 +128,11 @@ operator        ::= "+" | "-" | "*" | "**" | "%" | "/"
 (5 + 3) * -2
 !"red"
 true && false
+```
+
+
+## List
+
 ```
 
 

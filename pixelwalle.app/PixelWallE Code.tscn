@@ -171,7 +171,7 @@ layout_mode = 0
 offset_left = 20.0
 offset_top = 362.0
 offset_right = 848.0
-offset_bottom = 444.0
+offset_bottom = 472.0
 color = Color(0.10828, 0.105063, 0.121143, 1)
 script = ExtResource("2_eije3")
 _errorMessage = NodePath("ErrorMessage")
@@ -181,7 +181,7 @@ layout_mode = 0
 offset_left = 8.0
 offset_top = 10.0
 offset_right = 821.0
-offset_bottom = 78.0
+offset_bottom = 97.0
 theme = ExtResource("4_284gc")
 theme_override_colors/background_color = Color(0, 0, 0, 0)
 theme_override_colors/caret_background_color = Color(0, 0, 0, 0)
@@ -209,7 +209,6 @@ theme_override_colors/font_color = Color(0.780392, 0.580392, 0.615686, 1)
 theme_override_fonts/font = ExtResource("2_u6nwd")
 text = "***Welcome Start to Code***"
 context_menu_enabled = false
-shortcut_keys_enabled = false
 selecting_enabled = false
 wrap_mode = 1
 highlight_all_occurrences = true
@@ -346,7 +345,7 @@ offset_top = 7.0
 offset_right = 303.0
 offset_bottom = 34.0
 theme_override_fonts/normal_font = ExtResource("2_u6nwd")
-text = "Line: 0  Column: 0"
+text = "Line: 1  Column: 0"
 
 [connection signal="pressed" from="TopLine/ArchivesManager" to="." method="PressedArchiveControl"]
 [connection signal="pressed" from="TopLine/Settings" to="." method="PressedArchiveControl"]

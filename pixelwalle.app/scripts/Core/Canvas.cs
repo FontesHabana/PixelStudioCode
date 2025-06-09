@@ -1,7 +1,7 @@
 ﻿using System;
 
-namespace PixelWallE.Core
-{
+namespace PixelWallE.Core;
+
     /// <summary>
     /// Represents a canvas for drawing pixels.
     /// </summary>
@@ -14,7 +14,7 @@ namespace PixelWallE.Core
         /// <summary>
         /// Gets or sets the matrix representing the canvas.
         /// </summary>
-        public string[,] Matrix { get;  set; }
+        public PixelColor[,] Matrix { get;  set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Canvas"/> class.
@@ -23,12 +23,12 @@ namespace PixelWallE.Core
         public Canvas(int size)
         {
             Size = size;
-            Matrix = new string[size, size];
+            Matrix = new PixelColor[size, size];
             for (int x = 0; x < size; x++)
             {
                 for (int y = 0; y < size; y++)
                 {
-                    Matrix[x, y] = "White";
+                    Matrix[x, y] = new PixelColor(255,255,255);
                 }
 
             }
@@ -36,4 +36,4 @@ namespace PixelWallE.Core
 
         
     }
-}
+

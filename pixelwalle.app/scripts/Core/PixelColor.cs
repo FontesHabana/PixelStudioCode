@@ -1,0 +1,214 @@
+using System.Globalization;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+namespace PixelWallE.Core;
+
+public readonly struct PixelColor
+{
+    public byte Red { get; }
+    public byte Green { get; }
+    public byte Blue { get; }
+    public byte Alpha { get; }
+
+    public PixelColor(byte red, byte green, byte blue, byte alpha = 255)
+    {
+        Red = red;
+        Green = green;
+        Blue = blue;
+        Alpha = alpha;
+    }
+
+    public static bool TryParse(string colorString, out PixelColor color)
+    {
+        color = default;
+        if (string.IsNullOrWhiteSpace(colorString)) return false;
+
+        string normalizedString = colorString.Trim().ToLowerInvariant();
+
+        // Nombres predefinidos
+        switch (normalizedString)
+        {
+            case "red":
+                color = new PixelColor(255, 0, 0);
+                return true;
+            case "green":
+                color = new PixelColor(0, 255, 0);
+                return true;
+            case "blue":
+                color = new PixelColor(0, 0, 255);
+                return true;
+            case "yellow":
+                color = new PixelColor(255, 255, 0);
+                return true;
+            case "orange":
+                color = new PixelColor(255, 165, 0);
+                return true;
+            case "purple":
+                color = new PixelColor(128, 0, 128);
+                return true;
+            case "black":
+                color = new PixelColor(0, 0, 0);
+                return true;
+            case "white":
+                color = new PixelColor(255, 255, 255);
+                return true;
+            case "transparent":
+                color = new PixelColor(0, 0, 0, 0);
+                return true;
+        }
+
+        // Formatos Hexadecimales
+        if (normalizedString.StartsWith("#"))
+        {
+            var hex = normalizedString.Substring(1);
+            if (hex.Length == 8) // #AARRGGBB
+                return TryParseHexPacked(hex, out color);
+            if (hex.Length == 4) // #ARGB -> #AARRGGBB
+            {
+                var expandedHex = $"{hex[0]}{hex[0]}{hex[1]}{hex[1]}{hex[2]}{hex[2]}{hex[3]}{hex[3]}";
+                return TryParseHexPacked(expandedHex, out color);
+            }
+
+            if (hex.Length == 6) // #RRGGBB
+            {
+                var expandedHex = $"ff{hex}";
+                return TryParseHexPacked(expandedHex, out color);
+            }
+
+            if (hex.Length == 3) // #RGB -> #RRGGBB
+            {
+                var expandedHex = $"ff{hex[0]}{hex[0]}{hex[1]}{hex[1]}{hex[2]}{hex[2]}";
+                return TryParseHexPacked(expandedHex, out color);
+            }
+        }
+
+
+        
+        return TryParseRGB(normalizedString, out color);
+        
+       // return false;
+    }
+
+    /// <summary>
+    /// Tries to parse a hexadecimal color string in the format #AARRGGBB and converts it to a PixelColor.
+    /// </summary>
+    /// <param name="hexString">The hexadecimal color string to parse.</param>
+    /// <param name="color">When this method returns, contains the parsed PixelColor, or default if the parsing fails.</param>
+    /// <returns>True if the parsing was successful; otherwise, false.</returns>
+    private static bool TryParseHexPacked(string hexString, out PixelColor color)
+    {
+        color = default;
+        if (uint.TryParse(hexString, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var packedValue))
+        {
+           byte r, g, b, a;
+
+            r = (byte)((packedValue >> 24) & 0xFF);
+            g = (byte)((packedValue >> 16) & 0xFF);
+            b = (byte)((packedValue >> 8) & 0xFF);
+            a = (byte)(packedValue & 0xFF);
+
+
+            color = new PixelColor(r, g, b, a);
+            return true;
+        }
+
+        return false;
+    }
+
+
+    private static bool TryParseRGB(string rgbString, out PixelColor color)
+    {
+        color = new PixelColor(0, 0, 0, 255);
+        string[] separateColor = rgbString.Split(',');
+        if (separateColor.Length >= 3 && separateColor.Length <= 4)
+        {
+            foreach (string item in separateColor)
+            {
+                if (!int.TryParse(item, out int n))
+                {
+                    return false;
+                }
+            }
+            int.TryParse(separateColor[0], out int red);
+            int.TryParse(separateColor[1], out int green);
+            int.TryParse(separateColor[2], out int blue);
+            int value = 0;
+            if (separateColor.Count() == 4)
+            {
+                int.TryParse(separateColor[3], out value);
+            }        
+            else
+            {
+                value = 255;
+            }
+            int alpha = value;
+            color = new PixelColor((byte)NormalizeRGB(red), (byte)NormalizeRGB(green), (byte)NormalizeRGB(blue), (byte)NormalizeRGB(alpha));
+
+            return true;
+
+        }
+
+        return false;
+        
+        
+
+
+
+       
+    }
+    private static int NormalizeRGB(int number)
+    {
+        if (number > 255)
+            return 255;
+        if (number < 0)
+            return 0;
+        else
+            return number;
+    }
+
+
+    public override string ToString()
+    {
+        if (Alpha == 255)
+            return $"#{Red:X2}{Green:X2}{Blue:X2}";
+        return $"#{Alpha:X2}{Red:X2}{Green:X2}{Blue:X2}";
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return obj is PixelColor other &&
+               Red == other.Red &&
+               Green == other.Green &&
+               Blue == other.Blue &&
+               Alpha == other.Alpha;
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Red, Green, Blue, Alpha);
+    }
+
+    public static bool operator ==(PixelColor left, PixelColor right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(PixelColor left, PixelColor right)
+    {
+        return !(left == right);
+    }
+    
+    public static PixelColor operator +(PixelColor left, PixelColor right)
+    {
+        return Mix(left, right);
+    }
+    private static PixelColor Mix(PixelColor left, PixelColor right)
+    {
+        byte a = (byte)((left.Alpha + right.Alpha) / 2);
+        byte r = (byte)((left.Red + right.Red) / 2);
+        byte g = (byte)((left.Green + right.Alpha) / 2);
+        byte b = (byte)((left.Blue + right.Alpha) / 2);
+        return new PixelColor(r, g, b, a);
+    }
+}

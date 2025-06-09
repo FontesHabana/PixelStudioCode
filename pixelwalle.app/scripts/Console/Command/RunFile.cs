@@ -34,7 +34,7 @@ class RunFile: IConsoleCommand
     /// <param name="args">The arguments passed to the command. It expects one argument: the file path.</param>
     /// <param name="mainInstance">The main UI instance.</param>
     /// <exception cref="System.Exception">Thrown when the file path is invalid or the file does not end with '.pw'.</exception>
-    public virtual void Execute(string[] args, main_ui mainInstance)
+    public async  virtual void Execute(string[] args, main_ui mainInstance)
     {
         if (args.Count() == 1)
         {
@@ -57,7 +57,7 @@ class RunFile: IConsoleCommand
             }
 
 
-            mainInstance.OnPlayPressedArgs(fileContent);
+           await mainInstance.OnPlayPressedArgsAsync(fileContent);
         }
         else
         {

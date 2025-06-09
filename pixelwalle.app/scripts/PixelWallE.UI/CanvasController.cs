@@ -1,4 +1,5 @@
 using Godot;
+using PixelWallE.Core;
 using PixelWallE.Language;
 using PixelWallE.Language.Parsing;
 using System;
@@ -16,9 +17,7 @@ public partial class CanvasController : TextureRect
         
         int size = interpreter.Canvas.Size;
         float space = Size.X / size;
-        GD.Print(Size.X);
-        GD.Print(size);
-        GD.Print(space);
+        
 
 
         DrawColor(size, space, interpreter);
@@ -39,7 +38,7 @@ public partial class CanvasController : TextureRect
         {
             for (int j = 0; j < size; j++)
             {
-                Godot.Color color = CheckColor(interpreter.Canvas.Matrix[i, j],interpreter.Scope);
+                Godot.Color color = CheckColor(interpreter.Canvas.Matrix[i, j]);
                 //GD.Print(interpreter.Canvas.Matrix[i, j]);
                 //  GD.Print("dibuje pixel"+color.ToString());
                 Rect2 rect = new Rect2(j * space, i * space, space, space);
@@ -59,9 +58,9 @@ public partial class CanvasController : TextureRect
 
           Brush.Position = new Vector2(X, Y);
       }*/
-    public Godot.Color CheckColor(string color, Scope scope)
+    public Godot.Color CheckColor(PixelColor color)
     {
-        return scope.colors[color];
+        return new Godot.Color(color.Red / 255f, color.Green / 255f, color.Blue / 255f, color.Alpha / 255f);
     }
 
 
