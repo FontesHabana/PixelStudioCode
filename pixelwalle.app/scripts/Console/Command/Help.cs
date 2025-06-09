@@ -49,6 +49,11 @@ resize          - Changes the size of the canvas or output window.
 show commands   - Displays a categorized list of available commands in the console.
 
 ──────────────────────────────────────
+🖼️ Pixel Wall-E Commands
+──────────────────────────────────────
+generate code   - Generates code to draw a picture on the Pixel Wall-E display based on a selected image.
+
+──────────────────────────────────────
 ℹ️  Help
 ──────────────────────────────────────
 help            - Displays this help menu with all available commands.

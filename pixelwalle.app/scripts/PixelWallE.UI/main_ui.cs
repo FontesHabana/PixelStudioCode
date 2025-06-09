@@ -9,6 +9,7 @@ using System.Linq;
 using System.Drawing;
 using System.ComponentModel.DataAnnotations;
 using System.Threading;
+using MyConsole;
 namespace Editor;
 
 public partial class main_ui : Control
@@ -23,6 +24,7 @@ public partial class main_ui : Control
     [Export] CanvasController _canvas;
 
     [Export] Button _docs;
+    [Export] public FileDialog _pictureFileDialog;
     [Export] FileDialog _saveFileDialog;
     [Export] FileDialog _loadFileDialog;
     [Export] MenuButton _controlArchives;
@@ -46,6 +48,7 @@ public partial class main_ui : Control
     public static Interpreter interpreter = new Interpreter(canvas, ""); // Initialize the interpreter with a default size
     private string userScript => $" {DateTime.Now.ToString()} 🤖";
     private string? filePath = null;
+    public string? picturePath = null;
 
     public string? infoConsole => string.IsNullOrEmpty(filePath) ? $"*** New File {userScript} ***" : $"*** {filePath} {userScript} ***";
 
@@ -577,6 +580,12 @@ public partial class main_ui : Control
         }
     }
 
+
+
+    public void OnFileOpenSelectedPicture(string path)
+    {
+        picturePath = path;
+    }
     /// <summary>
     /// Creates a new file, clearing the code editor and resetting the file path.
     /// </summary>

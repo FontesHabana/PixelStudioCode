@@ -26,7 +26,8 @@ public static class Console
         { "redo", new Redo() },
         { "undo", new Undo() },
         {"resize",new Resize()},
-        {"show commands",new ShowCommands()}
+        {"show commands",new ShowCommands()},
+         {"generate code",new GenerateCode()}
     };
 
     /// <summary>

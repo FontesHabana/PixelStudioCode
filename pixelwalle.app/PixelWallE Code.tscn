@@ -39,7 +39,7 @@ keycode = 82
 [sub_resource type="Shortcut" id="Shortcut_lrqb5"]
 events = [SubResource("InputEventKey_kxpvm")]
 
-[node name="Control" type="Control" node_paths=PackedStringArray("_codeEditNode", "_errorTooltip", "_consoleOutput", "_cleanConsole", "_canvas", "_docs", "_saveFileDialog", "_loadFileDialog", "_controlArchives", "_closeButton", "_resizeButton", "_resizeInput", "_cleanCanvas", "_processButton", "_goBackButton", "_goNextButton", "_lineInfo")]
+[node name="Control" type="Control" node_paths=PackedStringArray("_codeEditNode", "_errorTooltip", "_consoleOutput", "_cleanConsole", "_canvas", "_docs", "_pictureFileDialog", "_saveFileDialog", "_loadFileDialog", "_controlArchives", "_closeButton", "_resizeButton", "_resizeInput", "_cleanCanvas", "_processButton", "_goBackButton", "_goNextButton", "_lineInfo")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -55,6 +55,7 @@ _consoleOutput = NodePath("Console")
 _cleanConsole = NodePath("Console/Clean Console")
 _canvas = NodePath("Canvas")
 _docs = NodePath("TopLine/Button")
+_pictureFileDialog = NodePath("Console/pictureFileDIalog")
 _saveFileDialog = NodePath("Save")
 _loadFileDialog = NodePath("Load")
 _controlArchives = NodePath("TopLine/ArchivesManager")
@@ -225,6 +226,17 @@ theme = ExtResource("3_x2dav")
 icon = ExtResource("8_6ufrl")
 flat = true
 
+[node name="pictureFileDIalog" type="FileDialog" parent="Console"]
+title = "Open a File"
+initial_position = 1
+size = Vector2i(352, 180)
+ok_button_text = "Open"
+dialog_autowrap = true
+file_mode = 0
+access = 2
+filters = PackedStringArray("*.jpg", "*.png", "*.webp")
+use_native_dialog = true
+
 [node name="Save" type="FileDialog" parent="."]
 initial_position = 1
 size = Vector2i(352, 180)
@@ -356,6 +368,7 @@ text = "Line: 1  Column: 0"
 [connection signal="text_changed" from="CodeEdit" to="." method="CodeChange"]
 [connection signal="text_changed" from="Console" to="Console" method="_on_text_changed"]
 [connection signal="pressed" from="Console/Clean Console" to="." method="CleanConsole"]
+[connection signal="file_selected" from="Console/pictureFileDIalog" to="." method="OnFileOpenSelectedPicture"]
 [connection signal="file_selected" from="Save" to="." method="OnFileSaveSelected"]
 [connection signal="file_selected" from="Load" to="." method="OnFileOpenSelected"]
 [connection signal="pressed" from="CanvasActions/Clean Canvas" to="." method="CleanCanvas"]
