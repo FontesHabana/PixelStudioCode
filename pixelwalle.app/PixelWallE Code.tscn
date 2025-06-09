@@ -65,7 +65,7 @@ _cleanCanvas = NodePath("CanvasActions/Clean Canvas")
 _processButton = NodePath("CanvasActions/Run")
 _goBackButton = NodePath("CanvasActions/GoBack")
 _goNextButton = NodePath("CanvasActions/GoNext")
-_lineInfo = NodePath("DownLine/LineInfo")
+_lineInfo = NodePath("BottomLine/LineInfo")
 metadata/_edit_horizontal_guides_ = [-380.0]
 
 [node name="Background" type="ColorRect" parent="."]
@@ -330,7 +330,7 @@ theme = ExtResource("4_284gc")
 icon = ExtResource("14_hq4cd")
 flat = true
 
-[node name="DownLine" type="ColorRect" parent="."]
+[node name="BottomLine" type="ColorRect" parent="."]
 layout_mode = 0
 offset_left = 2.0
 offset_top = 1044.0
@@ -338,7 +338,7 @@ offset_right = 1922.0
 offset_bottom = 1079.0
 color = Color(0.0862745, 0.211765, 0.403922, 1)
 
-[node name="LineInfo" type="RichTextLabel" parent="DownLine"]
+[node name="LineInfo" type="RichTextLabel" parent="BottomLine"]
 layout_mode = 0
 offset_left = 81.0
 offset_top = 7.0
@@ -348,8 +348,8 @@ theme_override_fonts/normal_font = ExtResource("2_u6nwd")
 text = "Line: 1  Column: 0"
 
 [connection signal="pressed" from="TopLine/ArchivesManager" to="." method="PressedArchiveControl"]
-[connection signal="pressed" from="TopLine/Settings" to="." method="PressedArchiveControl"]
 [connection signal="pressed" from="TopLine/Settings" to="." method="PressedVista"]
+[connection signal="pressed" from="TopLine/Settings" to="." method="PressedArchiveControl"]
 [connection signal="pressed" from="TopLine/Close" to="." method="ClosePressed"]
 [connection signal="pressed" from="TopLine/Button" to="." method="DocsPressed"]
 [connection signal="caret_changed" from="CodeEdit" to="." method="CaretChanged"]

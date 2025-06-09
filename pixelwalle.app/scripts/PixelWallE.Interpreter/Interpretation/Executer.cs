@@ -1006,7 +1006,6 @@ public class Executer : IVisitor<ASTNode>
                 Index = label.CommandIndicator - 1;
             }
             command.InfinteCycle++;
-            Godot.GD.Print("goto ejecutado");
         
     }
 
