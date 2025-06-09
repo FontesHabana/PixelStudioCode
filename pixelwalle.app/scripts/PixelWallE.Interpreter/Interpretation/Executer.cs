@@ -995,8 +995,7 @@ public class Executer : IVisitor<ASTNode>
     /// <exception cref="RuntimeException">Thrown when a possibly infinite loop is detected.</exception>
     public void GoToCommand(GoToCommand command)
     {
-        if (true) //10**6
-        {
+        
             foreach (Expression arg in command.Args)
             {
                 arg.Accept(this);
@@ -1008,11 +1007,7 @@ public class Executer : IVisitor<ASTNode>
             }
             command.InfinteCycle++;
             Godot.GD.Print("goto ejecutado");
-        }
-        else
-        {
-            throw new RuntimeException("Possibly infinite Loop at ", command.Location, "GoTo");
-        }
+        
     }
 
 
