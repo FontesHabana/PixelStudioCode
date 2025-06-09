@@ -21,7 +21,7 @@ class Help: IConsoleCommand
     public Help()
     {
         Name = "help";
-        Description = @"
+        Description =  @"
 Welcome to the Interactive Console!
 This console lets you control execution, navigation, and visualization inside the editor using simple text commands.
 
@@ -39,18 +39,20 @@ new file        - Creates a new blank file in your workspace.
 ──────────────────────────────────────
 🧭 Navigation Commands
 ──────────────────────────────────────
-undo         - Navigates to the previously opened file or view.
-redo         - Moves forward to the next file or view in history.
+undo            - Navigates to the previously opened file or view.
+redo            - Moves forward to the next file or view in history.
 
 ──────────────────────────────────────
 🎨 Visual & Interface Commands
 ──────────────────────────────────────
 resize          - Changes the size of the canvas or output window.
+show commands   - Displays a categorized list of available commands in the console.
 
 ──────────────────────────────────────
 ℹ️  Help
 ──────────────────────────────────────
 help            - Displays this help menu with all available commands.
+help [command]  - Displays detailed information about a specific command.
 
 ──────────────────────────────────────
 💡 Tip:
