@@ -74,7 +74,6 @@ type            ::="int"
 expressionList  ::= expression ("," expression)*
 
 expression      ::= identifier "[" expression "]"
-statement       ::= identifier "[" expression "]" "<-" expression
 
 expression      ::= identifier "." methodCall
 methodCall      ::= "Add" "(" expression ")" 
@@ -134,9 +133,5 @@ operator        ::= "+" | "-" | "*" | "**" | "%" | "/"
 true && false
 ```
 
-
-## List
-
-```
 
 
