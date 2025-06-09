@@ -30,7 +30,7 @@ Each command starts with a keyword and may take arguments (expressions).
 
 **Syntax:**
 ```
-command_statement ::= command_name "(" argument_list? ")"
+command_statement ::= command_name "[" argument_list? "]"
 command_name      ::= "DrawCircle" | "DrawLine" | "DrawRectangle" | "Fill" | "GoTo" | "Size" | "Spawn" | "Color"
 argument_list     ::= expression ("," expression)*
 ```
@@ -63,16 +63,20 @@ baseType        ::= number
                  | bool
 
 
-declaration     ::=Type Identifier "=" listInit 
+declaration     ::= Identifier "=" listInit 
 
-listInit        ::= "[" expressionList? "]" 
+listInit        ::="List""<" type ">" "[" expressionList? "]" 
+
+type            ::="int"
+                 | "bool"
+                 | "string"
 
 expressionList  ::= expression ("," expression)*
 
 expression      ::= identifier "[" expression "]"
 statement       ::= identifier "[" expression "]" "<-" expression
 
-expression      ::= identifier "." methdCall
+expression      ::= identifier "." methodCall
 methodCall      ::= "Add" "(" expression ")" 
                  |  "RemoveAt" "(" expression ")"
                  |  "Clear" "(" ")"

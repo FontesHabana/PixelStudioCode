@@ -86,9 +86,9 @@ color = Color(0.0352941, 0.0352941, 0.113725, 1)
 
 [node name="ArchivesManager" type="MenuButton" parent="TopLine"]
 layout_mode = 0
-offset_left = 66.0
+offset_left = 106.0
 offset_top = 9.0
-offset_right = 203.0
+offset_right = 185.0
 offset_bottom = 54.0
 mouse_filter = 1
 mouse_default_cursor_shape = 2
@@ -97,21 +97,6 @@ theme_override_fonts/font = ExtResource("2_u6nwd")
 theme_override_font_sizes/font_size = 15
 keep_pressed_outside = true
 text = "Archivo"
-item_count = 2
-popup/item_0/text = "Load"
-popup/item_1/text = "Save"
-popup/item_1/id = 1
-
-[node name="Settings" type="MenuButton" parent="TopLine"]
-visible = false
-layout_mode = 0
-offset_left = 193.0
-offset_right = 330.0
-offset_bottom = 45.0
-mouse_filter = 1
-mouse_default_cursor_shape = 2
-keep_pressed_outside = true
-text = "Vista"
 item_count = 2
 popup/item_0/text = "Load"
 popup/item_1/text = "Save"
@@ -129,10 +114,10 @@ flat = true
 
 [node name="Button" type="Button" parent="TopLine"]
 layout_mode = 0
-offset_left = 258.0
-offset_top = 7.0
-offset_right = 384.0
-offset_bottom = 53.0
+offset_left = 190.0
+offset_top = 9.0
+offset_right = 259.0
+offset_bottom = 55.0
 theme_override_colors/font_color = Color(0.588235, 0.709804, 0.866667, 1)
 theme_override_fonts/font = ExtResource("2_u6nwd")
 theme_override_font_sizes/font_size = 15
@@ -206,7 +191,7 @@ offset_top = 784.0
 offset_right = 973.0
 offset_bottom = 1036.0
 theme_override_colors/background_color = Color(0.0352941, 0.0352941, 0.113725, 1)
-theme_override_colors/font_color = Color(0.780392, 0.580392, 0.615686, 1)
+theme_override_colors/font_color = Color(0.935851, 0.861099, 0.872487, 1)
 theme_override_fonts/font = ExtResource("2_u6nwd")
 text = "***Welcome Start to Code***"
 context_menu_enabled = false
@@ -360,8 +345,6 @@ theme_override_fonts/normal_font = ExtResource("2_u6nwd")
 text = "Line: 1  Column: 0"
 
 [connection signal="pressed" from="TopLine/ArchivesManager" to="." method="PressedArchiveControl"]
-[connection signal="pressed" from="TopLine/Settings" to="." method="PressedVista"]
-[connection signal="pressed" from="TopLine/Settings" to="." method="PressedArchiveControl"]
 [connection signal="pressed" from="TopLine/Close" to="." method="ClosePressed"]
 [connection signal="pressed" from="TopLine/Button" to="." method="DocsPressed"]
 [connection signal="caret_changed" from="CodeEdit" to="." method="CaretChanged"]
