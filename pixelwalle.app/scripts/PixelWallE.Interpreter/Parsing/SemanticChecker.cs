@@ -77,7 +77,7 @@ public class SemanticChecker : IVisitor<ASTNode>
     /// </summary>
     /// <param name="type">The list type.</param>
     /// <returns>The expression type.</returns>
-    private ExpressionType GetExpressionType(ExpressionType type)
+    private ExpressionType GetListExpressionType(ExpressionType type)
     {
         ExpressionType argType = ExpressionType.Anytype;
         if (type == ExpressionType.ListBool)
@@ -97,7 +97,7 @@ public class SemanticChecker : IVisitor<ASTNode>
     public void List(List list)
     {
         List<ExpressionType> typeExpression = new List<ExpressionType>();
-        ExpressionType argType = GetExpressionType(list.Type);
+        ExpressionType argType = GetListExpressionType(list.Type);
 
 
         foreach (Expression expression in list.Args)
@@ -129,7 +129,7 @@ public class SemanticChecker : IVisitor<ASTNode>
             element.Index.Accept(this);
             if (element.Index.Type == ExpressionType.Number)
             {
-                ExpressionType type = GetExpressionType(scope.GetVariableType(element.ListReference));
+                ExpressionType type = GetListExpressionType(scope.GetVariableType(element.ListReference));
                 element.Type = type;
             }
             else
@@ -485,13 +485,13 @@ public class SemanticChecker : IVisitor<ASTNode>
     /// <param name="command">The command to analyze.</param>
     public void AddCommand(AddCommand command)
     {
-        if (!scope.IsDeclared(command.ListReference, scope.variables)) // Verifica si la variable de la lista está declarada
+        if (!scope.IsDeclared(command.ListReference, scope.variables)) 
         {
             errors.Add(SemanticException.UndeclaredVariable(command.ListReference, command.Location));
-            return; // Detiene verificaciones adicionales si la lista no está declarada
+            return; 
         }
         ExpressionType declaredVar = scope.GetVariableType(command.ListReference);
-        ExpressionType argType = GetExpressionType(declaredVar);
+        ExpressionType argType = GetListExpressionType(declaredVar);
 
         CheckArguments(new List<ExpressionType> { argType }, command);
     }
@@ -546,9 +546,40 @@ public class SemanticChecker : IVisitor<ASTNode>
 
         scope.DeclareVariable(command.Var.VariableName, null, command.Argument.Type);
 
+    }
 
+
+
+    public void AssigmentListElement(AssigmentListElement command)
+    {
+        command.Argument.Accept(this);
+        command.Index.Accept(this);
+
+    
+        if (!scope.IsDeclared(command.Var.VariableName, scope.variables)) // Verifica si la variable de la lista está declarada
+        {
+            errors.Add(SemanticException.UndeclaredVariable(command.Var.VariableName, command.Location));
+            return; 
+        }
+       
+        
+        ExpressionType declaredVar = scope.GetVariableType(command.Var.VariableName);
+        ExpressionType argType = GetListExpressionType(declaredVar);
+          if (argType != command.Argument.Type)
+         {
+                errors.Add(SemanticException.TypeMismatch("Assigment", argType, command.Argument.Type, command.Location));
+         }
+          if (command.Index.Type != ExpressionType.Number)
+         {
+                errors.Add(SemanticException.TypeMismatch("Assigment", ExpressionType.Number, command.Index.Type, command.Location));
+         }
+
+      
 
     }
+
+
+
     /// <summary>
     /// Performs semantic analysis on the given <see cref="ColorCommand"/>.
     /// </summary>

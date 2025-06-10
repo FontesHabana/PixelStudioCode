@@ -713,6 +713,23 @@ public class Executer : IVisitor<ASTNode>
         scope.AssignVariable(command.Var.VariableName, command.Argument.Value, command.Argument.Type);
     }
 
+
+
+
+
+    public void AssigmentListElement(AssigmentListElement command)
+    {
+        command.Argument.Accept(this);
+        command.Index.Accept(this);
+        int index = (int)command.Index.Value;
+        List<Expression> list = (List<Expression>)scope.GetVariable(command.Var.VariableName);
+        if (index < list.Count && index >= 0)
+        {
+            list[index]=command.Argument;
+            return;
+        }
+        throw RuntimeException.IndexOutOfRange(index,list.Count,command.Name, command.Index.Location);
+    }
     /// <summary>
     /// Sets the brush color of the robot.
     /// </summary>

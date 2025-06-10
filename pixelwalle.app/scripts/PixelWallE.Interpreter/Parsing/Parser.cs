@@ -482,6 +482,25 @@ public class Parser
         return new AssigmentExpression(assigment.Location, var, ParseExpression());
     }
 
+     private AssigmentListElement ParseListAssignation()
+    {
+        // Move back one token to get the identifier.
+        Stream.MoveBack(1);
+        // Create a variable from the identifier.
+        Variable var = new Variable(Stream.Previous().Location, Stream.Previous().Value);
+        // Move forward to continue parsing.
+        Stream.Consume(TokenType.LEFT_BRACKET, "[");
+        Expression index = ParseExpression();
+        Stream.Consume(TokenType.RIGHT_BRACKET, "]");
+        // Get the assignment token.
+        
+        
+        Stream.Consume(TokenType.ASSIGNMENT, "<-");
+        Token assigment = Stream.Previous();
+        // Return a new assignment expression.
+        return new AssigmentListElement(assigment.Location, var, ParseExpression(), index);
+    }
+
     /// <summary>
     /// Parses a GoTo command.
     /// </summary>
@@ -622,9 +641,22 @@ public class Parser
                         continue;
                     }
                 }
+                else if (Stream.Match(new List<TokenType> { TokenType.LEFT_BRACKET }))
+                {
+                     try
+                    {
+                        program.Statements.Add(ParseListAssignation());
+                        twoCommandLineError = true;
+                    }
+                    catch (PixelWallEException error)
+                    {
+                        program.Errors.Add(error);
+                        Stream.Synchronize();
+                        continue;
+                    }
+                }
                 else if (Stream.Match(new List<TokenType> { TokenType.DOT }))
                 {
-                    Godot.GD.Print("Vamos a tratar de parsear un ocmando de lsita");
                     if (Stream.Match(new List<TokenType> { TokenType.ADD, TokenType.CLEAR, TokenType.REMOVEAT }))
                     {
                         try

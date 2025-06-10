@@ -71,6 +71,7 @@ public interface IVisitor<T>
     void CountCommand(CountCommand command);
     #endregion
     void AssigmentExpression(AssigmentExpression command);
+    void AssigmentListElement(AssigmentListElement command);
     void ColorCommand(ColorCommand command);
     void DrawCircleCommand(DrawCircleCommand command);
     void DrawLineCommand(DrawLineCommand command);
