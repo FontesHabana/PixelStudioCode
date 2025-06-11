@@ -27,6 +27,7 @@ public partial class main_ui : Control
     [Export] public FileDialog _pictureFileDialog;
     [Export] FileDialog _saveFileDialog;
     [Export] FileDialog _loadFileDialog;
+    [Export] FileDialog _savePictureDialog;
     [Export] MenuButton _controlArchives;
     [Export] Button _closeButton;
 
@@ -83,6 +84,9 @@ public partial class main_ui : Control
                 break;
             case 1:
                 _saveFileDialog.Popup();
+                break;
+            case 2:
+                _savePictureDialog.Popup();
                 break;
         }
     }
@@ -551,7 +555,7 @@ public partial class main_ui : Control
     {
         if (!path.EndsWith(".pw"))
         {
-            _consoleOutput.Text += "\n" + "Solo se admiten archivos terminados en .pw" + "\n" + userScript + "\n" + ">>>";
+            _consoleOutput.Text += "\n" + "Only files with the .pw extension are supported" + "\n" + userScript + "\n" + ">>>";
             return;
         }
 
@@ -576,16 +580,27 @@ public partial class main_ui : Control
         }
         catch (System.Exception error)
         {
-            _consoleOutput.Text += "\n" + "Error al guardar el archivo" + error + "\n" + userScript + "\n" + ">>>";
+            _consoleOutput.Text += "\n" + "Error occurred while saving the file" + error + "\n" + userScript + "\n" + ">>>";
         }
     }
 
 
 
-    public void OnFileOpenSelectedPicture(string path)
+    public void OnFileSavePictureSelected(string path)
     {
-        picturePath = path;
+
+        try
+        {
+           SaveDrawing(_canvas, path);
+        }
+        catch (System.Exception error)
+        {
+            _consoleOutput.Text += "\n" + "Error occurred while saving the file" + error + "\n" + userScript + "\n" + ">>>";
+        }
+        
     }
+
+    
     /// <summary>
     /// Creates a new file, clearing the code editor and resetting the file path.
     /// </summary>
@@ -593,6 +608,8 @@ public partial class main_ui : Control
     {
         _codeEditNode.Text = "";
         filePath = null;
+
+
     }
 
     /// <summary>
@@ -614,6 +631,54 @@ public partial class main_ui : Control
         }
     }
 
+
+    public void SaveDrawing(TextureRect texturerect, string path )
+    {
+        if (texturerect == null)
+        {
+            return;
+        }
+       
+        Image fullscreenshot = texturerect.GetViewport().GetTexture().GetImage();
+        if (fullscreenshot == null)
+        {
+            GD.Print("Invalid screenshot");
+        }
+
+
+        Vector2 globalPos = texturerect.GlobalPosition;
+        Vector2 size = texturerect.Size;
+
+        Rect2I cropRect = new Rect2I(
+            (int)globalPos.X,
+            (int)globalPos.Y,
+            (int)size.X,
+            (int)size.Y
+        );
+
+        Vector2I screenSize = fullscreenshot.GetSize();
+        cropRect = cropRect.Intersection(new Rect2I(0, 0, screenSize.X, screenSize.Y));
+
+        Image croppedImage = fullscreenshot.GetRegion(cropRect);
+
+        
+
+        Error result = croppedImage.SavePng(path);
+        if (result == Error.Ok)
+        {
+            GD.Print("Save Ok");
+        }
+        else
+        {
+            GD.Print("Save error");
+        }
+
+
+       
+    }
+
+
+
     /// <summary>
     /// Cleans up resources when the node exits the scene tree.
     /// </summary>
@@ -622,6 +687,8 @@ public partial class main_ui : Control
         cancellationTokenSource?.Dispose();
         base._ExitTree();
     }
+
+
 
 
     //------------------------------------------------------------------------------------------------

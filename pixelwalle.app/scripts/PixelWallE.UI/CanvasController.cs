@@ -48,16 +48,7 @@ public partial class CanvasController : TextureRect
             }
         }
     }
-    /*  private void UpdateBrushPosition(float space)
-      {
-          (int x, int y) = Scope.Position;
-          Vector2 currentPosition = new Vector2(x, y);
-
-          float X = currentPosition.X * space + 20;
-          float Y = currentPosition.Y * space - 20;
-
-          Brush.Position = new Vector2(X, Y);
-      }*/
+   
     public Godot.Color CheckColor(PixelColor color)
     {
         return new Godot.Color(color.Red / 255f, color.Green / 255f, color.Blue / 255f, color.Alpha / 255f);
