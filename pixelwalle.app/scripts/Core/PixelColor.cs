@@ -99,13 +99,13 @@ namespace PixelWallE.Core;
 
                 if (hex.Length == 6) // #RRGGBB
                 {
-                    var expandedHex = $"ff{hex}";
+                    var expandedHex = $"{hex}ff";
                     return TryParseHexPacked(expandedHex, out color);
                 }
 
                 if (hex.Length == 3) // #RGB -> #RRGGBB
                 {
-                    var expandedHex = $"ff{hex[0]}{hex[0]}{hex[1]}{hex[1]}{hex[2]}{hex[2]}";
+                    var expandedHex = $"{hex[0]}{hex[0]}{hex[1]}{hex[1]}{hex[2]}{hex[2]}ff";
                     return TryParseHexPacked(expandedHex, out color);
                 }
             }
