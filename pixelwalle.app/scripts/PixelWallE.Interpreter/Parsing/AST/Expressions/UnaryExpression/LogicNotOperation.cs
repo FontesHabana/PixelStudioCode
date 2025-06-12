@@ -22,7 +22,7 @@ public class NotOperation : UnaryExpression
     /// <param name="right">The expression to negate logically.</param>
     public NotOperation(CodeLocation location, Expression right) : base(location, right)
     {
-        Type = ExpressionType.Bool;
+        Type = ExpressionType.IntegerOrBool;
     }
 
     /// <summary>

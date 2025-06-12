@@ -35,7 +35,7 @@ public class IsBrushColorFunction : Function, IColor
     /// <param name="args">The list of argument expressions (the color to compare with).</param>
     public IsBrushColorFunction(CodeLocation location, TokenType functionName, List<Expression>? args) : base(location, functionName, args)
     {
-        Type = ExpressionType.Bool;
+        Type = ExpressionType.IntegerOrBool;
         Name = "IsBrushColor";
     }
 

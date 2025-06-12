@@ -4,10 +4,8 @@ namespace PixelWallE.Language.Parsing.Expressions;
     {
         Anytype,
         String,
-        Number,
-        Bool,
-        ListNumber,
+        IntegerOrBool,
+        ListIntegerOrBool,
         ListString,
-        ListBool,
         ErrorType
     }

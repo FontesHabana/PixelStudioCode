@@ -23,7 +23,7 @@ public class ANDOperation : BinaryExpression
     /// <param name="right">The right operand expression.</param>
     public ANDOperation(CodeLocation location, Expression left, Expression right) : base(location, left, right)
     {
-        Type = ExpressionType.Bool;
+        Type = ExpressionType.IntegerOrBool;
     }
 
     /// <summary>

@@ -33,7 +33,7 @@ public class GetActualXFunction : Function
     /// <param name="args">The list of argument expressions (should be empty).</param>
     public GetActualXFunction(CodeLocation location, TokenType functionName, List<Expression?> args) : base(location, functionName, args)
     {
-        Type = ExpressionType.Number;
+        Type = ExpressionType.IntegerOrBool;
         Name = "GetActualX"; // Note: Typo in original code, should be GetActualX
     }
 

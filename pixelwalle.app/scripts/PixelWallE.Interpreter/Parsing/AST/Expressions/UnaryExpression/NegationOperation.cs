@@ -22,7 +22,7 @@ public class NegationOperation : UnaryExpression
     /// <param name="right">The expression to negate.</param>
     public NegationOperation(CodeLocation location, Expression right) : base(location, right)
     {
-        Type = ExpressionType.Number;
+        Type = ExpressionType.IntegerOrBool;
     }
 
     /// <summary>

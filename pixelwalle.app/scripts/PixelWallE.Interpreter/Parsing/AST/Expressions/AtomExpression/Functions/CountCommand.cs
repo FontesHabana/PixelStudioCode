@@ -43,7 +43,7 @@ public class CountCommand : Function, IListReference
         : base(location, functionName, args)
     {
         Name = "Count";
-        Type = ExpressionType.Number;
+        Type = ExpressionType.IntegerOrBool;
         ListReference = "";
     }
 

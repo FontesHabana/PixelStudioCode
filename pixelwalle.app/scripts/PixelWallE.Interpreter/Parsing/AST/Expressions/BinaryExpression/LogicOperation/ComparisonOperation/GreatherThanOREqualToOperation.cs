@@ -6,7 +6,7 @@ public  class GreatherThanOrEqualToOperation: BinaryExpression
     public override object? Value {get; set;}
 
     public GreatherThanOrEqualToOperation(CodeLocation location, Expression left, Expression right) : base(location, left, right){
-         Type=ExpressionType.Bool;
+         Type=ExpressionType.IntegerOrBool;
     }
     public override void Accept(IVisitor<ASTNode> visitor)
     {

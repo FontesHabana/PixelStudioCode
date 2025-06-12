@@ -23,7 +23,7 @@ public class ModuloOperation : BinaryExpression
     /// <param name="right">The right operand expression.</param>
     public ModuloOperation(CodeLocation location, Expression left, Expression right) : base(location, left, right)
     {
-        Type = ExpressionType.Number; // Assuming Modulo operation results in a number
+        Type = ExpressionType.IntegerOrBool; // Assuming Modulo operation results in a number
     }
 
     /// <summary>

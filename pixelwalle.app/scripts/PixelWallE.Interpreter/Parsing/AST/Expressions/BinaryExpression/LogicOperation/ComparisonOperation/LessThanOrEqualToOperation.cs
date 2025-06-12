@@ -23,7 +23,7 @@ public class LessThanOrEqualToOperation : BinaryExpression
     /// <param name="right">The right operand expression.</param>
     public LessThanOrEqualToOperation(CodeLocation location, Expression left, Expression right) : base(location, left, right)
     {
-        Type = ExpressionType.Bool;
+        Type = ExpressionType.IntegerOrBool;
     }
 
     /// <summary>

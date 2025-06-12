@@ -33,7 +33,7 @@ public class IsCanvasColor : Function, IColor
     /// <param name="args">The list of argument expressions (color, x, y).</param>
     public IsCanvasColor(CodeLocation location, TokenType functionName, List<Expression?> args) : base(location, functionName, args)
     {
-        Type = ExpressionType.Bool;
+        Type = ExpressionType.IntegerOrBool;
         Name = "IsCanvasColor";
     }
 

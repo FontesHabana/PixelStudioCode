@@ -80,12 +80,10 @@ public class SemanticChecker : IVisitor<ASTNode>
     private ExpressionType GetListExpressionType(ExpressionType type)
     {
         ExpressionType argType = ExpressionType.Anytype;
-        if (type == ExpressionType.ListBool)
-            argType = ExpressionType.Bool;
+        if (type == ExpressionType.ListIntegerOrBool)
+            argType = ExpressionType.IntegerOrBool;
         if (type == ExpressionType.ListString)
             argType = ExpressionType.String;
-        if (type == ExpressionType.ListNumber)
-            argType = ExpressionType.Number;
         return argType;
     }
 
@@ -127,14 +125,14 @@ public class SemanticChecker : IVisitor<ASTNode>
         {
 
             element.Index.Accept(this);
-            if (element.Index.Type == ExpressionType.Number)
+            if (element.Index.Type == ExpressionType.IntegerOrBool)
             {
                 ExpressionType type = GetListExpressionType(scope.GetVariableType(element.ListReference));
                 element.Type = type;
             }
             else
             {
-                errors.Add(SemanticException.TypeMismatch("index", ExpressionType.Number, element.Index.Type, element.Index.Location));
+                errors.Add(SemanticException.TypeMismatch("index", ExpressionType.IntegerOrBool, element.Index.Type, element.Index.Location));
             }
 
         }
@@ -246,7 +244,7 @@ public class SemanticChecker : IVisitor<ASTNode>
     /// <param name="function">The function to analyze.</param>
     public void GetColorCountFunction(GetColorCountFunction function)
     {
-        CheckArguments(new List<ExpressionType>() { ExpressionType.String, ExpressionType.Number, ExpressionType.Number, ExpressionType.Number, ExpressionType.Number }, function);
+        CheckArguments(new List<ExpressionType>() { ExpressionType.String, ExpressionType.IntegerOrBool, ExpressionType.IntegerOrBool, ExpressionType.IntegerOrBool, ExpressionType.IntegerOrBool }, function);
         CheckColor(function.Args[0], out PixelColor color);
         function.color = color;
 
@@ -267,7 +265,7 @@ public class SemanticChecker : IVisitor<ASTNode>
     /// <param name="function">The function to analyze.</param>
     public void IsBrushSizeFunction(IsBrushSizeFunction function)
     {
-        CheckArguments(new List<ExpressionType>() { ExpressionType.Number }, function);
+        CheckArguments(new List<ExpressionType>() { ExpressionType.IntegerOrBool }, function);
     }
     /// <summary>
     /// Performs semantic analysis on the given <see cref="IsCanvasColor"/>.
@@ -275,7 +273,7 @@ public class SemanticChecker : IVisitor<ASTNode>
     /// <param name="function">The function to analyze.</param>
     public void IsCanvasColor(IsCanvasColor function)
     {
-        CheckArguments(new List<ExpressionType>() { ExpressionType.String, ExpressionType.Number, ExpressionType.Number }, function);
+        CheckArguments(new List<ExpressionType>() { ExpressionType.String, ExpressionType.IntegerOrBool, ExpressionType.IntegerOrBool }, function);
         CheckColor(function.Args[0], out PixelColor color);
         function.color = color;
 
@@ -300,7 +298,7 @@ public class SemanticChecker : IVisitor<ASTNode>
     /// <param name="operation">The operation to analyze.</param>
     public void NotOperation(NotOperation operation)
     {
-        UnaryOperation(operation, ExpressionType.Bool);
+        UnaryOperation(operation, ExpressionType.IntegerOrBool);
     }
     /// <summary>
     /// Performs semantic analysis on the given <see cref="NegationOperation"/>.
@@ -308,7 +306,7 @@ public class SemanticChecker : IVisitor<ASTNode>
     /// <param name="operation">The operation to analyze.</param>
     public void NegationOperation(NegationOperation operation)
     {
-        UnaryOperation(operation, ExpressionType.Number);
+        UnaryOperation(operation, ExpressionType.IntegerOrBool);
     }
     #endregion
 
@@ -318,13 +316,17 @@ public class SemanticChecker : IVisitor<ASTNode>
     {
         operation.Right.Accept(this);
         operation.Left.Accept(this);
+        Godot.GD.Print("Binary Expression Check");
+          Godot.GD.Print(type);
+        Godot.GD.Print(operation.Left.Type);
+        Godot.GD.Print(operation.Right.Type);
 
         if (operation.Left.Type != type)
-        {
+        {       Godot.GD.Print("Doy Error Aqui");
             errors.Add(SemanticException.InvalidOperation(operation.ToString(), operation.Left.Type, operation.Right.Type, operation.Location));
         }
         if (operation.Right.Type != type)
-        {
+        {   Godot.GD.Print("Doy Error Aqui 2");
             errors.Add(SemanticException.InvalidOperation(operation.ToString(), operation.Right.Type, operation.Left.Type, operation.Location));
         }
     }
@@ -336,15 +338,17 @@ public class SemanticChecker : IVisitor<ASTNode>
     /// <param name="operation">The operation to analyze.</param>
     public void AdditionOperation(AdditionOperation operation)
     {
-        if (operation.Left.Type == ExpressionType.Number)
+        operation.Left.Accept(this);
+        operation.Right.Accept(this);
+        if (operation.Left.Type == ExpressionType.String|| operation.Right.Type == ExpressionType.String)
         {
-            BinaryExpression(operation, ExpressionType.Number);
-            operation.Type = ExpressionType.Number;
+            operation.Type = ExpressionType.String;
+           
         }
         else
         {
-            BinaryExpression(operation, ExpressionType.String);
-            operation.Type = ExpressionType.String;
+            operation.Type = ExpressionType.IntegerOrBool;
+
         }
       
     }
@@ -354,7 +358,7 @@ public class SemanticChecker : IVisitor<ASTNode>
     /// <param name="operation">The operation to analyze.</param>
     public void DivisionOperation(DivisionOperation operation)
     {
-        BinaryExpression(operation, ExpressionType.Number);
+        BinaryExpression(operation, ExpressionType.IntegerOrBool);
     }
     /// <summary>
     /// Performs semantic analysis on the given <see cref="ExponentiationOperation"/>.
@@ -362,7 +366,7 @@ public class SemanticChecker : IVisitor<ASTNode>
     /// <param name="operation">The operation to analyze.</param>
     public void ExponentiationOperation(ExponentiationOperation operation)
     {
-        BinaryExpression(operation, ExpressionType.Number);
+        BinaryExpression(operation, ExpressionType.IntegerOrBool);
     }
     /// <summary>
     /// Performs semantic analysis on the given <see cref="ModuloOperation"/>.
@@ -370,7 +374,7 @@ public class SemanticChecker : IVisitor<ASTNode>
     /// <param name="operation">The operation to analyze.</param>
     public void ModuloOperation(ModuloOperation operation)
     {
-        BinaryExpression(operation, ExpressionType.Number);
+        BinaryExpression(operation, ExpressionType.IntegerOrBool);
     }
     /// <summary>
     /// Performs semantic analysis on the given <see cref="MultiplicationOperation"/>.
@@ -378,7 +382,7 @@ public class SemanticChecker : IVisitor<ASTNode>
     /// <param name="operation">The operation to analyze.</param>
     public void MultiplicationOperation(MultiplicationOperation operation)
     {
-        BinaryExpression(operation, ExpressionType.Number);
+        BinaryExpression(operation, ExpressionType.IntegerOrBool);
     }
     /// <summary>
     /// Performs semantic analysis on the given <see cref="SubstractionOperation"/>.
@@ -386,7 +390,7 @@ public class SemanticChecker : IVisitor<ASTNode>
     /// <param name="operation">The operation to analyze.</param>
     public void SubstractionOperation(SubstractionOperation operation)
     {
-        BinaryExpression(operation, ExpressionType.Number);
+        BinaryExpression(operation, ExpressionType.IntegerOrBool);
     }
     #endregion
 
@@ -397,7 +401,7 @@ public class SemanticChecker : IVisitor<ASTNode>
     /// <param name="operation">The operation to analyze.</param>
     public void ANDOperation(ANDOperation operation)
     {
-        BinaryExpression(operation, ExpressionType.Bool);
+        BinaryExpression(operation, ExpressionType.IntegerOrBool);
     }
     /// <summary>
     /// Performs semantic analysis on the given <see cref="OrOperation"/>.
@@ -405,7 +409,7 @@ public class SemanticChecker : IVisitor<ASTNode>
     /// <param name="operation">The operation to analyze.</param>
     public void OrOperation(OrOperation operation)
     {
-        BinaryExpression(operation, ExpressionType.Bool);
+        BinaryExpression(operation, ExpressionType.IntegerOrBool);
     }
     /// <summary>
     /// Performs semantic analysis on the given <see cref="EqualToOperation"/>.
@@ -443,7 +447,7 @@ public class SemanticChecker : IVisitor<ASTNode>
     /// <param name="operation">The operation to analyze.</param>
     public void GreatherThanOperation(GreatherThanOperation operation)
     {
-        BinaryExpression(operation, ExpressionType.Number);
+        BinaryExpression(operation, ExpressionType.IntegerOrBool);
     }
     /// <summary>
     /// Performs semantic analysis on the given <see cref="GreatherThanOrEqualToOperation"/>.
@@ -451,7 +455,7 @@ public class SemanticChecker : IVisitor<ASTNode>
     /// <param name="operation">The operation to analyze.</param>
     public void GreatherThanOrEqualToOperation(GreatherThanOrEqualToOperation operation)
     {
-        BinaryExpression(operation, ExpressionType.Number);
+        BinaryExpression(operation, ExpressionType.IntegerOrBool);
     }
     /// <summary>
     /// Performs semantic analysis on the given <see cref="LessThanOperation"/>.
@@ -459,7 +463,7 @@ public class SemanticChecker : IVisitor<ASTNode>
     /// <param name="operation">The operation to analyze.</param>
     public void LessThanOperation(LessThanOperation operation)
     {
-        BinaryExpression(operation, ExpressionType.Number);
+        BinaryExpression(operation, ExpressionType.IntegerOrBool);
     }
     /// <summary>
     /// Performs semantic analysis on the given <see cref="LessThanOrEqualToOperation"/>.
@@ -467,7 +471,7 @@ public class SemanticChecker : IVisitor<ASTNode>
     /// <param name="operation">The operation to analyze.</param>
     public void LessThanOrEqualToOperation(LessThanOrEqualToOperation operation)
     {
-        BinaryExpression(operation, ExpressionType.Number);
+        BinaryExpression(operation, ExpressionType.IntegerOrBool);
     }
 
 
@@ -502,7 +506,7 @@ public class SemanticChecker : IVisitor<ASTNode>
     public void RemoveAtCommand(RemoveAtCommand command)
     {
 
-        CheckArguments(new List<ExpressionType> { ExpressionType.Number }, command);
+        CheckArguments(new List<ExpressionType> { ExpressionType.IntegerOrBool }, command);
     }
    /// <summary>
     /// Performs semantic analysis on the given <see cref="ClearCommand"/>.
@@ -569,9 +573,9 @@ public class SemanticChecker : IVisitor<ASTNode>
          {
                 errors.Add(SemanticException.TypeMismatch("Assigment", argType, command.Argument.Type, command.Location));
          }
-          if (command.Index.Type != ExpressionType.Number)
+          if (command.Index.Type != ExpressionType.IntegerOrBool)
          {
-                errors.Add(SemanticException.TypeMismatch("Assigment", ExpressionType.Number, command.Index.Type, command.Location));
+                errors.Add(SemanticException.TypeMismatch("Assigment", ExpressionType.IntegerOrBool, command.Index.Type, command.Location));
          }
 
       
@@ -597,7 +601,7 @@ public class SemanticChecker : IVisitor<ASTNode>
     /// <param name="command">The command to analyze.</param>
     public void DrawCircleCommand(DrawCircleCommand command)
     {
-        CheckArguments(new List<ExpressionType>() { ExpressionType.Number, ExpressionType.Number, ExpressionType.Number }, command);
+        CheckArguments(new List<ExpressionType>() { ExpressionType.IntegerOrBool, ExpressionType.IntegerOrBool, ExpressionType.IntegerOrBool }, command);
     }
     /// <summary>
     /// Performs semantic analysis on the given <see cref="DrawLineCommand"/>.
@@ -605,7 +609,7 @@ public class SemanticChecker : IVisitor<ASTNode>
     /// <param name="command">The command to analyze.</param>
     public void DrawLineCommand(DrawLineCommand command)
     {
-        CheckArguments(new List<ExpressionType>() { ExpressionType.Number, ExpressionType.Number, ExpressionType.Number }, command);
+        CheckArguments(new List<ExpressionType>() { ExpressionType.IntegerOrBool, ExpressionType.IntegerOrBool, ExpressionType.IntegerOrBool }, command);
     }
     /// <summary>
     /// Performs semantic analysis on the given <see cref="DrawRectangleCommand"/>.
@@ -613,7 +617,7 @@ public class SemanticChecker : IVisitor<ASTNode>
     /// <param name="command">The command to analyze.</param>
     public void DrawRectangleCommand(DrawRectangleCommand command)
     {
-        CheckArguments(new List<ExpressionType>() { ExpressionType.Number, ExpressionType.Number, ExpressionType.Number, ExpressionType.Number, ExpressionType.Number }, command);
+        CheckArguments(new List<ExpressionType>() { ExpressionType.IntegerOrBool, ExpressionType.IntegerOrBool, ExpressionType.IntegerOrBool, ExpressionType.IntegerOrBool, ExpressionType.IntegerOrBool }, command);
 
     }
     /// <summary>
@@ -630,7 +634,7 @@ public class SemanticChecker : IVisitor<ASTNode>
     /// <param name="command">The command to analyze.</param>
     public void SizeCommand(SizeCommand command)
     {
-        CheckArguments(new List<ExpressionType>() { ExpressionType.Number }, command);
+        CheckArguments(new List<ExpressionType>() { ExpressionType.IntegerOrBool }, command);
     }
     /// <summary>
     /// Performs semantic analysis on the given <see cref="SpawnCommand"/>.
@@ -638,7 +642,7 @@ public class SemanticChecker : IVisitor<ASTNode>
     /// <param name="command">The command to analyze.</param>
     public void SpawnCommand(SpawnCommand command)
     {
-        CheckArguments(new List<ExpressionType>() { ExpressionType.Number, ExpressionType.Number }, command);
+        CheckArguments(new List<ExpressionType>() { ExpressionType.IntegerOrBool, ExpressionType.IntegerOrBool }, command);
 
     }
     /// <summary>
@@ -647,7 +651,7 @@ public class SemanticChecker : IVisitor<ASTNode>
     /// <param name="command">The command to analyze.</param>
     public void ReSpawnCommand(ReSpawnCommand command)
     {
-        CheckArguments(new List<ExpressionType>() { ExpressionType.Number, ExpressionType.Number }, command);
+        CheckArguments(new List<ExpressionType>() { ExpressionType.IntegerOrBool, ExpressionType.IntegerOrBool }, command);
     }
     /// <summary>
     /// Performs semantic analysis on the given <see cref="GoToCommand"/>.
@@ -655,7 +659,7 @@ public class SemanticChecker : IVisitor<ASTNode>
     /// <param name="command">The command to analyze.</param>
     public void GoToCommand(GoToCommand command)
     {
-        CheckArguments(new List<ExpressionType>() { ExpressionType.Bool }, command);
+        CheckArguments(new List<ExpressionType>() { ExpressionType.IntegerOrBool }, command);
         if (!scope.IsDeclared(command.Label, scope.labels))
         {
             errors.Add(SemanticException.LabelNotFound(command.Label, command.Location));

@@ -10,7 +10,7 @@ public class Number : AtomExpression
     /// </summary>
     public override ExpressionType Type
     {
-        get { return ExpressionType.Number; }
+        get { return ExpressionType.IntegerOrBool; }
         set { } // Setting the type is not supported for literals.
     }
 
@@ -24,7 +24,7 @@ public class Number : AtomExpression
     /// </summary>
     /// <param name="location">The code location associated with this numeric literal.</param>
     /// <param name="value">The integer value.</param>
-    public Number(CodeLocation location, int value) : base(location)
+    public Number(CodeLocation location, IntegerOrBool value) : base(location)
     {
         Value = value;
     }

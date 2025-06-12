@@ -33,7 +33,7 @@ public class GetCanvasSizeFunction : Function
     /// <param name="args">The list of argument expressions (should be empty).</param>
     public GetCanvasSizeFunction(CodeLocation location, TokenType functionName, List<Expression>? args) : base(location, functionName, args)
     {
-        Type = ExpressionType.Number;
+        Type = ExpressionType.IntegerOrBool;
         Name = "GetCanvasSize";
     }
 

@@ -33,7 +33,7 @@ public class IsBrushSizeFunction : Function
     /// <param name="args">The list of argument expressions (the size to compare with).</param>
     public IsBrushSizeFunction(CodeLocation location, TokenType functionName, List<Expression>? args) : base(location, functionName, args)
     {
-        Type = ExpressionType.Number; // Although it returns a boolean, it's comparing against a number
+        Type = ExpressionType.IntegerOrBool; // Although it returns a boolean, it's comparing against a number
         Name = "IsBrushSize";
     }
 

@@ -23,7 +23,7 @@ public class DivisionOperation : BinaryExpression
     /// <param name="right">The right operand expression.</param>
     public DivisionOperation(CodeLocation location, Expression left, Expression right) : base(location, left, right)
     {
-        Type = ExpressionType.Number;
+        Type = ExpressionType.IntegerOrBool;
     }
 
     /// <summary>

@@ -111,7 +111,7 @@ public class printAst
             GD.Print($"{indent}  Operand:");
             printAstNode(unaryExpression.Right, depth + 1, visitedNodes);
         }
-        else if (node is Bool boolLiteral)
+        else if (node is Number boolLiteral)
         {
             GD.Print($"{indent}  Value: {boolLiteral.Value}");
         }

@@ -23,7 +23,7 @@ public class AdditionOperation : BinaryExpression
     /// <param name="right">The right operand expression.</param>
     public AdditionOperation(CodeLocation location, Expression left, Expression right) : base(location, left, right)
     {
-        Type = ExpressionType.Number;
+        Type = ExpressionType.IntegerOrBool;
     }
 
     /// <summary>

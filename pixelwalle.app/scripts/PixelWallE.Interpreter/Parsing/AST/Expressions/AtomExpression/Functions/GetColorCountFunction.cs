@@ -37,7 +37,7 @@ public class GetColorCountFunction : Function, IColor
     /// <param name="args">The list of argument expressions (color, x1, y1, x2, y2).</param>
     public GetColorCountFunction(CodeLocation location, TokenType functionName, List<Expression>? args) : base(location, functionName, args)
     {
-        Type = ExpressionType.Number;
+        Type = ExpressionType.IntegerOrBool;
         Name = "GetColorFunction"; // Note: Typo in original code, should be GetColorCount
     }
 

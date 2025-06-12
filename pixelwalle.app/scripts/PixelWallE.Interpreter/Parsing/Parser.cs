@@ -286,9 +286,9 @@ public class Parser
         if (argsType == TokenType.STRINGTYPE)
             listType = ExpressionType.ListString;
         else if (argsType == TokenType.INTTYPE)
-            listType = ExpressionType.ListNumber;
+            listType = ExpressionType.ListIntegerOrBool;
         else if (argsType == TokenType.BOOLTYPE)
-            listType = ExpressionType.ListBool;
+            listType = ExpressionType.ListIntegerOrBool;
         else
             throw SyntaxException.UnexpectedToken(argsType.ToString(), "string || int || bool", headToken.Location);
         // Advance the stream and consume the closing angle bracket.
@@ -316,15 +316,15 @@ public class Parser
         // Match various token types and return corresponding expressions.
         if (Stream.Match(new List<TokenType> { TokenType.FALSE }))
         {
-            return new Bool(Stream.Previous().Location, false);
+            return new Number(Stream.Previous().Location, new IntegerOrBool(false));
         }
         if (Stream.Match(new List<TokenType> { TokenType.TRUE }))
         {
-            return new Bool(Stream.Previous().Location, true);
+            return new Number(Stream.Previous().Location, new IntegerOrBool(true));
         }
         if (Stream.Match(new List<TokenType> { TokenType.NUMBER }))
         {
-            return new Number(Stream.Previous().Location, (int)Stream.Previous().Literal);
+            return new Number(Stream.Previous().Location, new IntegerOrBool((int)Stream.Previous().Literal));
         }
         if (Stream.Match(new List<TokenType> { TokenType.STRING }))
         {

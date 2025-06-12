@@ -123,12 +123,10 @@ public class Executer : IVisitor<ASTNode>
     private ExpressionType GetExpressionType(ExpressionType type)
     {
         ExpressionType argType = ExpressionType.Anytype;
-        if (type == ExpressionType.ListBool)
-            argType = ExpressionType.Bool;
+        if (type == ExpressionType.ListIntegerOrBool)
+            argType = ExpressionType.IntegerOrBool;
         if (type == ExpressionType.ListString)
             argType = ExpressionType.String;
-        if (type == ExpressionType.ListNumber)
-            argType = ExpressionType.Number;
         return argType;
     }
     public void List(List list)
@@ -145,12 +143,12 @@ public class Executer : IVisitor<ASTNode>
     {
         List<Expression> list = (List<Expression>)scope.GetVariable(element.ListReference);
         element.Index.Accept(this);
-        if ((int)element.Index.Value < list.Count && (int)element.Index.Value >= 0)
-        {
-            element.Value = list[(int)element.Index.Value].Value;
+        if ((IntegerOrBool)element.Index.Value < list.Count && (IntegerOrBool)element.Index.Value >= 0)
+        {   
+            element.Value = list[(IntegerOrBool)element.Index.Value].Value;
             return;
         }
-        throw RuntimeException.IndexOutOfRange((int)element.Index.Value,list.Count, "Get element", element.Index.Location);
+        throw RuntimeException.IndexOutOfRange((IntegerOrBool)element.Index.Value,list.Count, "Get element", element.Index.Location);
     }
 
     #region functions
@@ -161,7 +159,7 @@ public class Executer : IVisitor<ASTNode>
     /// <param name="function">The function to get the X coordinate.</param>
     public void GetActualXFunction(GetActualXFunction function)
     {
-        function.Value = robot.X;
+        function.Value = new IntegerOrBool(robot.X);
     }
 
     /// <summary>
@@ -170,7 +168,7 @@ public class Executer : IVisitor<ASTNode>
     /// <param name="function">The function to get the Y coordinate.</param>
     public void GetActualYFunction(GetActualYFunction function)
     {
-        function.Value = robot.Y;
+        function.Value = new IntegerOrBool(robot.Y);
     }
 
     /// <summary>
@@ -179,7 +177,7 @@ public class Executer : IVisitor<ASTNode>
     /// <param name="function">The function to get the canvas size.</param>
     public void GetCanvasSizeFunction(GetCanvasSizeFunction function)
     {
-        function.Value = canvas.Size;
+        function.Value = new IntegerOrBool(canvas.Size);
     }
 
     /// <summary>
@@ -194,37 +192,37 @@ public class Executer : IVisitor<ASTNode>
             item.Accept(this);
         }
 
-        object color = function.Args[0].Value;
-        object x1 = function.Args[1].Value;
-        object y1 = function.Args[2].Value;
-        object x2 = function.Args[3].Value;
-        object y2 = function.Args[4].Value;
+        IntegerOrBool color = (IntegerOrBool)function.Args[0].Value;
+        IntegerOrBool x1 = (IntegerOrBool)function.Args[1].Value;
+        IntegerOrBool y1 = (IntegerOrBool)function.Args[2].Value;
+        IntegerOrBool x2 = (IntegerOrBool)function.Args[3].Value;
+        IntegerOrBool y2 = (IntegerOrBool)function.Args[4].Value;
 
 
-        if ((int)x1 < 0 || (int)x1 >= canvas.Size || (int)x2 < 0 || (int)x2 >= canvas.Size || (int)y1 < 0 || (int)y1 >= canvas.Size || (int)y2 < 0 || (int)y2 >= canvas.Size)
+        if (x1 < 0 || x1 >= canvas.Size || x2 < 0 || x2 >= canvas.Size || y1 < 0 || y1 >= canvas.Size || y2 < 0 || y2 >= canvas.Size)
         {
-            function.Value = 0;
+            function.Value = new IntegerOrBool(0);
             return;
         }
 
-        if ((int)x1 > (int)x2)
+        if (x1 > x2)
         {
-            int temp = (int)x1;
+            int temp = x1;
             x1 = x2;
             x2 = temp;
         }
 
-        if ((int)y1 > (int)y2)
+        if (y1 > y2)
         {
-            int temp = (int)y1;
+            int temp = y1;
             y1 = y2;
             y2 = temp;
         }
 
         int colorCount = 0;
-        for (int y = (int)y1; y <= (int)y2; y++)
+        for (int y = y1; y <= y2; y++)
         {
-            for (int x = (int)x1; x < (int)x2; x++)
+            for (int x = x1; x < x2; x++)
             {
                 if (canvas.Matrix[y, x] == function.color)
                 {
@@ -232,7 +230,7 @@ public class Executer : IVisitor<ASTNode>
                 }
             }
         }
-        function.Value = colorCount;
+        function.Value = new IntegerOrBool(colorCount);
     }
 
     /// <summary>
@@ -248,9 +246,9 @@ public class Executer : IVisitor<ASTNode>
 
         object color = function.Args[0].Value;
         if (robot.BrushColor == function.color)
-            function.Value = true;
+            function.Value = new IntegerOrBool(true);
         else
-            function.Value = false;
+            function.Value = new IntegerOrBool(false);
     }
 
     /// <summary>
@@ -265,10 +263,10 @@ public class Executer : IVisitor<ASTNode>
         }
 
         object size = function.Args[0].Value;
-        if (robot.BrushSize == (int)size)
-            function.Value = true;
+        if (robot.BrushSize == (IntegerOrBool)size)
+            function.Value = new IntegerOrBool(true);
         else
-            function.Value = false;
+            function.Value = new IntegerOrBool(false);
     }
 
     /// <summary>
@@ -282,16 +280,15 @@ public class Executer : IVisitor<ASTNode>
             item.Accept(this);
         }
 
-        object color = function.Args[0].Value;
-        int x = (int)function.Args[1].Value;
-        int y = (int)function.Args[2].Value;
+        int x = (IntegerOrBool)function.Args[1].Value;
+        int y = (IntegerOrBool)function.Args[2].Value;
 
         if (robot.X + x < 0 || robot.X + x >= canvas.Size || robot.Y + y < 0 || robot.Y + y >= canvas.Size)
-            function.Value = false;
+            function.Value = new IntegerOrBool(false);
         else if (canvas.Matrix[robot.Y + y, robot.X + x] == function.color)
-            function.Value = true;
+            function.Value = new IntegerOrBool(true);
         else
-            function.Value = false;
+            function.Value = new IntegerOrBool(false);
     }
 
     #endregion
@@ -305,9 +302,9 @@ public class Executer : IVisitor<ASTNode>
     public void NotOperation(NotOperation operation)
     {
         operation.Right.Accept(this);
-        operation.Value = !(bool)operation.Right.Value;
+        operation.Value = new IntegerOrBool(!(IntegerOrBool)operation.Right.Value);
     }
-
+    
     /// <summary>
     /// Performs a negation operation on the given expression.
     /// </summary>
@@ -316,8 +313,8 @@ public class Executer : IVisitor<ASTNode>
     {
         operation.Right.Accept(this);
 
-        int right = (int)operation.Right.Value;
-        operation.Value = -right;
+        IntegerOrBool right = (IntegerOrBool)operation.Right.Value;
+        operation.Value = new IntegerOrBool(-right);
     }
 
     #endregion
@@ -334,16 +331,16 @@ public class Executer : IVisitor<ASTNode>
     {
         operation.Left.Accept(this);
         operation.Right.Accept(this);
-        if (operation.Left.Type == ExpressionType.Number)
+        if (operation.Type == ExpressionType.IntegerOrBool)
         {
-            int left = (int)operation.Left.Value;
-            int right = (int)operation.Right.Value;
-            operation.Value = left + right;
+            IntegerOrBool left = (IntegerOrBool)operation.Left.Value;
+            IntegerOrBool right = (IntegerOrBool)operation.Right.Value;
+            operation.Value = new IntegerOrBool(left + right);
         }
-        if (operation.Left.Type==ExpressionType.String)
+        else
         {
-             string left = (string)operation.Left.Value;
-             string right = (string)operation.Right.Value;
+             string left = operation.Left.Value.ToString();
+             string right = operation.Right.Value.ToString ();
              operation.Value = left + right;
         }
         
@@ -359,14 +356,14 @@ public class Executer : IVisitor<ASTNode>
         operation.Left.Accept(this);
         operation.Right.Accept(this);
 
-        int left = (int)operation.Left.Value;
-        int right = (int)operation.Right.Value;
+        int left = (IntegerOrBool)operation.Left.Value;
+        int right = (IntegerOrBool)operation.Right.Value;
 
         if (right == 0)
         {
             throw RuntimeException.DivisionByZero(operation.Location);
         }
-        operation.Value = left / right;
+        operation.Value = new IntegerOrBool(left / right);
     }
 
     /// <summary>
@@ -378,14 +375,14 @@ public class Executer : IVisitor<ASTNode>
     {
         operation.Left.Accept(this);
         operation.Right.Accept(this);
-        int left = (int)operation.Left.Value;
-        int right = (int)operation.Right.Value;
+        int left = (IntegerOrBool)operation.Left.Value;
+        int right = (IntegerOrBool)operation.Right.Value;
 
-        if ((int)left == 0 && (int)right == 0)
+        if ((IntegerOrBool)left == 0 && (IntegerOrBool)right == 0)
         {
             throw RuntimeException.ZeroPowerZero(operation.Location);
         }
-        operation.Value = (int)Math.Pow(left, right);
+        operation.Value = new IntegerOrBool((int)Math.Pow(left, right));
     }
 
     /// <summary>
@@ -397,9 +394,9 @@ public class Executer : IVisitor<ASTNode>
         operation.Left.Accept(this);
         operation.Right.Accept(this);
 
-        int left = (int)operation.Left.Value;
-        int right = (int)operation.Right.Value;
-        operation.Value = left % right;
+        int left = (IntegerOrBool)operation.Left.Value;
+        int right = (IntegerOrBool)operation.Right.Value;
+        operation.Value = new IntegerOrBool(left % right);
     }
 
     /// <summary>
@@ -411,10 +408,10 @@ public class Executer : IVisitor<ASTNode>
         operation.Left.Accept(this);
         operation.Right.Accept(this);
 
-        int left = (int)operation.Left.Value;
-        int right = (int)operation.Right.Value;
+        int left = (IntegerOrBool)operation.Left.Value;
+        int right = (IntegerOrBool)operation.Right.Value;
 
-        operation.Value = left * right;
+        operation.Value = new IntegerOrBool(left * right);
     }
 
     /// <summary>
@@ -426,10 +423,10 @@ public class Executer : IVisitor<ASTNode>
         operation.Left.Accept(this);
         operation.Right.Accept(this);
 
-        int left = (int)operation.Left.Value;
-        int right = (int)operation.Right.Value;
+        int left = (IntegerOrBool)operation.Left.Value;
+        int right = (IntegerOrBool)operation.Right.Value;
 
-        operation.Value = left - right;
+        operation.Value = new IntegerOrBool(left - right);
     }
 
     #endregion
@@ -445,7 +442,7 @@ public class Executer : IVisitor<ASTNode>
         operation.Left.Accept(this);
         operation.Right.Accept(this);
 
-        operation.Value = (bool)operation.Left.Value && (bool)operation.Right.Value;
+        operation.Value = new IntegerOrBool((IntegerOrBool)operation.Left.Value && (IntegerOrBool)operation.Right.Value);
     }
 
     /// <summary>
@@ -457,7 +454,7 @@ public class Executer : IVisitor<ASTNode>
         operation.Left.Accept(this);
         operation.Right.Accept(this);
 
-        operation.Value = (bool)operation.Left.Value || (bool)operation.Right.Value;
+        operation.Value = new IntegerOrBool((IntegerOrBool)operation.Left.Value || (IntegerOrBool)operation.Right.Value);
     }
 
     /// <summary>
@@ -472,7 +469,7 @@ public class Executer : IVisitor<ASTNode>
         object left = operation.Left.Value;
         object right = operation.Right.Value;
 
-        operation.Value = left.Equals(right);
+        operation.Value = new IntegerOrBool(left.Equals(right));
     }
 
     /// <summary>
@@ -483,10 +480,10 @@ public class Executer : IVisitor<ASTNode>
     {
         operation.Left.Accept(this);
         operation.Right.Accept(this);
-        int left = (int)operation.Left.Value;
-        int right = (int)operation.Right.Value;
+        int left = (IntegerOrBool)operation.Left.Value;
+        int right = (IntegerOrBool)operation.Right.Value;
 
-        operation.Value = (int)left > (int)right;
+        operation.Value = new IntegerOrBool((IntegerOrBool)left > (IntegerOrBool)right);
     }
 
     /// <summary>
@@ -497,10 +494,10 @@ public class Executer : IVisitor<ASTNode>
     {
         operation.Left.Accept(this);
         operation.Right.Accept(this);
-        int left = (int)operation.Left.Value;
-        int right = (int)operation.Right.Value;
+        int left = (IntegerOrBool)operation.Left.Value;
+        int right = (IntegerOrBool)operation.Right.Value;
 
-        operation.Value = (int)left >= (int)right;
+        operation.Value = new IntegerOrBool(left >= right);
     }
 
     /// <summary>
@@ -511,9 +508,9 @@ public class Executer : IVisitor<ASTNode>
     {
         operation.Left.Accept(this);
         operation.Right.Accept(this);
-        int left = (int)operation.Left.Value;
-        int right = (int)operation.Right.Value;
-        operation.Value = left < right;
+        int left = (IntegerOrBool)operation.Left.Value;
+        int right = (IntegerOrBool)operation.Right.Value;
+        operation.Value = new IntegerOrBool(left < right);
     }
 
     /// <summary>
@@ -525,10 +522,10 @@ public class Executer : IVisitor<ASTNode>
         operation.Left.Accept(this);
         operation.Right.Accept(this);
 
-        int left = (int)operation.Left.Value;
-        int right = (int)operation.Right.Value;
+        int left = (IntegerOrBool)operation.Left.Value;
+        int right = (IntegerOrBool)operation.Right.Value;
 
-        operation.Value = left <= right;
+        operation.Value = new IntegerOrBool(left <= right);
     }
 
     /// <summary>
@@ -540,18 +537,16 @@ public class Executer : IVisitor<ASTNode>
         operation.Left.Accept(this);
         operation.Right.Accept(this);
 
-        operation.Left.Accept(this);
-        operation.Right.Accept(this);
 
         if (operation.Left.Type == ExpressionType.String)
         {
-            operation.Value = !operation.Left.Equals(operation.Right);
+            operation.Value = new IntegerOrBool(!operation.Left.Equals(operation.Right));
             return;
         }
-        int left = (int)operation.Left.Value;
-        int right = (int)operation.Right.Value;
+        int left = (IntegerOrBool)operation.Left.Value;
+        int right = (IntegerOrBool)operation.Right.Value;
 
-        operation.Value = !left.Equals(right);
+        operation.Value = new IntegerOrBool(!left.Equals(right));
     }
 
     #endregion;
@@ -583,7 +578,7 @@ public class Executer : IVisitor<ASTNode>
     public void RemoveAtCommand(RemoveAtCommand command)
     {
         command.Args[0].Accept(this);
-        int index = (int)command.Args[0].Value;
+        int index = (IntegerOrBool)command.Args[0].Value;
         List<Expression> list = (List<Expression>)scope.GetVariable(command.ListReference);
         if (index < list.Count && index >= 0)
         {
@@ -643,8 +638,8 @@ public class Executer : IVisitor<ASTNode>
     /// <exception cref="RuntimeException">Thrown when the direction coordinates are invalid.</exception>
     private void CheckDirection(Command command)
     {
-        int x = (int)command.Args[0].Value;
-        int y = (int)command.Args[1].Value;
+        int x = (IntegerOrBool)command.Args[0].Value;
+        int y = (IntegerOrBool)command.Args[1].Value;
         if (x != 1 && x != -1 && x != 0)
         {
             throw RuntimeException.InvalidDirectionCoordinates(x, y, command.Name, command.Location);
@@ -721,7 +716,7 @@ public class Executer : IVisitor<ASTNode>
     {
         command.Argument.Accept(this);
         command.Index.Accept(this);
-        int index = (int)command.Index.Value;
+        int index = (IntegerOrBool)command.Index.Value;
         List<Expression> list = (List<Expression>)scope.GetVariable(command.Var.VariableName);
         if (index < list.Count && index >= 0)
         {
@@ -758,9 +753,9 @@ public class Executer : IVisitor<ASTNode>
             item.Accept(this);
         }
 
-        if ((int)command.Args[2].Value <= 0)
+        if ((IntegerOrBool)command.Args[2].Value <= 0)
         {
-            throw RuntimeException.ArgumentMostBePositive("Radio", (int)command.Args[2].Value, command.Location);
+            throw RuntimeException.ArgumentMostBePositive("Radio", (IntegerOrBool)command.Args[2].Value, command.Location);
         }
 
         CheckDirection(command);
@@ -768,15 +763,15 @@ public class Executer : IVisitor<ASTNode>
         object cy = command.Args[1].Value;
         object r = command.Args[2].Value;
 
-        for (int i = 0; i < (int)r; i++)
+        for (int i = 0; i < (IntegerOrBool)r; i++)
         {
-            MoveRobot((int)cx, (int)cy, command);
+            MoveRobot((IntegerOrBool)cx, (IntegerOrBool)cy, command);
         }
 
         //Implementar algoritmo de bresenham
         int x = 0;
-        int y = (int)r;
-        int d = 3 - 2 * (int)r;
+        int y = (IntegerOrBool)r;
+        int d = 3 - 2 * (IntegerOrBool)r;
 
         while (x <= y)
         {
@@ -817,9 +812,9 @@ public class Executer : IVisitor<ASTNode>
             item.Accept(this);
         }
 
-        if ((int)command.Args[2].Value <= 0)
+        if ((IntegerOrBool)command.Args[2].Value <= 0)
         {
-            throw RuntimeException.ArgumentMostBePositive("Distance", (int)command.Args[2].Value, command.Location);
+            throw RuntimeException.ArgumentMostBePositive("Distance", (IntegerOrBool)command.Args[2].Value, command.Location);
         }
 
         CheckDirection(command);
@@ -827,10 +822,10 @@ public class Executer : IVisitor<ASTNode>
         object y = command.Args[1].Value;
         object distance = command.Args[2].Value;
 
-        for (int i = 0; i < (int)distance; i++)
+        for (int i = 0; i < (IntegerOrBool)distance; i++)
         {
             DrawPixel(robot.X, robot.Y);
-            MoveRobot((int)x, (int)y, command);
+            MoveRobot((IntegerOrBool)x, (IntegerOrBool)y, command);
         }
     }
 
@@ -849,33 +844,33 @@ public class Executer : IVisitor<ASTNode>
             item.Accept(this);
         }
 
-        if ((int)command.Args[2].Value <= 0)
+        if ((IntegerOrBool)command.Args[2].Value <= 0)
         {
-            throw RuntimeException.ArgumentMostBePositive("Distance", (int)command.Args[2].Value, command.Location);
+            throw RuntimeException.ArgumentMostBePositive("Distance", (IntegerOrBool)command.Args[2].Value, command.Location);
         }
-        if ((int)command.Args[3].Value <= 0)
+        if ((IntegerOrBool)command.Args[3].Value <= 0)
         {
-            throw RuntimeException.ArgumentMostBePositive("Width", (int)command.Args[2].Value, command.Location);
+            throw RuntimeException.ArgumentMostBePositive("Width", (IntegerOrBool)command.Args[2].Value, command.Location);
         }
-        if ((int)command.Args[4].Value <= 0)
+        if ((IntegerOrBool)command.Args[4].Value <= 0)
         {
-            throw RuntimeException.ArgumentMostBePositive("Height", (int)command.Args[2].Value, command.Location);
+            throw RuntimeException.ArgumentMostBePositive("Height", (IntegerOrBool)command.Args[2].Value, command.Location);
         }
 
         CheckDirection(command);
-        int x = (int)command.Args[0].Value;
-        int y = (int)command.Args[1].Value;
-        int distance = (int)command.Args[2].Value;
+        int x = (IntegerOrBool)command.Args[0].Value;
+        int y = (IntegerOrBool)command.Args[1].Value;
+        int distance = (IntegerOrBool)command.Args[2].Value;
 
-        int width = (int)command.Args[3].Value;
-        int height = (int)command.Args[4].Value;
+        int width = (IntegerOrBool)command.Args[3].Value;
+        int height = (IntegerOrBool)command.Args[4].Value;
 
         Godot.GD.Print(x);
         Godot.GD.Print(y);
         Godot.GD.Print(distance);
         Godot.GD.Print(width);
         Godot.GD.Print(height);
-        for (int i = 0; i < (int)distance; i++)
+        for (int i = 0; i < (IntegerOrBool)distance; i++)
         {
             MoveRobot(x, y, command);
         }
@@ -958,7 +953,7 @@ public class Executer : IVisitor<ASTNode>
         {
             item.Accept(this);
         }
-        int size = (int)command.Args[0].Value;
+        int size = (IntegerOrBool)command.Args[0].Value;
         if (size >= 0)
         {
             robot.BrushSize = size;
@@ -998,10 +993,10 @@ public class Executer : IVisitor<ASTNode>
         {
             item.Accept(this);
         }
-        object x = command.Args[0].Value;
-        object y = command.Args[1].Value;
-        robot.X = (int)x;
-        robot.Y = (int)y;
+        IntegerOrBool x =(IntegerOrBool) command.Args[0].Value;
+        IntegerOrBool y =(IntegerOrBool) command.Args[1].Value;
+        robot.X = x;
+        robot.Y = y;
         RobotOutException(robot.X, robot.Y, canvas.Size, (ASTNode)command);
     }
 
@@ -1017,12 +1012,12 @@ public class Executer : IVisitor<ASTNode>
             {
                 arg.Accept(this);
             }
-            if ((bool)command.Args[0].Value)
+            if ((IntegerOrBool)command.Args[0].Value)
             {
                 Label? label = scope.GetLabel(command.Label);
                 Index = label.CommandIndicator - 1;
             }
-            command.InfinteCycle++;
+            
         
     }
 
