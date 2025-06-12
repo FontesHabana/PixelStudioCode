@@ -1,13 +1,14 @@
-[gd_scene load_steps=20 format=3 uid="uid://6vs6w3i1savd"]
+[gd_scene load_steps=21 format=3 uid="uid://6vs6w3i1savd"]
 
-[ext_resource type="Script" path="res://scripts/PixelWallE.UI/main_ui.cs" id="1_nchyf"]
+[ext_resource type="Script" path="res://scripts/PixelWallE.UI/main_ui.cs" id="1_se0kn"]
+[ext_resource type="Script" path="res://scripts/PixelWallE.UI/ShowError.cs" id="2_eije3"]
 [ext_resource type="FontFile" uid="uid://vlkcwwd4g23j" path="res://assets/fonts/JetBrains_Mono/static/JetBrainsMono-Medium.ttf" id="2_u6nwd"]
+[ext_resource type="Script" path="res://scripts/PixelWallE.UI/TextEdit.cs" id="2_vlke6"]
+[ext_resource type="Script" path="res://scripts/PixelWallE.UI/CanvasController.cs" id="3_4rnn0"]
 [ext_resource type="Theme" uid="uid://ckn0mkxklx1if" path="res://themes/button 2.tres" id="3_x2dav"]
 [ext_resource type="Theme" uid="uid://cnul15ibhyt4c" path="res://themes/buttom.tres" id="4_284gc"]
 [ext_resource type="Texture2D" uid="uid://cxjyqvvjlajh3" path="res://assets/icons/DarkTheme/Close.svg" id="4_hgxs5"]
-[ext_resource type="Script" path="res://scripts/PixelWallE.UI/CodeEdit.cs" id="5_p0d57"]
-[ext_resource type="Script" path="res://scripts/PixelWallE.UI/ShowError.cs" id="6_h2tql"]
-[ext_resource type="Script" path="res://scripts/PixelWallE.UI/TextEdit.cs" id="7_dnxrt"]
+[ext_resource type="Script" path="res://scripts/PixelWallE.UI/CodeEdit.cs" id="5_ai80o"]
 [ext_resource type="Texture2D" uid="uid://d4cnukjtfp3cl" path="res://assets/icons/DarkTheme/Trash.svg" id="8_6ufrl"]
 [ext_resource type="Texture2D" uid="uid://bgmjhdqfuo35x" path="res://assets/icons/DarkTheme/PrincipalTrash.svg" id="10_4xcmd"]
 [ext_resource type="Texture2D" uid="uid://cs2u7oqf05djq" path="res://assets/icons/DarkTheme/Play.svg" id="13_svcd3"]
@@ -48,7 +49,7 @@ grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 6
 size_flags_vertical = 6
-script = ExtResource("1_nchyf")
+script = ExtResource("1_se0kn")
 _codeEditNode = NodePath("CodeEdit")
 _errorTooltip = NodePath("CodeEdit/ColorRect")
 _consoleOutput = NodePath("Console")
@@ -153,7 +154,7 @@ code_completion_enabled = true
 indent_automatic = true
 auto_brace_completion_enabled = true
 auto_brace_completion_highlight_matching = true
-script = ExtResource("5_p0d57")
+script = ExtResource("5_ai80o")
 
 [node name="ColorRect" type="ColorRect" parent="CodeEdit" node_paths=PackedStringArray("_errorMessage")]
 visible = false
@@ -163,7 +164,7 @@ offset_top = 362.0
 offset_right = 848.0
 offset_bottom = 472.0
 color = Color(0.10828, 0.105063, 0.121143, 1)
-script = ExtResource("6_h2tql")
+script = ExtResource("2_eije3")
 _errorMessage = NodePath("ErrorMessage")
 
 [node name="ErrorMessage" type="TextEdit" parent="CodeEdit/ColorRect"]
@@ -203,7 +204,7 @@ selecting_enabled = false
 wrap_mode = 1
 highlight_all_occurrences = true
 highlight_current_line = true
-script = ExtResource("7_dnxrt")
+script = ExtResource("2_vlke6")
 
 [node name="Clean Console" type="Button" parent="Console"]
 layout_mode = 0
@@ -262,6 +263,7 @@ offset_top = 89.0
 offset_right = 1894.0
 offset_bottom = 992.0
 texture = SubResource("CanvasTexture_lhqmy")
+script = ExtResource("3_4rnn0")
 
 [node name="CanvasActions" type="ColorRect" parent="."]
 layout_mode = 0
