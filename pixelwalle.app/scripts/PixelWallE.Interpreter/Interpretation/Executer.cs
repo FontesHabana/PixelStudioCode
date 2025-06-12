@@ -673,10 +673,10 @@ public class Executer : IVisitor<ASTNode>
     /// <param name="Y">The y-coordinate of the pixel.</param>
     private void DrawPixel(int X, int Y)
     {
-        
-        for (int y = 0; y < robot.BrushSize; y++)
+
+        for (int y = 0 - robot.BrushSize / 2; y <=   robot.BrushSize / 2; y++)
         {
-            for (int x = 0; x < robot.BrushSize; x++)
+            for (int x = 0 - robot.BrushSize / 2; x <=  robot.BrushSize / 2; x++)
             {
                 if (CheckPosition(X + x, Y + y, canvas.Size) && robot.BrushColor.Alpha != 0)
                 {
