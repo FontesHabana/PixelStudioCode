@@ -51,7 +51,7 @@ show commands   - Displays a categorized list of available commands in the conso
 ──────────────────────────────────────
 🖼️ Pixel Wall-E Commands
 ──────────────────────────────────────
-generate code   - Generates code to draw a picture on the Pixel Wall-E display based on a selected image.
+generate code   - Generates code to draw a picture on the Pixel Wall-E display based on a selected image. You must enter the folder name.
 
 ──────────────────────────────────────
 ℹ️  Help
