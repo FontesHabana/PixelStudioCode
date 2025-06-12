@@ -33,15 +33,16 @@ public partial class GenerateCode : IConsoleCommand
     /// <param name="mainInstance">The main UI instance to interact with the console and file dialog.</param>
     /// <exception cref="System.Exception">Thrown when an unexpected number of arguments is provided.</exception>
     public virtual void Execute(string[] args, main_ui mainInstance)
-    {     mainInstance._consoleOutput.ConsoleLog(args.Length.ToString()+"\n");
+    {       mainInstance._consoleOutput.ConsoleLog(args.Length.ToString()+"\n");
             foreach (var item in args)
             {
             mainInstance._consoleOutput.ConsoleLog(item);
             }
         if (args.Count() == 1)
         {
-            mainInstance._pictureFileDialog.Popup();
-            ExecutePythonScript(mainInstance.picturePath, args[0].ToString(), mainInstance);
+            //mainInstance._pictureFileDialog.Popup();
+            //ExecutePythonScript(mainInstance.picturePath, args[0].ToString(), mainInstance);
+            mainInstance._consoleOutput.ConsoleLog("This command is in development. You can use the python script in the PixelWallEScript folder "+"\n");
         }
         else
         {
