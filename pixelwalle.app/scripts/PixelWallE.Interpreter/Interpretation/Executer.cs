@@ -673,6 +673,7 @@ public class Executer : IVisitor<ASTNode>
     /// <param name="Y">The y-coordinate of the pixel.</param>
     private void DrawPixel(int X, int Y)
     {
+        
         for (int y = 0; y < robot.BrushSize; y++)
         {
             for (int x = 0; x < robot.BrushSize; x++)
@@ -957,6 +958,10 @@ public class Executer : IVisitor<ASTNode>
         if (size >= 0)
         {
             robot.BrushSize = size;
+            if (robot.BrushSize%2==0)
+            {
+                robot.BrushSize--;
+            }
         }
         else
         {
