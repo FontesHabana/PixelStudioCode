@@ -14,15 +14,15 @@ public partial class CodeEdit : Godot.CodeEdit
     
     private void ChangeTheme()
 	{
-		 var myHighlighter = new CodeHighlighter(); // Sí, se llama GDScriptHighlighter incluso en C# para resaltar sintaxis GDScript
-         myHighlighter.AddKeywordColor("true", new Godot.Color(0.643f, 0.545f, 1.0f));     // Violeta eléctrico
-         myHighlighter.AddKeywordColor("false", new Godot.Color(0.643f, 0.545f, 1.0f));    // Igual que true
-         myHighlighter.NumberColor = new Godot.Color(1.0f, 0.592f, 0.71f);                 // Rosa fuerte
+		 var myHighlighter = new CodeHighlighter(); 
+         myHighlighter.AddKeywordColor("true", new Godot.Color(0.643f, 0.545f, 1.0f));   
+         myHighlighter.AddKeywordColor("false", new Godot.Color(0.643f, 0.545f, 1.0f));   
+         myHighlighter.NumberColor = new Godot.Color(1.0f, 0.592f, 0.71f);               
      
 
-        myHighlighter.SymbolColor = new Godot.Color(1.0f, 0.914f, 0.49f);                 // Amarillo claro
-        myHighlighter.FunctionColor = new Godot.Color(0.392f, 0.714f, 1.0f);              // Azul neón
-        myHighlighter.MemberVariableColor = new Godot.Color(1.0f, 0.592f, 0.71f);         // Igual que números
+        myHighlighter.SymbolColor = new Godot.Color(1.0f, 0.914f, 0.49f);               
+        myHighlighter.FunctionColor = new Godot.Color(0.392f, 0.714f, 1.0f);            
+        myHighlighter.MemberVariableColor = new Godot.Color(1.0f, 0.592f, 0.71f);        
 
         myHighlighter.AddKeywordColor("GoTo", new Godot.Color(0.643f, 0.545f, 1.0f));
 

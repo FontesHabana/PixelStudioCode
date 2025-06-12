@@ -227,7 +227,9 @@ public partial class main_ui : Control
             Canvas current = new Canvas(canvas.Size);
             CopyMatrix(interpreter.Canvas, current);
             stackGoNext.Push(current);
-            interpreter.Canvas = stackGoBack.Pop();
+            canvas = stackGoBack.Pop();
+            interpreter.Canvas = canvas;
+            
             _canvas.QueueRedraw();
         }
         else
@@ -248,6 +250,7 @@ public partial class main_ui : Control
             CopyMatrix(interpreter.Canvas, current);
             stackGoBack.Push(current);
             interpreter.Canvas = stackGoNext.Pop();
+            canvas = interpreter.Canvas;
             _canvas.QueueRedraw();
             _goBackButton.Visible = true;
         }
@@ -290,6 +293,9 @@ public partial class main_ui : Control
         Canvas current = new Canvas(canvas.Size);
         CopyMatrix(canvas, current);
         stackGoBack.Push(current);
+        stackGoNext.Clear();
+        _goBackButton.Visible = false;
+
 
         try
         {
@@ -585,7 +591,10 @@ public partial class main_ui : Control
     }
 
 
-
+    /// <summary>
+    /// Handles the picture save operation.
+    /// </summary>
+    /// <param name="path">The path to save the file to.</param>
     public void OnFileSavePictureSelected(string path)
     {
 
@@ -632,13 +641,17 @@ public partial class main_ui : Control
     }
 
 
-    public void SaveDrawing(TextureRect texturerect, string path )
+    /// <summary>
+    /// Try to save a picture of a texture rect.
+    /// </summary>
+    /// <param name="path">The path to save the file to.</param>
+    public void SaveDrawing(TextureRect texturerect, string path)
     {
         if (texturerect == null)
         {
             return;
         }
-       
+
         Image fullscreenshot = texturerect.GetViewport().GetTexture().GetImage();
         if (fullscreenshot == null)
         {
@@ -661,7 +674,7 @@ public partial class main_ui : Control
 
         Image croppedImage = fullscreenshot.GetRegion(cropRect);
 
-        
+
 
         Error result = croppedImage.SavePng(path);
         if (result == Error.Ok)
@@ -674,7 +687,7 @@ public partial class main_ui : Control
         }
 
 
-       
+
     }
 
 

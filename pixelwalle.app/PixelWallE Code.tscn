@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3 uid="uid://6vs6w3i1savd"]
+[gd_scene load_steps=21 format=3 uid="uid://6vs6w3i1savd"]
 
 [ext_resource type="Script" path="res://scripts/PixelWallE.UI/main_ui.cs" id="1_se0kn"]
 [ext_resource type="Script" path="res://scripts/PixelWallE.UI/ShowError.cs" id="2_eije3"]
@@ -15,6 +15,7 @@
 [ext_resource type="Texture2D" uid="uid://cnejdgmeqr045" path="res://assets/icons/DarkTheme/GoNext.svg" id="14_hq4cd"]
 [ext_resource type="Texture2D" uid="uid://c0ixmulwgxmni" path="res://assets/icons/DarkTheme/Resize.svg" id="14_ke1lv"]
 [ext_resource type="Texture2D" uid="uid://dhf6p72rf4uw0" path="res://assets/icons/DarkTheme/GoBack.svg" id="15_1vx2k"]
+[ext_resource type="Texture2D" uid="uid://cxvn6p53cjvmr" path="res://assets/icons/Pixel.png" id="16_54i8c"]
 
 [sub_resource type="CodeHighlighter" id="CodeHighlighter_1v4sa"]
 number_color = Color(0.716234, 0.810914, 1, 1)
@@ -39,7 +40,7 @@ keycode = 82
 [sub_resource type="Shortcut" id="Shortcut_lrqb5"]
 events = [SubResource("InputEventKey_kxpvm")]
 
-[node name="Control" type="Control" node_paths=PackedStringArray("_codeEditNode", "_errorTooltip", "_consoleOutput", "_cleanConsole", "_canvas", "_docs", "_pictureFileDialog", "_saveFileDialog", "_loadFileDialog", "_controlArchives", "_closeButton", "_resizeButton", "_resizeInput", "_cleanCanvas", "_processButton", "_goBackButton", "_goNextButton", "_lineInfo")]
+[node name="Control" type="Control" node_paths=PackedStringArray("_codeEditNode", "_errorTooltip", "_consoleOutput", "_cleanConsole", "_canvas", "_docs", "_pictureFileDialog", "_saveFileDialog", "_loadFileDialog", "_savePictureDialog", "_controlArchives", "_closeButton", "_resizeButton", "_resizeInput", "_cleanCanvas", "_processButton", "_goBackButton", "_goNextButton", "_lineInfo")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -58,6 +59,7 @@ _docs = NodePath("TopLine/Button")
 _pictureFileDialog = NodePath("Console/pictureFileDIalog")
 _saveFileDialog = NodePath("Save")
 _loadFileDialog = NodePath("Load")
+_savePictureDialog = NodePath("SavePicture")
 _controlArchives = NodePath("TopLine/ArchivesManager")
 _closeButton = NodePath("TopLine/Close")
 _resizeButton = NodePath("CanvasActions/Resize")
@@ -86,21 +88,23 @@ color = Color(0.0352941, 0.0352941, 0.113725, 1)
 
 [node name="ArchivesManager" type="MenuButton" parent="TopLine"]
 layout_mode = 0
-offset_left = 106.0
-offset_top = 9.0
-offset_right = 185.0
-offset_bottom = 54.0
+offset_left = 68.0
+offset_top = 13.0
+offset_right = 147.0
+offset_bottom = 48.0
 mouse_filter = 1
 mouse_default_cursor_shape = 2
 theme_override_colors/font_color = Color(0.588235, 0.709804, 0.866667, 1)
 theme_override_fonts/font = ExtResource("2_u6nwd")
 theme_override_font_sizes/font_size = 15
 keep_pressed_outside = true
-text = "Archivo"
-item_count = 2
+text = "File"
+item_count = 3
 popup/item_0/text = "Load"
 popup/item_1/text = "Save"
 popup/item_1/id = 1
+popup/item_2/text = "Save Picture"
+popup/item_2/id = 2
 
 [node name="Close" type="Button" parent="TopLine"]
 layout_mode = 0
@@ -114,11 +118,12 @@ flat = true
 
 [node name="Button" type="Button" parent="TopLine"]
 layout_mode = 0
-offset_left = 190.0
-offset_top = 9.0
-offset_right = 259.0
-offset_bottom = 55.0
+offset_left = 129.0
+offset_top = 13.0
+offset_right = 184.0
+offset_bottom = 48.0
 theme_override_colors/font_color = Color(0.588235, 0.709804, 0.866667, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_fonts/font = ExtResource("2_u6nwd")
 theme_override_font_sizes/font_size = 15
 text = "Docs"
@@ -228,6 +233,15 @@ size = Vector2i(352, 180)
 unresizable = true
 access = 2
 filters = PackedStringArray("*.pw")
+use_native_dialog = true
+
+[node name="SavePicture" type="FileDialog" parent="."]
+auto_translate_mode = 1
+initial_position = 1
+size = Vector2i(352, 180)
+unresizable = true
+access = 2
+filters = PackedStringArray("*.png")
 use_native_dialog = true
 
 [node name="Load" type="FileDialog" parent="."]
@@ -344,6 +358,15 @@ offset_bottom = 34.0
 theme_override_fonts/normal_font = ExtResource("2_u6nwd")
 text = "Line: 1  Column: 0"
 
+[node name="TextureRect" type="TextureRect" parent="."]
+layout_mode = 0
+offset_left = 9.0
+offset_top = 17.0
+offset_right = 59.0
+offset_bottom = 40.0
+texture = ExtResource("16_54i8c")
+expand_mode = 1
+
 [connection signal="pressed" from="TopLine/ArchivesManager" to="." method="PressedArchiveControl"]
 [connection signal="pressed" from="TopLine/Close" to="." method="ClosePressed"]
 [connection signal="pressed" from="TopLine/Button" to="." method="DocsPressed"]
@@ -353,6 +376,7 @@ text = "Line: 1  Column: 0"
 [connection signal="pressed" from="Console/Clean Console" to="." method="CleanConsole"]
 [connection signal="file_selected" from="Console/pictureFileDIalog" to="." method="OnFileOpenSelectedPicture"]
 [connection signal="file_selected" from="Save" to="." method="OnFileSaveSelected"]
+[connection signal="file_selected" from="SavePicture" to="." method="OnFileSavePictureSelected"]
 [connection signal="file_selected" from="Load" to="." method="OnFileOpenSelected"]
 [connection signal="pressed" from="CanvasActions/Clean Canvas" to="." method="CleanCanvas"]
 [connection signal="pressed" from="CanvasActions/Run" to="." method="OnButtonPressed"]

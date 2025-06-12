@@ -124,7 +124,11 @@ public partial class TextEdit : Godot.TextEdit
 		custom.AddKeywordColor("commands",new Godot.Color(0.392f, 0.714f, 1.0f)); 
 		custom.AddKeywordColor("Commands",new Godot.Color(0.392f, 0.714f, 1.0f)); 
 		custom.AddKeywordColor("Help",new Godot.Color(0.392f, 0.714f, 1.0f)); 
-		custom.AddKeywordColor("help",new Godot.Color(0.392f, 0.714f, 1.0f)); 
+		custom.AddKeywordColor("help",new Godot.Color(0.392f, 0.714f, 1.0f));
+		custom.AddKeywordColor("Generate",new Godot.Color(0.392f, 0.714f, 1.0f)); 
+		custom.AddKeywordColor("generate",new Godot.Color(0.392f, 0.714f, 1.0f));
+		custom.AddKeywordColor("Code",new Godot.Color(0.392f, 0.714f, 1.0f)); 
+		custom.AddKeywordColor("code",new Godot.Color(0.392f, 0.714f, 1.0f)); 
 
 
 

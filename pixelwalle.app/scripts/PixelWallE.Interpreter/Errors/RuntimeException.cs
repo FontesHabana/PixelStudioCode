@@ -78,7 +78,7 @@ class RuntimeException : PixelWallEException
     /// <returns>A new <see cref="RuntimeException"/> instance.</returns>
     public static RuntimeException ArgumentMostBePositive(string argumentName, int opffendingValue, CodeLocation location)
     {
-        string message = $"Runtime Error: Argument '(argumentName)' must be positive number(grater than 0). Received {opffendingValue}. Error at line {location.Line}, column {location.Column}.";
+        string message = $"Runtime Error: Argument '{argumentName}' must be positive number(grater than 0). Received {opffendingValue}. Error at line {location.Line}, column {location.Column}.";
         return new RuntimeException(message, location);
     }
 
@@ -106,7 +106,7 @@ class RuntimeException : PixelWallEException
     /// <returns>A new <see cref="RuntimeException"/> instance.</returns>
     public static RuntimeException InvalidDirectionCoordinates(int x, int y, string commandName, CodeLocation location)
     {
-        string message = $"Runtime Error in command '{commandName}': Invlid coordinates ({x},{y}). Values must be (-1,0,1). Error occurred at line {location.Line}, column {location.Column}.";
+        string message = $"Runtime Error in command '{commandName}': Invalid coordinates ({x},{y}). Values must be (-1,0,1). Error occurred at line {location.Line}, column {location.Column}.";
         return new RuntimeException(message, location);
     }
 

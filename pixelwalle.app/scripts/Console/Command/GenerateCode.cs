@@ -23,7 +23,7 @@ public partial class GenerateCode : IConsoleCommand
     public GenerateCode()
     {
         Name = "generate code";
-        Description = "Generates code to draw a picture on the Pixel Wall-E display based on a selected image.";
+        Description = "Generates code to draw a picture on the Pixel Wall-E display based on a selected image. You must enter the folder name";
     }
 
     /// <summary>

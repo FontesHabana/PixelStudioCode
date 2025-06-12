@@ -12,7 +12,7 @@ public partial class CanvasController : TextureRect
 
 
     public override void _Draw()
-    {   //Tomar el tamaño del canvas de una casilla
+    {   
         Interpreter interpreter = main_ui.interpreter;
         
         int size = interpreter.Canvas.Size;
@@ -39,11 +39,9 @@ public partial class CanvasController : TextureRect
             for (int j = 0; j < size; j++)
             {
                 Godot.Color color = CheckColor(interpreter.Canvas.Matrix[i, j]);
-                //GD.Print(interpreter.Canvas.Matrix[i, j]);
-                //  GD.Print("dibuje pixel"+color.ToString());
+               
                 Rect2 rect = new Rect2(j * space, i * space, space, space);
                 DrawRect(rect, color);
-                //DrawRect(new Rect2(i, j, space, space), new Godot.Color(255, 0, 255));
 
             }
         }
