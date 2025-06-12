@@ -192,7 +192,7 @@ public class Executer : IVisitor<ASTNode>
             item.Accept(this);
         }
 
-        IntegerOrBool color = (IntegerOrBool)function.Args[0].Value;
+
         IntegerOrBool x1 = (IntegerOrBool)function.Args[1].Value;
         IntegerOrBool y1 = (IntegerOrBool)function.Args[2].Value;
         IntegerOrBool x2 = (IntegerOrBool)function.Args[3].Value;
@@ -244,7 +244,7 @@ public class Executer : IVisitor<ASTNode>
             item.Accept(this);
         }
 
-        object color = function.Args[0].Value;
+        
         if (robot.BrushColor == function.color)
             function.Value = new IntegerOrBool(true);
         else
