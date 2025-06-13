@@ -16,3 +16,5 @@ __pycache__/
 */.mono_source_links/
 */obj/
 */bin/
+*/Installer/
+*/PixelStudioCode_Win/
