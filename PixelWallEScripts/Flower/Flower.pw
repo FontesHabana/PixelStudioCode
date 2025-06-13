@@ -1,0 +1,4 @@
+Spawn(0,0)
+Run("d:/01_proyectos/Pixel_Wall-E/PixelWallEScripts/Flower/walle_pixel_art_0.pw")
+Run("d:/01_proyectos/Pixel_Wall-E/PixelWallEScripts/Flower/walle_pixel_art_1.pw")
+Run("d:/01_proyectos/Pixel_Wall-E/PixelWallEScripts/Flower/walle_pixel_art_2.pw")
