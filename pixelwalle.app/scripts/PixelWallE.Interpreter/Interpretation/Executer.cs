@@ -465,11 +465,15 @@ public class Executer : IVisitor<ASTNode>
     {
         operation.Left.Accept(this);
         operation.Right.Accept(this);
-
-        object left = operation.Left.Value;
-        object right = operation.Right.Value;
-
-        operation.Value = new IntegerOrBool(left.Equals(right));
+        if (operation.Left.Type == ExpressionType.String || operation.Right.Type == ExpressionType.String)
+        {
+            operation.Value = new IntegerOrBool(operation.Left.Value.ToString() == operation.Left.Value.ToString());
+            return;
+        }
+        int left =  (IntegerOrBool)operation.Left.Value;
+        int right = (IntegerOrBool)operation.Right.Value;
+     ;
+        operation.Value = new IntegerOrBool(left==right);
     }
 
     /// <summary>
@@ -540,13 +544,13 @@ public class Executer : IVisitor<ASTNode>
 
         if (operation.Left.Type == ExpressionType.String)
         {
-            operation.Value = new IntegerOrBool(!operation.Left.Equals(operation.Right));
+            operation.Value = new IntegerOrBool(operation.Left.Value.ToString()!=operation.Right.Value.ToString());
             return;
         }
         int left = (IntegerOrBool)operation.Left.Value;
         int right = (IntegerOrBool)operation.Right.Value;
 
-        operation.Value = new IntegerOrBool(!left.Equals(right));
+        operation.Value = new IntegerOrBool(left!=right);
     }
 
     #endregion;
