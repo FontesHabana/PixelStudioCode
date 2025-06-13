@@ -2,18 +2,19 @@ import os
 from PIL import Image
 
 # --- Configuration ---
-PIXEL_ART_SIZE = 100        # Desired size for the pixel art (e.g., 100x100)
+PIXEL_ART_SIZE = 300        # Desired size for the pixel art (e.g., 100x100)
 MAX_LINES_PER_FILE = 2000   # Maximum number of lines per output .pw file
 
 # --- User Input ---
 # Remove extra quotes from user input to avoid path errors
-script_dir=os.path.dirname(os.path.abspath("transformImg.py"))
-image_path = input().strip('"')
-output_folder_name = input().strip('"')
+# Use __file__ for more robust script directory detection
+script_dir = os.path.dirname(os.path.abspath(__file__))
+image_path = input("Enter the full path to your image (e.g., C:\\images\\my_art.png): ").strip('"')
+output_folder_name = input("Enter a name for the output folder (e.g., MyPixelArt): ").strip('"')
 
 # Create the output folder if it doesn't exist
-# os.path.dirname(image_path) gets the directory of the input image
-base_output_directory = os.path.join(os.path.dirname(script_dir), "PixelWallEScripts")
+# os.path.dirname(script_dir) gets the directory where this Python script resides
+base_output_directory = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(script_dir))), "PixelWallEScripts")
 os.makedirs(base_output_directory, exist_ok=True)
 
 
@@ -25,6 +26,9 @@ try:
     image = Image.open(image_path).convert("RGBA")
 except FileNotFoundError:
     print(f"Error: Image file not found at {image_path}. Please verify the path.")
+    exit()
+except Exception as e:
+    print(f"An unexpected error occurred while opening the image: {e}")
     exit()
 
 image = image.resize((PIXEL_ART_SIZE, PIXEL_ART_SIZE), Image.NEAREST)
@@ -40,14 +44,15 @@ all_generated_lines.append("y<-0")
 for y_abs in range(height):
     for x_abs in range(width):
         r, g, b, a = image.getpixel((x_abs, y_abs))
-        hex_color = f'"#{r:02x}{g:02x}{b:02x}{a:02x}"'
+        # Ensure alpha is handled for transparency, though not directly used in DrawLine
+        hex_color = f'"#{r:02x}{g:02x}{b:02x}{a:02x}"' 
         
         all_generated_lines.append(f"Color({hex_color})")
-        all_generated_lines.append("DrawLine(1, 0, 1)")
+        all_generated_lines.append("DrawLine(1, 0, 1)") # Draw 1 pixel horizontally, then move 1 unit right
 
-    if y_abs < height - 1:
+    if y_abs < height - 1: # Move to the next row unless it's the last row
         all_generated_lines.append(f"y<-{y_abs + 1}")
-        all_generated_lines.append(f"ReSpawn(0, y)")
+        all_generated_lines.append(f"ReSpawn(0, y)") # Resets x to 0, moves to new y
 
 current_file_buffer = []
 file_index = 0
@@ -62,9 +67,11 @@ for i in range(min(3, len(all_generated_lines))):
         try:
             last_pw_y = int(all_generated_lines[i].split("<-")[1].strip())
         except ValueError:
+            # This should ideally not happen for "y<-0" but good to be robust
             pass
 
 # Iterate over the rest of the lines to divide them into files
+# Start from index 3 as the first 3 lines are already handled
 for i in range(3, len(all_generated_lines)):
     line = all_generated_lines[i]
 
@@ -73,13 +80,15 @@ for i in range(3, len(all_generated_lines)):
         try:
             last_pw_y = int(line.split("<-")[1].strip())
         except ValueError:
+            # If the y<- line format is unexpected, this catches it
+            print(f"Warning: Could not parse y-coordinate from line: {line}")
             pass
 
     # Determine if the line is an end-of-row command ('y' change or ReSpawn)
     is_end_of_row_command = line.startswith("y<-") or line.startswith("ReSpawn(0, y)")
 
     # If the buffer exceeds the line limit AND it's an end-of-row command,
-    # and it's not the last line of the file (to avoid empty files),
+    # and it's not the last line of the entire generated content (to avoid empty files),
     # then it's time to save the current file and start a new one.
     if len(current_file_buffer) + 1 > MAX_LINES_PER_FILE and is_end_of_row_command and i < len(all_generated_lines) - 1:
         output_file_name = f"walle_pixel_art_{file_index}.pw"
@@ -116,10 +125,10 @@ print(f"\nPixel art generation process completed. Total files generated: {len(ge
 # --- Create the master .pw file ---
 master_file_content = ["Spawn(0,0)"]  # Always starts with Spawn(0,0) in the master
 for path in generated_file_paths:
-    # Add a Run command for each generated .pw file.
-    # Make sure the paths are correct for your PW interpreter to find them.
-    # Double quotes are used around the path for compatibility.
-    master_file_content.append(f"Run(\"{path}\")")
+    # Use os.path.basename to get just the filename, making the path relative
+    # This assumes the PixelWall interpreter will run the master file from
+    # the same directory where all part files are located.
+    master_file_content.append(f"Run(\"{os.path.basename(path)}\")")
 
 master_file_name = f"{output_folder_name}.pw"
 master_file_path = os.path.join(output_directory, master_file_name)
