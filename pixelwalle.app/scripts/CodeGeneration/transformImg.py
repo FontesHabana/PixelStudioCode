@@ -2,7 +2,8 @@ import os
 from PIL import Image
 
 # --- Configuration ---
-PIXEL_ART_SIZE = 300        # Desired size for the pixel art (e.g., 100x100)
+PIXEL_ART_SIZE = 100
+# Desired size for the pixel art (e.g., 100x100)
 MAX_LINES_PER_FILE = 2000   # Maximum number of lines per output .pw file
 
 # --- User Input ---
