@@ -62,7 +62,7 @@ public class SyntaxException : PixelWallEException
     /// <returns>A new <see cref="SyntaxException"/> instance.</returns>
     public static SyntaxException DuplicateSpawn(CodeLocation location)
     {
-        string message = $"Syntax Error: The 'Spawn' command can only appear once in the program. Duplicate 'Spawn' at line {location.Line}, column {location.Column}.";
+        string message = $"Syntax Error: The 'Spawn' command can only appear once in the program and  the 'Spawn' command must be the first command int the program (including labels). Error in 'Spawn' at line {location.Line}, column {location.Column}.";
         return new SyntaxException(message, location);
     }
 
