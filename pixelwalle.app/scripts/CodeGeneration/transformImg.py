@@ -13,7 +13,7 @@ image_path = input("Enter the full path to your image (e.g., C:\\images\\my_art.
 output_folder_name = input("Enter a name for the output folder (e.g., MyPixelArt): ").strip('"')
 
 # Create the output folder if it doesn't exist
-# os.path.dirname(script_dir) gets the directory where this Python script resides
+# Go three directories up from the script's location
 base_output_directory = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(script_dir))), "PixelWallEScripts")
 os.makedirs(base_output_directory, exist_ok=True)
 
@@ -125,10 +125,8 @@ print(f"\nPixel art generation process completed. Total files generated: {len(ge
 # --- Create the master .pw file ---
 master_file_content = ["Spawn(0,0)"]  # Always starts with Spawn(0,0) in the master
 for path in generated_file_paths:
-    # Use os.path.basename to get just the filename, making the path relative
-    # This assumes the PixelWall interpreter will run the master file from
-    # the same directory where all part files are located.
-    master_file_content.append(f"Run(\"{os.path.basename(path)}\")")
+    # Use the full absolute path for the 'Run' command, ensuring forward slashes.
+    master_file_content.append(f"Run(\"{path.replace(os.sep, '/')}\")")
 
 master_file_name = f"{output_folder_name}.pw"
 master_file_path = os.path.join(output_directory, master_file_name)
