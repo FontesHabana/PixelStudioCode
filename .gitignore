@@ -1,0 +1,20 @@
+.idea
+.obj
+test.pw
+GRAMMARPIXELWALLE.cs
+# Godot 4+ specific ignores
+.godot/
+/android/
+.godot/
+*.import
+.DS_Store
+project.godot.user
+__pycache__/
+*.py[cod]
+*~
+*/.mono/
+*/.mono_source_links/
+*/obj/
+*/bin/
+*/Installer/
+*/PixelStudioCode_Win/

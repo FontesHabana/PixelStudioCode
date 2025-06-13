@@ -1,0 +1,387 @@
+[gd_scene load_steps=21 format=3 uid="uid://6vs6w3i1savd"]
+
+[ext_resource type="Script" path="res://scripts/PixelWallE.UI/main_ui.cs" id="1_se0kn"]
+[ext_resource type="Script" path="res://scripts/PixelWallE.UI/ShowError.cs" id="2_eije3"]
+[ext_resource type="FontFile" uid="uid://vlkcwwd4g23j" path="res://assets/fonts/JetBrains_Mono/static/JetBrainsMono-Medium.ttf" id="2_u6nwd"]
+[ext_resource type="Script" path="res://scripts/PixelWallE.UI/TextEdit.cs" id="2_vlke6"]
+[ext_resource type="Script" path="res://scripts/PixelWallE.UI/CanvasController.cs" id="3_4rnn0"]
+[ext_resource type="Theme" uid="uid://ckn0mkxklx1if" path="res://themes/button 2.tres" id="3_x2dav"]
+[ext_resource type="Theme" uid="uid://cnul15ibhyt4c" path="res://themes/buttom.tres" id="4_284gc"]
+[ext_resource type="Texture2D" uid="uid://cxjyqvvjlajh3" path="res://assets/icons/DarkTheme/Close.svg" id="4_hgxs5"]
+[ext_resource type="Script" path="res://scripts/PixelWallE.UI/CodeEdit.cs" id="5_ai80o"]
+[ext_resource type="Texture2D" uid="uid://d4cnukjtfp3cl" path="res://assets/icons/DarkTheme/Trash.svg" id="8_6ufrl"]
+[ext_resource type="Texture2D" uid="uid://bgmjhdqfuo35x" path="res://assets/icons/DarkTheme/PrincipalTrash.svg" id="10_4xcmd"]
+[ext_resource type="Texture2D" uid="uid://cs2u7oqf05djq" path="res://assets/icons/DarkTheme/Play.svg" id="13_svcd3"]
+[ext_resource type="Texture2D" uid="uid://cnejdgmeqr045" path="res://assets/icons/DarkTheme/GoNext.svg" id="14_hq4cd"]
+[ext_resource type="Texture2D" uid="uid://c0ixmulwgxmni" path="res://assets/icons/DarkTheme/Resize.svg" id="14_ke1lv"]
+[ext_resource type="Texture2D" uid="uid://dhf6p72rf4uw0" path="res://assets/icons/DarkTheme/GoBack.svg" id="15_1vx2k"]
+[ext_resource type="Texture2D" uid="uid://cxvn6p53cjvmr" path="res://assets/icons/Pixel.png" id="16_54i8c"]
+
+[sub_resource type="CodeHighlighter" id="CodeHighlighter_1v4sa"]
+number_color = Color(0.716234, 0.810914, 1, 1)
+symbol_color = Color(0.945098, 0.945098, 0.945098, 1)
+function_color = Color(0.945098, 0.945098, 0.945098, 1)
+member_variable_color = Color(0.945098, 0.945098, 1, 1)
+keyword_colors = {
+"Semantic": Color(1, 0, 0, 1)
+}
+member_keyword_colors = {
+"Error": Color(1, 0, 0, 1)
+}
+
+[sub_resource type="CanvasTexture" id="CanvasTexture_lhqmy"]
+
+[sub_resource type="InputEventKey" id="InputEventKey_kxpvm"]
+device = -1
+ctrl_pressed = true
+pressed = true
+keycode = 82
+
+[sub_resource type="Shortcut" id="Shortcut_lrqb5"]
+events = [SubResource("InputEventKey_kxpvm")]
+
+[node name="Control" type="Control" node_paths=PackedStringArray("_codeEditNode", "_errorTooltip", "_consoleOutput", "_cleanConsole", "_canvas", "_docs", "_pictureFileDialog", "_saveFileDialog", "_loadFileDialog", "_savePictureDialog", "_controlArchives", "_closeButton", "_resizeButton", "_resizeInput", "_cleanCanvas", "_processButton", "_goBackButton", "_goNextButton", "_lineInfo")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 6
+size_flags_vertical = 6
+script = ExtResource("1_se0kn")
+_codeEditNode = NodePath("CodeEdit")
+_errorTooltip = NodePath("CodeEdit/ColorRect")
+_consoleOutput = NodePath("Console")
+_cleanConsole = NodePath("Console/Clean Console")
+_canvas = NodePath("Canvas")
+_docs = NodePath("TopLine/Button")
+_pictureFileDialog = NodePath("Console/pictureFileDIalog")
+_saveFileDialog = NodePath("Save")
+_loadFileDialog = NodePath("Load")
+_savePictureDialog = NodePath("SavePicture")
+_controlArchives = NodePath("TopLine/ArchivesManager")
+_closeButton = NodePath("TopLine/Close")
+_resizeButton = NodePath("CanvasActions/Resize")
+_resizeInput = NodePath("CanvasActions/Resize/ResizeInput")
+_cleanCanvas = NodePath("CanvasActions/Clean Canvas")
+_processButton = NodePath("CanvasActions/Run")
+_goBackButton = NodePath("CanvasActions/GoBack")
+_goNextButton = NodePath("CanvasActions/GoNext")
+_lineInfo = NodePath("BottomLine/LineInfo")
+metadata/_edit_horizontal_guides_ = [-380.0]
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 0
+offset_top = -21.0
+offset_right = 1920.0
+offset_bottom = 1083.0
+color = Color(0.0621688, 0.0621873, 0.164118, 1)
+
+[node name="TopLine" type="ColorRect" parent="."]
+layout_mode = 0
+offset_left = 1.0
+offset_top = 2.0
+offset_right = 1920.0
+offset_bottom = 49.0
+color = Color(0.0352941, 0.0352941, 0.113725, 1)
+
+[node name="ArchivesManager" type="MenuButton" parent="TopLine"]
+layout_mode = 0
+offset_left = 68.0
+offset_top = 13.0
+offset_right = 147.0
+offset_bottom = 48.0
+mouse_filter = 1
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(0.588235, 0.709804, 0.866667, 1)
+theme_override_fonts/font = ExtResource("2_u6nwd")
+theme_override_font_sizes/font_size = 15
+keep_pressed_outside = true
+text = "File"
+item_count = 3
+popup/item_0/text = "Load"
+popup/item_1/text = "Save"
+popup/item_1/id = 1
+popup/item_2/text = "Save Picture"
+popup/item_2/id = 2
+
+[node name="Close" type="Button" parent="TopLine"]
+layout_mode = 0
+offset_left = 1855.0
+offset_top = 2.0
+offset_right = 1903.0
+offset_bottom = 50.0
+theme = ExtResource("4_284gc")
+icon = ExtResource("4_hgxs5")
+flat = true
+
+[node name="Button" type="Button" parent="TopLine"]
+layout_mode = 0
+offset_left = 129.0
+offset_top = 13.0
+offset_right = 184.0
+offset_bottom = 48.0
+theme_override_colors/font_color = Color(0.588235, 0.709804, 0.866667, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("2_u6nwd")
+theme_override_font_sizes/font_size = 15
+text = "Docs"
+flat = true
+
+[node name="CodeEdit" type="CodeEdit" parent="."]
+layout_mode = 0
+offset_left = 68.0
+offset_top = 56.0
+offset_right = 969.0
+offset_bottom = 776.0
+theme_override_colors/current_line_color = Color(0.0808718, 0.173058, 0.281239, 1)
+theme_override_colors/background_color = Color(0.117647, 0.117647, 0.180392, 1)
+theme_override_colors/font_color = Color(0.945098, 0.945098, 0.945098, 1)
+theme_override_colors/selection_color = Color(0.388235, 0.584314, 0.819608, 0.266667)
+theme_override_colors/caret_color = Color(0.588235, 0.709804, 0.866667, 1)
+theme_override_fonts/font = ExtResource("2_u6nwd")
+theme_override_font_sizes/font_size = 15
+theme_override_colors/line_number_color = Color(0.372549, 0.341176, 0.568627, 1)
+wrap_mode = 1
+minimap_draw = true
+caret_blink = true
+highlight_all_occurrences = true
+highlight_current_line = true
+gutters_draw_executing_lines = true
+gutters_draw_line_numbers = true
+code_completion_enabled = true
+indent_automatic = true
+auto_brace_completion_enabled = true
+auto_brace_completion_highlight_matching = true
+script = ExtResource("5_ai80o")
+
+[node name="ColorRect" type="ColorRect" parent="CodeEdit" node_paths=PackedStringArray("_errorMessage")]
+visible = false
+layout_mode = 0
+offset_left = 20.0
+offset_top = 362.0
+offset_right = 848.0
+offset_bottom = 472.0
+color = Color(0.10828, 0.105063, 0.121143, 1)
+script = ExtResource("2_eije3")
+_errorMessage = NodePath("ErrorMessage")
+
+[node name="ErrorMessage" type="TextEdit" parent="CodeEdit/ColorRect"]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 10.0
+offset_right = 821.0
+offset_bottom = 97.0
+theme = ExtResource("4_284gc")
+theme_override_colors/background_color = Color(0, 0, 0, 0)
+theme_override_colors/caret_background_color = Color(0, 0, 0, 0)
+theme_override_fonts/font = ExtResource("2_u6nwd")
+editable = false
+context_menu_enabled = false
+shortcut_keys_enabled = false
+deselect_on_focus_loss_enabled = false
+drag_and_drop_selection_enabled = false
+virtual_keyboard_enabled = false
+middle_mouse_paste_enabled = false
+wrap_mode = 1
+scroll_smooth = true
+syntax_highlighter = SubResource("CodeHighlighter_1v4sa")
+highlight_all_occurrences = true
+
+[node name="Console" type="TextEdit" parent="."]
+layout_mode = 0
+offset_left = 68.0
+offset_top = 784.0
+offset_right = 973.0
+offset_bottom = 1036.0
+theme_override_colors/background_color = Color(0.0352941, 0.0352941, 0.113725, 1)
+theme_override_colors/font_color = Color(0.935851, 0.861099, 0.872487, 1)
+theme_override_fonts/font = ExtResource("2_u6nwd")
+text = "***Welcome Start to Code***"
+context_menu_enabled = false
+selecting_enabled = false
+wrap_mode = 1
+highlight_all_occurrences = true
+highlight_current_line = true
+script = ExtResource("2_vlke6")
+
+[node name="Clean Console" type="Button" parent="Console"]
+layout_mode = 0
+offset_left = 870.0
+offset_top = -1.0
+offset_right = 903.0
+offset_bottom = 32.0
+theme = ExtResource("3_x2dav")
+icon = ExtResource("8_6ufrl")
+flat = true
+
+[node name="pictureFileDIalog" type="FileDialog" parent="Console"]
+title = "Open a File"
+initial_position = 1
+size = Vector2i(352, 180)
+ok_button_text = "Open"
+dialog_autowrap = true
+file_mode = 0
+access = 2
+filters = PackedStringArray("*.jpg", "*.png", "*.webp")
+use_native_dialog = true
+
+[node name="Save" type="FileDialog" parent="."]
+initial_position = 1
+size = Vector2i(352, 180)
+unresizable = true
+access = 2
+filters = PackedStringArray("*.pw")
+use_native_dialog = true
+
+[node name="SavePicture" type="FileDialog" parent="."]
+auto_translate_mode = 1
+initial_position = 1
+size = Vector2i(352, 180)
+unresizable = true
+access = 2
+filters = PackedStringArray("*.png")
+use_native_dialog = true
+
+[node name="Load" type="FileDialog" parent="."]
+auto_translate_mode = 1
+title = "Open a File"
+initial_position = 1
+size = Vector2i(352, 180)
+unresizable = true
+ok_button_text = "Open"
+file_mode = 0
+access = 2
+filters = PackedStringArray("*.pw")
+use_native_dialog = true
+
+[node name="Canvas" type="TextureRect" parent="."]
+layout_mode = 0
+offset_left = 994.0
+offset_top = 89.0
+offset_right = 1894.0
+offset_bottom = 992.0
+texture = SubResource("CanvasTexture_lhqmy")
+script = ExtResource("3_4rnn0")
+
+[node name="CanvasActions" type="ColorRect" parent="."]
+layout_mode = 0
+offset_left = 2.0
+offset_top = 49.0
+offset_right = 63.0
+offset_bottom = 1079.0
+color = Color(0.0352941, 0.0352941, 0.113725, 1)
+
+[node name="Clean Canvas" type="Button" parent="CanvasActions"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 140.0
+offset_right = 48.0
+offset_bottom = 178.0
+theme = ExtResource("4_284gc")
+icon = ExtResource("10_4xcmd")
+flat = true
+
+[node name="Run" type="Button" parent="CanvasActions"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 40.0
+offset_right = 48.0
+offset_bottom = 78.0
+theme = ExtResource("4_284gc")
+shortcut = SubResource("Shortcut_lrqb5")
+icon = ExtResource("13_svcd3")
+flat = true
+
+[node name="Resize" type="Button" parent="CanvasActions"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 90.0
+offset_right = 48.0
+offset_bottom = 128.0
+theme = ExtResource("4_284gc")
+icon = ExtResource("14_ke1lv")
+flat = true
+
+[node name="ResizeInput" type="LineEdit" parent="CanvasActions/Resize"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 61.0
+offset_top = 2.0
+offset_right = 183.0
+offset_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+placeholder_text = "CanvasSize"
+alignment = 1
+
+[node name="GoBack" type="Button" parent="CanvasActions"]
+visible = false
+layout_mode = 0
+offset_left = 10.0
+offset_top = 190.0
+offset_right = 48.0
+offset_bottom = 228.0
+theme = ExtResource("4_284gc")
+icon = ExtResource("15_1vx2k")
+flat = true
+
+[node name="GoNext" type="Button" parent="CanvasActions"]
+visible = false
+layout_mode = 0
+offset_left = 10.0
+offset_top = 240.0
+offset_right = 48.0
+offset_bottom = 278.0
+theme = ExtResource("4_284gc")
+icon = ExtResource("14_hq4cd")
+flat = true
+
+[node name="BottomLine" type="ColorRect" parent="."]
+layout_mode = 0
+offset_left = 2.0
+offset_top = 1044.0
+offset_right = 1922.0
+offset_bottom = 1079.0
+color = Color(0.0862745, 0.211765, 0.403922, 1)
+
+[node name="LineInfo" type="RichTextLabel" parent="BottomLine"]
+layout_mode = 0
+offset_left = 81.0
+offset_top = 7.0
+offset_right = 303.0
+offset_bottom = 34.0
+theme_override_fonts/normal_font = ExtResource("2_u6nwd")
+text = "Line: 1  Column: 0"
+
+[node name="TextureRect" type="TextureRect" parent="."]
+layout_mode = 0
+offset_left = 9.0
+offset_top = 17.0
+offset_right = 59.0
+offset_bottom = 40.0
+texture = ExtResource("16_54i8c")
+expand_mode = 1
+
+[connection signal="pressed" from="TopLine/ArchivesManager" to="." method="PressedArchiveControl"]
+[connection signal="pressed" from="TopLine/Close" to="." method="ClosePressed"]
+[connection signal="pressed" from="TopLine/Button" to="." method="DocsPressed"]
+[connection signal="caret_changed" from="CodeEdit" to="." method="CaretChanged"]
+[connection signal="text_changed" from="CodeEdit" to="." method="CodeChange"]
+[connection signal="text_changed" from="Console" to="Console" method="_on_text_changed"]
+[connection signal="pressed" from="Console/Clean Console" to="." method="CleanConsole"]
+[connection signal="file_selected" from="Console/pictureFileDIalog" to="." method="OnFileOpenSelectedPicture"]
+[connection signal="file_selected" from="Save" to="." method="OnFileSaveSelected"]
+[connection signal="file_selected" from="SavePicture" to="." method="OnFileSavePictureSelected"]
+[connection signal="file_selected" from="Load" to="." method="OnFileOpenSelected"]
+[connection signal="pressed" from="CanvasActions/Clean Canvas" to="." method="CleanCanvas"]
+[connection signal="pressed" from="CanvasActions/Run" to="." method="OnButtonPressed"]
+[connection signal="pressed" from="CanvasActions/Resize" to="." method="ResizePressed"]
+[connection signal="focus_exited" from="CanvasActions/Resize/ResizeInput" to="." method="CloseResize"]
+[connection signal="text_submitted" from="CanvasActions/Resize/ResizeInput" to="." method="ResizedCanvas"]
+[connection signal="pressed" from="CanvasActions/GoBack" to="." method="GoBack"]
+[connection signal="pressed" from="CanvasActions/GoNext" to="." method="GoNext"]
