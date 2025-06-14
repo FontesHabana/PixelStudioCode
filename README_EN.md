@@ -4,7 +4,7 @@
 
 **PixelStudioCode** is a visual development environment designed to learn, experiment, and explore algorithms through pixel manipulation.
 <br>
-[Our web](https://fonteshabana.github.io/Pixel_WallE_docs/)
+🔗[Our web](https://fonteshabana.github.io/Pixel_WallE_docs/)
 <br>
 🔗 [README in Spanish](README.md)
 
