@@ -882,15 +882,15 @@ public class Executer : IVisitor<ASTNode>
 
 
 
-        for (int i = robot.Y - height + 1; i < robot.Y + height; i++)
+        for (int i = robot.Y -(height)/2; i < robot.Y + height/2+1; i++)
         {
-            DrawPixel(robot.X + width - 1, i);
-            DrawPixel(robot.X - width + 1, i);
+            DrawPixel(robot.X + (width )/2, i);
+            DrawPixel(robot.X - (width )/2, i);
         }
-        for (int i = robot.X - width + 1; i < robot.X + width; i++)
+        for (int i = robot.X -(width)/2; i < robot.X + width/2; i++)
         {
-            DrawPixel(i, robot.Y + height - 1);
-            DrawPixel(i, robot.Y - height + 1);
+            DrawPixel(i, robot.Y + (height)/2);
+            DrawPixel(i, robot.Y -(height)/2);
         }
     }
 
