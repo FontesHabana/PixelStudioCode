@@ -62,8 +62,10 @@ public  class Interpreter{
   {
     Canvas = canvas;
     Errors = new List<PixelWallEException>();
-    ConsoleMessage = new List<string>();
-    Interpetation(code);
+    ConsoleMessage = new List<string>();  
+      Interpetation(code);
+    
+    
 
   }
 

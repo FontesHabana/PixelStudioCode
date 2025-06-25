@@ -740,7 +740,12 @@ public class Executer : IVisitor<ASTNode>
         {
             item.Accept(this);
         }
-        object color = command.Args[0].Value;
+        string posibleColor = (string)command.Args[0].Value;
+        if (!PixelColor.TryParse(posibleColor, out PixelColor color))
+        {
+            throw RuntimeException.UndeclaredColor(posibleColor, command.Args[0].Location);
+        }
+        command.color = color;
         robot.BrushColor = command.color;
     }
 

@@ -196,18 +196,27 @@ public class SemanticChecker : IVisitor<ASTNode>
 
     }
 
-    private void CheckColor(Expression posibleColor, out PixelColor myColor)
+    private bool CheckColor(Expression posibleColor, out PixelColor myColor)
     {
         myColor = new PixelColor(0, 0, 0);
-        if (posibleColor.Type == ExpressionType.String)
+        if (posibleColor.Value != null)
         {
-
-            if (!PixelColor.TryParse(posibleColor.Value.ToString(), out PixelColor color))
+            Godot.GD.Print("Hay esta cosa");
+            Godot.GD.Print(posibleColor.Value);
+            if (posibleColor.Type == ExpressionType.String)
             {
-                errors.Add(SemanticException.UndeclaredColor(posibleColor.ToString(), posibleColor.Location));
+
+                if (!PixelColor.TryParse(posibleColor.Value.ToString(), out PixelColor color))
+                {
+                    errors.Add(SemanticException.UndeclaredColor(posibleColor.ToString(), posibleColor.Location));
+                }
+                myColor = color;
+                return true;
             }
-            myColor = color;
         }
+
+
+        return false;
     }
 
     #region functions
@@ -591,8 +600,11 @@ public class SemanticChecker : IVisitor<ASTNode>
     public void ColorCommand(ColorCommand command)
     {
         CheckArguments(new List<ExpressionType>() { ExpressionType.String }, command);
-        CheckColor(command.Args[0], out PixelColor color);
-        command.color = color;
+        if (CheckColor(command.Args[0], out PixelColor color))
+        {
+             command.color = color;
+        }
+       
 
     }
     /// <summary>

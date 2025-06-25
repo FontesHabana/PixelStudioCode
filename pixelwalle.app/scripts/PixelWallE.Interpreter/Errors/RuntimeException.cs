@@ -152,4 +152,17 @@ class RuntimeException : PixelWallEException
         // Using a default CodeLocation as the error pertains to the path itself rather than a specific code line.
         return innerException != null ? new RuntimeException(message, new CodeLocation(), innerException) : new RuntimeException(message, new CodeLocation());
     }
+
+
+    /// <summary>
+    /// Creates a new <see cref="RuntimeException"/> for an undeclared color.
+    /// </summary>
+    /// <param name="colorName">The name of the undeclared color.</param>
+    /// <param name="location">The location in the code where the error occurred.</param>
+    /// <returns>A new <see cref="RuntimeException"/> instance.</returns>
+    public static RuntimeException UndeclaredColor(string colorName, CodeLocation location)
+    {
+        string message = $"Runtime Error: Use of undeclared color '{colorName}'. Error at line{location.Line}, column {location.Column}";
+        return new RuntimeException(message, location, colorName);
+    }
 }
